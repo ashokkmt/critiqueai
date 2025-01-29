@@ -1,0 +1,92 @@
+/* style_eval.css */
+
+
+.page {
+    width: 80%;
+    max-width: 600px;
+    width: 100vw;
+    padding: 0 20vw;
+    background-color: #0d1117;
+    border-radius: 10px;
+    padding: 20px;
+    /* text-align: center; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+h1 {
+    font-size: 1.5em;
+    /* color: #3fe493; */
+    margin-bottom: 20px;
+    text-transform: capitalize;
+}
+
+.answer,
+.score {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #202630;
+    border-radius: 5px;
+    border: 1px solid #3fe493;
+    text-align: left;
+    margin-left: 20px;
+}
+
+.answer {
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #c3d0e5;
+    /* max-width: 600px; */
+    width: 750px;
+    padding-bottom: 40px;
+}
+
+.score {
+    font-size: 2em;
+    font-weight: bold;
+    color: #38d67a;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+/* .section{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+} */
+
+.evl-box {
+    display: flex;
+    align-items: center;
+    width: 50vw;
+    justify-content: space-between;
+}
+
+.evl-heading {
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.3em;
+    margin-bottom: 20px;
+    color: #38d67a;
+}
+
+.evl-answer {
+    font-size: 16px;
+}
+
+.back{
+    align-items: center;
+    text-align: center;
+}
+.try-now-button{
+    font-weight: 500;
+    font-size: 18px;
+    color: white;
+    text-decoration: none;
+    padding: 0 15px;
+    cursor: pointer;
+    /* margin: 20px; */
+}

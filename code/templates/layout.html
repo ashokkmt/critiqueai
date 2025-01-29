@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CritiqueAI</title>
+    <link rel="stylesheet" href="../static/css/navbar_and_footer.css">
+</head>
+
+<body>
+    <div class="navbar">
+        <div class="title-links">
+            <a class="title" href="/">
+                <img src="{{ url_for('static', filename='images/logo-svg.svg') }}" 
+                     alt="" class="title-img">
+                <span class="title-text">CritiqueAI</span>
+            </a>
+            
+        </div>
+
+        <div class="link-area">
+            <a href="/">Home</a>
+            <a href="/">How This Works</a>
+            <a href="/">Contact</a>
+            <a href="/">About Us</a>
+            <button><a href="/input">Try Now</a></button>
+
+        </div>
+
+    </div>
+{% block body %} {% endblock %}
+<footer>
+        <p>Made with <span class="heart">&hearts;</span> by Ashok Kumawat</p>
+</footer>
+
+
+</body>
+
+</html>

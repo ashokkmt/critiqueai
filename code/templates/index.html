@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <link rel="stylesheet" href="../static/css/styles.css">
+
+    <div class="page">
+        <div class="heading">
+            <h1>Transform the Way You Evaluate Answers!</h1>
+        </div>
+        <div class="sub-heading">
+            <span>Redefine your answers with </span>
+            <span id="typing-effect-text" class="typing-effect-text"></span>
+            <span class="typing-effect-cursor">|</span>
+        </div>
+
+        <div class="features">
+            <div class="feature-box">
+                <div class="feature-img">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px"
+                        fill="#34b677">
+                        <path
+                            d="M160-120v-213.33q0-27.5 19.58-47.09Q199.17-400 226.67-400h506.66q27.5 0 47.09 19.58Q800-360.83 800-333.33V-120H160Zm200-320q-83 0-141.5-58.5T160-640q0-83 58.5-141.5T360-840h240q83 0 141.5 58.5T800-640q0 83-58.5 141.5T600-440H360ZM226.67-186.67h506.66v-146.66H226.67v146.66Zm133.33-320h240q55.56 0 94.44-38.84 38.89-38.84 38.89-94.33 0-55.49-38.89-94.49-38.88-39-94.44-39H360q-55.56 0-94.44 38.84-38.89 38.84-38.89 94.33 0 55.49 38.89 94.49 38.88 39 94.44 39Zm.12-100q14.21 0 23.71-9.61 9.5-9.62 9.5-23.84 0-14.21-9.61-23.71-9.62-9.5-23.84-9.5-14.21 0-23.71 9.61-9.5 9.62-9.5 23.84 0 14.21 9.61 23.71 9.62 9.5 23.84 9.5Zm240 0q14.21 0 23.71-9.61 9.5-9.62 9.5-23.84 0-14.21-9.61-23.71-9.62-9.5-23.84-9.5-14.21 0-23.71 9.61-9.5 9.62-9.5 23.84 0 14.21 9.61 23.71 9.62 9.5 23.84 9.5ZM480-186.67ZM480-640Z" />
+                    </svg>
+                </div>
+                <div class="feature-head">
+                    <!-- <img src="../static/images/list_logo16X16.png" alt="icon"> -->
+                    <h4>AI-Powered Answer Evaluation</h4>
+                </div>
+                <div class="feature-disc">Experience the precision of Gemini AI as it evaluates your answers, analyzing
+                    them for accuracy,
+                    relevancy, and clarity. The tool provides insightful feedback to help refine your responses and
+                    improve your overall performance</div>
+            </div>
+            <div class="feature-box">
+                <div class="feature-img">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px"
+                        fill="#34b677">
+                        <path
+                            d="M480-40 328.67-192H632L480-40ZM146.67-280q-27 0-46.84-19.83Q80-319.67 80-346.67v-426.66q0-27 19.83-46.84Q119.67-840 146.67-840h666.66q27 0 46.84 19.83Q880-800.33 880-773.33v426.66q0 27-19.83 46.84Q840.33-280 813.33-280H146.67Zm0-66.67h666.66v-426.66H146.67v426.66Zm176-56.66H638V-470H322.67v66.67ZM198-526.67h66.67v-66.66H198v66.66Zm124.67 0h66.66v-66.66h-66.66v66.66Zm124 0h66.66v-66.66h-66.66v66.66Zm124.66 0H638v-66.66h-66.67v66.66Zm124 0H762v-66.66h-66.67v66.66ZM198-650h66.67v-66.67H198V-650Zm124.67 0h66.66v-66.67h-66.66V-650Zm124 0h66.66v-66.67h-66.66V-650Zm124.66 0H638v-66.67h-66.67V-650Zm124 0H762v-66.67h-66.67V-650ZM146.67-346.67v-426.66 426.66Z" />
+                    </svg>
+                </div>
+                <div class="feature-head">
+                    <!-- <img src="../static/images/list_logo16X16.png" alt="icon"> -->
+                    <h4>Multi-Format Input</h4>
+                </div>
+                <div class="feature-disc">Easily evaluate answers with flexible input options: type directly or upload
+                    files in TXT, DOCX,
+                    PDF, ODT, or image formats (PNG, JPEG, JPG). Advanced parsing ensures accurate extraction and
+                    effortless processing across all types.</div>
+            </div>
+            <div class="feature-box">
+                <div class="feature-img">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px"
+                        fill="#34b677">
+                        <path
+                            d="M295-119q-36-1-68.5-18.5T165-189q-40-48-62.5-114.5T80-440q0-83 31.5-156T197-723q54-54 127-85.5T480-840q83 0 156 31.67 73 31.66 127 86.66t85.5 129q31.5 74 31.5 159Q880-358 855.67-291 831.33-224 786-178q-28.67 29.33-60 44.17Q694.67-119 662-119q-18 0-36-4.5T590-137l-56-28q-12.67-6.67-26.17-9.67-13.5-3-27.83-3-14.33 0-27.83 3-13.5 3-26.17 9.67l-56 28q-19 10-37.5 14.5T295-119Zm2.67-66.67q10.33 0 21.16-2.66Q329.67-191 340-196l56-28q19.67-9.67 40.5-14.67t42.5-5q21.67 0 42.67 4.67T563-224l57 28q10.33 5 20.67 7.67 10.33 2.66 20.66 2.66 21.67 0 41.67-10.66 20-10.67 39-32 34-38 52.67-92.67 18.66-54.67 18.66-114.67 0-142-96.66-239.83Q620-773.33 480-773.33t-236.67 98.66Q146.67-576 146.67-434q0 61 18.83 115.33 18.83 54.34 53.17 92 19 21.34 38.33 31.17 19.33 9.83 40.67 9.83ZM480-480Zm0 113.33q30.33 0 51.83-21.5t21.5-51.83q0-8-1.5-16t-5.16-15.33l59.33-77q11.33 13.66 19.83 28.83 8.5 15.17 13.5 32.83H708q-17-82-80.83-134.33-63.84-52.33-147.17-52.33-83.33 0-147.67 52.5Q268-568.33 252-486.67h68.67q16-54 60-87t99.33-33q19.67 0 38.33 4.34 18.67 4.33 35.34 13L494-511.67q-3.33-.66-7-1.16-3.67-.5-7-.5-30.33 0-51.83 21.5T406.67-440q0 30.33 21.5 51.83t51.83 21.5Z" />
+                    </svg>
+                </div>
+                <div class="feature-head">
+                    <!-- <img src="../static/images/list_logo16X16.png" alt="icon"> -->
+                    <h4>Detailed Feedback and Scoring</h4>
+                </div>
+                <div class="feature-disc">Receive comprehensive feedback, including accuracy, relevancy, and coherence
+                    analysis. Gain
+                    actionable insights and an overall score out of 10, empowering users to refine their answers and
+                    improve their performance effortlessly.</div>
+
+            </div>
+            <div class="feature-box">
+                <div class="feature-img">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="40px" viewBox="0 -960 960 960" width="40px"
+                        fill="#34b677">
+                        <path
+                            d="M422-297.33 704.67-580l-49.34-48.67L422-395.33l-118-118-48.67 48.66L422-297.33ZM480-80q-82.33 0-155.33-31.5-73-31.5-127.34-85.83Q143-251.67 111.5-324.67T80-480q0-83 31.5-156t85.83-127q54.34-54 127.34-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 82.33-31.5 155.33-31.5 73-85.5 127.34Q709-143 636-111.5T480-80Zm0-66.67q139.33 0 236.33-97.33t97-236q0-139.33-97-236.33t-236.33-97q-138.67 0-236 97-97.33 97-97.33 236.33 0 138.67 97.33 236 97.33 97.33 236 97.33ZM480-480Z" />
+                    </svg>
+                </div>
+                <div class="feature-head">
+                    <!-- <img src="../static/images/list_logo16X16.png" alt="icon"> -->
+                    <h4>Real-Time Results</h4>
+                </div>
+                <div class="feature-disc">Get instant evaluations with AI-powered speed and precision. Save time with
+                    on-the-spot feedback,
+                    detailed analysis, and scoring, enabling quick improvements and better outcomes in no time.</div>
+            </div>
+        </div>
+
+        <div class="testimonials">
+            <div class="testimonial-box">
+                <div class="testimonial-text">"Bahut badiya hai bhaisab"</div>
+                <div class="testimonial-person">-Ap singh ji maharaj</div>
+            </div>
+        </div>
+
+        <button style="margin: 50px;"><a href="/input" class="try-now-button">Try Now</a></button>
+
+    </div>
+
+    <script src="../static/script/script.js"></script>
+
+{% endblock %}

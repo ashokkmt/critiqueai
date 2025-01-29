@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <link rel="stylesheet" href="../static/css/style_input.css">
+    <div class="page">
+        <!-- Left: Input Box -->
+        <div class="column">
+            <div class="form-group">
+                <form action="/evaluate" method="post">
+                    <label class="form-control-1" for="input">Write or paste your question and answer</label>
+                    <textarea class="form-control-text" id="input" name="fname" rows="6" cols="30" placeholder="Type or paste your question and answer" ></textarea><br>
+                    <a href="/evaluate"><button>Submit</button></a>
+                </form>
+                <!-- Description below the input box -->
+                <div class="description">
+                    Note: <br>
+                    Please provide the question and answer in the space above. You can write or paste the content.
+                </div>
+            </div>
+
+            <div class="divider"></div>  
+            <!-- Right: Drag-and-Drop Box -->
+            <div class="form-group">
+                <form action="/evaluate" method="post" enctype="multipart/form-data">
+                    <!-- <div class="form-group"> -->
+                        <label class="form-control-2" for="eval_file">File Input</label>
+                        <input type="file" id="eval_file" name="file" style="display: none;">
+                        <!-- Drag and drop area -->
+                        <div id="drop-zone">
+                            Drag and drop your file here or click to select
+                        </div>
+                        <button type="submit" style="display: none;">Submit</button>
+                    <!-- </div> -->
+                </form>
+                <!-- Description below the drag-and-drop box -->
+                <div class="description">
+                    Note:<br>
+                    1. Upload a file containing question and answer.<br>
+                    2. Supported file format - docx, odt, txt, pdf, png, jpeg, jpg
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../static/script/input.js"></script>
+{% endblock %}

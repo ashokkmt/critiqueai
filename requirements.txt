@@ -1,0 +1,6 @@
+Flask
+werkzeug
+google-generativeai
+pillow
+python-docx
+odfdo
