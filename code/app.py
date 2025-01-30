@@ -8,7 +8,7 @@ import PIL.Image
 import docx
 from odfdo import Document
 
-with open('config.json', 'r') as c:
+with open('code/config.json', 'r') as c:
     params = json.load(c)["params"]
 
 # Configure the Google Generative AI API
