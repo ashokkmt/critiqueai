@@ -4,7 +4,7 @@ import google.generativeai as genai
 app = Flask(__name__)
 
 # Configure API Key
-genai.configure(api_key="AIzaSyBJ9WUabUnyTRb_8QybjQPKZJmvgHdnsXU")
+genai.configure(api_key="YOUR_API_KEY")
 model = genai.GenerativeModel("gemini-pro")
 
 ROADMAP_PROMPT = '''Provide a step-by-step learning roadmap for {topic}. Include key concepts, practice tasks, and real-world applications. 
