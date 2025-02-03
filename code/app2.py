@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import google.generativeai as genai
 import json
 
-with open('code/config.json', 'r') as c:
+with open('config.json', 'r') as c:
     params = json.load(c)["params"]
 
 app = Flask(__name__)
