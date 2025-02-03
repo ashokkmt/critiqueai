@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skill Roadmap Generator</title>
-    <link rel="stylesheet" href="../static/css/styleroad.css">
+    <link rel="stylesheet" href="../static/style.css">
 </head>
-
 <body>
     <h1>Skill Roadmap Generator</h1>
     <form id="roadmap-form">
@@ -21,14 +19,15 @@
     <div id="roadmap-result" class="hidden">
         <h2>Generated Roadmap</h2>
         <div id="roadmap-content" class="roadmap-container"></div>
-        <button id="download-btn">Download Roadmap</button>
+        <!-- Initially hide the download button -->
+        <button id="download-btn" style="display: none;">Download Roadmap</button>
     </div>
 
     <script>
         // Handling the form submission to generate the roadmap
         document.getElementById("roadmap-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-
+            
             const topic = document.getElementById("topic").value.trim();
             if (!topic) {
                 alert("Please enter a topic");
@@ -44,15 +43,18 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: `topic=${encodeURIComponent(topic)}`
                 });
-
+                
                 if (!response.ok) throw new Error("Server error");
                 const text = await response.text();
-
+                
                 const htmlContent = parseRoadmapText(text);
                 document.getElementById("roadmap-content").innerHTML = htmlContent;
                 document.getElementById("roadmap-result").classList.remove("hidden");
+
+                // Show the download button after the roadmap is generated
+                document.getElementById("download-btn").style.display = 'inline-block';
             } catch (error) {
-                document.getElementById("roadmap-content").innerHTML =
+                document.getElementById("roadmap-content").innerHTML = 
                     `<div class="error">❌ Error: ${error.message}</div>`;
             } finally {
                 document.getElementById("loading").classList.add("hidden");
@@ -154,8 +156,6 @@
             return html;
         }
 
-
-
         // Download feature to download the roadmap as a text file
         document.getElementById("download-btn").addEventListener("click", () => {
             const content = document.getElementById("roadmap-content").textContent; // Get content
@@ -169,5 +169,4 @@
         });
     </script>
 </body>
-
 </html>
