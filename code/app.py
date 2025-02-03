@@ -14,7 +14,8 @@ with open('code/config.json', 'r') as c:
 # Configure the Google Generative AI API
 genai.configure(api_key=params['gen_api'])
 model = genai.GenerativeModel("gemini-1.5-flash")
-model_pro = genai.GenerativeModel("gemini-1.5-flash")
+model_pro = genai.GenerativeModel("gemini-1.5-flash")  
+# model_pro = genai.GenerativeModel("gemini-1.5-pro")  # Output not aligning incorrect when using gemini-1.5-pro
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -144,16 +145,18 @@ def input():
 
 # Route for evaluation logic
 
+
 @app.route("/roadmap")
 def roadmap():
     return render_template("roadmap.html")
+
 
 @app.route('/get_roadmap', methods=['POST'])
 def get_roadmap():
     topic = request.form.get('topic', '').strip()
     if not topic:
         return "Please enter a valid topic", 400
-    
+
     try:
         full_prompt = ROADMAP_PROMPT.format(topic=topic)
         response = model_pro.generate_content(
@@ -164,7 +167,7 @@ def get_roadmap():
             )
         )
         return response.text if response.candidates else "Failed to generate roadmap"
-    
+
     except Exception as e:
         return f"Error generating roadmap: {str(e)}", 500
 
