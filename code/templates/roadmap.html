@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skill Roadmap Generator</title>
-    <link rel="stylesheet" href="../static/styleroad.css">
+    <link rel="stylesheet" href="../static/css/styleroad.css">
 </head>
+
 <body>
     <h1>Skill Roadmap Generator</h1>
     <form id="roadmap-form">
@@ -26,7 +28,7 @@
         // Handling the form submission to generate the roadmap
         document.getElementById("roadmap-form").addEventListener("submit", async (e) => {
             e.preventDefault();
-            
+
             const topic = document.getElementById("topic").value.trim();
             if (!topic) {
                 alert("Please enter a topic");
@@ -42,15 +44,15 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: `topic=${encodeURIComponent(topic)}`
                 });
-                
+
                 if (!response.ok) throw new Error("Server error");
                 const text = await response.text();
-                
+
                 const htmlContent = parseRoadmapText(text);
                 document.getElementById("roadmap-content").innerHTML = htmlContent;
                 document.getElementById("roadmap-result").classList.remove("hidden");
             } catch (error) {
-                document.getElementById("roadmap-content").innerHTML = 
+                document.getElementById("roadmap-content").innerHTML =
                     `<div class="error">❌ Error: ${error.message}</div>`;
             } finally {
                 document.getElementById("loading").classList.add("hidden");
@@ -59,98 +61,98 @@
 
         // Function to parse the roadmap text and convert it to HTML structure
         function parseRoadmapText(text) {
-    const lines = text.split('\n');
-    let html = '';
-    let inList = false;
-    let inOrderedList = false;
+            const lines = text.split('\n');
+            let html = '';
+            let inList = false;
+            let inOrderedList = false;
 
-    lines.forEach(line => {
-        line = line.trim();
+            lines.forEach(line => {
+                line = line.trim();
 
-        // Bold text (**text**) to <strong>text</strong>
-        line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                // Bold text (**text**) to <strong>text</strong>
+                line = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-        // Italic text (*italic* or _italic_) to <em>italic</em>
-        line = line.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
+                // Italic text (*italic* or _italic_) to <em>italic</em>
+                line = line.replace(/(\*|_)(.*?)\1/g, '<em>$2</em>');
 
-        // Links [text](url) to <a href="url">text</a>
-        line = line.replace(/\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+                // Links [text](url) to <a href="url">text</a>
+                line = line.replace(/\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
 
-        // Images ![alt text](image_url) to <img alt="alt text" src="image_url">
-        line = line.replace(/!\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g, '<img alt="$1" src="$2" />');
+                // Images ![alt text](image_url) to <img alt="alt text" src="image_url">
+                line = line.replace(/!\[([^\]]+)\]\((https?:\/\/[^\s]+)\)/g, '<img alt="$1" src="$2" />');
 
-        // Inline code `code` to <code>code</code>
-        line = line.replace(/`(.*?)`/g, '<code>$1</code>');
+                // Inline code `code` to <code>code</code>
+                line = line.replace(/`(.*?)`/g, '<code>$1</code>');
 
-        // Headers
-        if (line.startsWith('# ')) {
-            if (inList || inOrderedList) {
-                html += '</ul>';
-                inList = inOrderedList = false;
-            }
-            html += `<h3 class="roadmap-heading">${line.replace('# ', '')}</h3>`;
-        } else if (line.startsWith('## ')) {
-            if (inList || inOrderedList) {
-                html += '</ul>';
-                inList = inOrderedList = false;
-            }
-            html += `<h4 class="roadmap-subheading">${line.replace('## ', '')}</h4>`;
+                // Headers
+                if (line.startsWith('# ')) {
+                    if (inList || inOrderedList) {
+                        html += '</ul>';
+                        inList = inOrderedList = false;
+                    }
+                    html += `<h3 class="roadmap-heading">${line.replace('# ', '')}</h3>`;
+                } else if (line.startsWith('## ')) {
+                    if (inList || inOrderedList) {
+                        html += '</ul>';
+                        inList = inOrderedList = false;
+                    }
+                    html += `<h4 class="roadmap-subheading">${line.replace('## ', '')}</h4>`;
+                }
+                // Steps like **Step X:** to <h3 class="roadmap-step">Step X:</h3>
+                else if (line.startsWith('**Step')) {
+                    if (inList || inOrderedList) {
+                        html += '</ul>';
+                        inList = inOrderedList = false;
+                    }
+                    html += `<h3 class="roadmap-step">${line}</h3>`;
+                }
+                // Unordered Lists (* or - Item) to <ul><li>Item</li></ul>
+                else if (line.startsWith('* ') || line.startsWith('- ')) {
+                    if (!inList && !inOrderedList) {
+                        html += '<ul class="roadmap-list">';
+                        inList = true;
+                    }
+                    html += `<li class="roadmap-item">${line.replace(/^\*?\-?\s*/, '')}</li>`;
+                }
+                // Ordered Lists (1. Item) to <ol><li>Item</li></ol>
+                else if (line.match(/^\d+\./)) {
+                    if (!inOrderedList && !inList) {
+                        html += '<ol class="roadmap-ordered-list">';
+                        inOrderedList = true;
+                    }
+                    html += `<li class="roadmap-item">${line.replace(/^\d+\.\s*/, '')}</li>`;
+                }
+                // Blockquotes (> Quote) to <blockquote>Quote</blockquote>
+                else if (line.startsWith('> ')) {
+                    if (inList || inOrderedList) {
+                        html += '</ul>';
+                        inList = inOrderedList = false;
+                    }
+                    html += `<blockquote class="roadmap-blockquote">${line.replace('> ', '')}</blockquote>`;
+                }
+                // Strikethrough (~~text~~) to <del>text</del>
+                else if (line.match(/~~(.*?)~~/)) {
+                    line = line.replace(/~~(.*?)~~/g, '<del>$1</del>');
+                    html += `<p class="roadmap-text">${line}</p>`;
+                }
+                // Normal text to <p>text</p>
+                else if (line !== '') {
+                    if (inList || inOrderedList) {
+                        html += `<li class="roadmap-item">${line}</li>`;
+                    } else {
+                        html += `<p class="roadmap-text">${line}</p>`;
+                    }
+                } else {
+                    if (inList || inOrderedList) {
+                        html += '</ul>';
+                        inList = inOrderedList = false;
+                    }
+                }
+            });
+
+            if (inList || inOrderedList) html += '</ul>';
+            return html;
         }
-        // Steps like **Step X:** to <h3 class="roadmap-step">Step X:</h3>
-        else if (line.startsWith('**Step')) {
-            if (inList || inOrderedList) {
-                html += '</ul>';
-                inList = inOrderedList = false;
-            }
-            html += `<h3 class="roadmap-step">${line}</h3>`;
-        }
-        // Unordered Lists (* or - Item) to <ul><li>Item</li></ul>
-        else if (line.startsWith('* ') || line.startsWith('- ')) {
-            if (!inList && !inOrderedList) {
-                html += '<ul class="roadmap-list">';
-                inList = true;
-            }
-            html += `<li class="roadmap-item">${line.replace(/^\*?\-?\s*/, '')}</li>`;
-        }
-        // Ordered Lists (1. Item) to <ol><li>Item</li></ol>
-        else if (line.match(/^\d+\./)) {
-            if (!inOrderedList && !inList) {
-                html += '<ol class="roadmap-ordered-list">';
-                inOrderedList = true;
-            }
-            html += `<li class="roadmap-item">${line.replace(/^\d+\.\s*/, '')}</li>`;
-        }
-        // Blockquotes (> Quote) to <blockquote>Quote</blockquote>
-        else if (line.startsWith('> ')) {
-            if (inList || inOrderedList) {
-                html += '</ul>';
-                inList = inOrderedList = false;
-            }
-            html += `<blockquote class="roadmap-blockquote">${line.replace('> ', '')}</blockquote>`;
-        }
-        // Strikethrough (~~text~~) to <del>text</del>
-        else if (line.match(/~~(.*?)~~/)) {
-            line = line.replace(/~~(.*?)~~/g, '<del>$1</del>');
-            html += `<p class="roadmap-text">${line}</p>`;
-        }
-        // Normal text to <p>text</p>
-        else if (line !== '') {
-            if (inList || inOrderedList) {
-                html += `<li class="roadmap-item">${line}</li>`;
-            } else {
-                html += `<p class="roadmap-text">${line}</p>`;
-            }
-        } else {
-            if (inList || inOrderedList) {
-                html += '</ul>';
-                inList = inOrderedList = false;
-            }
-        }
-    });
-
-    if (inList || inOrderedList) html += '</ul>';
-    return html;
-}
 
 
 
@@ -167,4 +169,5 @@
         });
     </script>
 </body>
+
 </html>

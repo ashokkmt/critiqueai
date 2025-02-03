@@ -14,6 +14,7 @@ with open('code/config.json', 'r') as c:
 # Configure the Google Generative AI API
 genai.configure(api_key=params['gen_api'])
 model = genai.GenerativeModel("gemini-1.5-flash")
+model_pro = genai.GenerativeModel("gemini-1.5-flash")
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -26,6 +27,8 @@ app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
 # Prompts for AI evaluation
 prompt = "Evaluate the following question and answer pair for accuracy and relevance, provide a concise summary (max 60-70 words, human-like legal language but simple), give proper justification for your evaluations, and suggest specific improvements."
 prompt2 = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score : 7'. (Always give 0 if answer is absolutely wrong) "
+ROADMAP_PROMPT = '''Provide a step-by-step learning roadmap for {topic}. Include key concepts, practice tasks, and real-world applications. 
+Also, list the best resources (books, websites, courses, and tools) at the end. explain each sub point in atleast 80-100 words , dont forget to add working links without description and try to check that links may not be broken  '''
 
 # Define allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'txt', 'pdf', 'docx', 'odt'}
@@ -140,6 +143,30 @@ def input():
     return render_template("input.html")
 
 # Route for evaluation logic
+
+@app.route("/roadmap")
+def roadmap():
+    return render_template("roadmap.html")
+
+@app.route('/get_roadmap', methods=['POST'])
+def get_roadmap():
+    topic = request.form.get('topic', '').strip()
+    if not topic:
+        return "Please enter a valid topic", 400
+    
+    try:
+        full_prompt = ROADMAP_PROMPT.format(topic=topic)
+        response = model_pro.generate_content(
+            contents=full_prompt,
+            generation_config=genai.GenerationConfig(
+                max_output_tokens=1000,
+                temperature=0.3
+            )
+        )
+        return response.text if response.candidates else "Failed to generate roadmap"
+    
+    except Exception as e:
+        return f"Error generating roadmap: {str(e)}", 500
 
 
 @app.route('/evaluate', methods=['GET', 'POST'])
