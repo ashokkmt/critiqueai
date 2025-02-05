@@ -5,26 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skill Roadmap Generator</title>
     <link rel="stylesheet" href="../static/css/styleroad.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <h1>Skill Roadmap Generator</h1>
-    <form id="roadmap-form">
-        <label for="topic">Topic (e.g., Python): </label>
-        <input type="text" id="topic" name="topic" required>
-        <button type="submit">Generate Roadmap</button>
-    </form>
+    <div id="roadmap-box" class="container">
+        <h1>Skill Roadmap Generator</h1>
+        <form id="roadmap-form">
+            <label for="topic">Topic (e.g., Python): </label>
+            <input type="text" id="topic" name="topic" required>
+            <button type="submit">Generate Roadmap</button>
+        </form>
 
-    <div id="loading" class="hidden">⏳ Generating your roadmap...</div>
+        <div id="loading" class="hidden">
+            <div class="spinner"></div>
+        </div>
 
-    <div id="roadmap-result" class="hidden">
-        <h2>Generated Roadmap</h2>
-        <div id="roadmap-content" class="roadmap-container"></div>
-        <!-- Initially hide the download button -->
-        <button id="download-btn" style="display: none;">Download Roadmap</button>
+        <div id="roadmap-result">
+            <h2>Generated Roadmap</h2>
+            <div id="roadmap-content" class="roadmap-container"></div>
+            <button id="download-btn" style="display: none;">Download Roadmap</button>
+        </div>
     </div>
 
     <script>
-        // Handling the form submission to generate the roadmap
         document.getElementById("roadmap-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             
@@ -36,6 +39,7 @@
 
             document.getElementById("loading").classList.remove("hidden");
             document.getElementById("roadmap-content").innerHTML = "";
+            document.getElementById("roadmap-box").style.width = "40%"; // Reset width
 
             try {
                 const response = await fetch('/get_roadmap', {
@@ -43,13 +47,13 @@
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: `topic=${encodeURIComponent(topic)}`
                 });
-                
+
                 if (!response.ok) throw new Error("Server error");
                 const text = await response.text();
                 
                 const htmlContent = parseRoadmapText(text);
                 document.getElementById("roadmap-content").innerHTML = htmlContent;
-                document.getElementById("roadmap-result").classList.remove("hidden");
+                document.getElementById("roadmap-result").classList.add("shown");
 
                 // Show the download button after the roadmap is generated
                 document.getElementById("download-btn").style.display = 'inline-block';
@@ -58,6 +62,7 @@
                     `<div class="error">❌ Error: ${error.message}</div>`;
             } finally {
                 document.getElementById("loading").classList.add("hidden");
+                document.getElementById("roadmap-box").style.width = "95%"; // Enlarge width
             }
         });
 
@@ -156,16 +161,25 @@
             return html;
         }
 
-        // Download feature to download the roadmap as a text file
+        // Download feature to download the roadmap as a PDF file
         document.getElementById("download-btn").addEventListener("click", () => {
-            const content = document.getElementById("roadmap-content").textContent; // Get content
-            const blob = new Blob([content], { type: 'text/plain' }); // Create a file blob
-            const url = URL.createObjectURL(blob); // Create an object URL for download
-            const a = document.createElement('a'); // Create an anchor element
-            a.href = url; // Set the download link
-            a.download = `roadmap-${document.getElementById("topic").value}.txt`; // Set filename
-            a.click(); // Trigger the download
-            URL.revokeObjectURL(url); // Clean up the URL object
+            const content = document.getElementById("roadmap-content").innerHTML; // Get content
+            const { jsPDF } = window.jspdf; // Import jsPDF from the library
+
+            const doc = new jsPDF(); // Create a jsPDF document
+
+            // Set content to the PDF
+            doc.fromHTML(content, 10, 10);
+
+            // Save the PDF
+            doc.save(`roadmap-${document.getElementById("topic").value}.pdf`);
+        });
+
+        // Allow form submission with the Enter key
+        document.getElementById("topic").addEventListener("keyup", (e) => {
+            if (e.key === "Enter") {
+                document.querySelector("button[type='submit']").click();
+            }
         });
     </script>
 </body>
