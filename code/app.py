@@ -22,12 +22,14 @@ app = Flask(__name__)
 
 # Configure upload folder and file size limits
 # Path to save uploaded files
-app.config['UPLOAD_FOLDER'] = params['upload_folder']
+app.config['UPLOAD_FOLDER'] = params['upload_folder2']
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
 
 # Prompts for AI evaluation
 prompt = "Evaluate the following question and answer pair for accuracy and relevance, provide a concise summary (max 60-70 words, human-like legal language but simple), give proper justification for your evaluations, and suggest specific improvements."
+
 prompt2 = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score : 7'. (Always give 0 if answer is absolutely wrong) "
+
 ROADMAP_PROMPT = '''Provide a step-by-step learning roadmap for {topic}. Include key concepts, practice tasks, and real-world applications. 
 Also, list the best resources (books, websites, courses, and tools) at the end. explain each sub point in atleast 80-100 words , dont forget to add working links without description and try to check that links may not be broken  '''
 
@@ -42,22 +44,23 @@ def allowed_file(filename):
 
 # Function to process .txt files
 
-
+def get_evaluate(text):
+    response = model.generate_content(
+        [text, prompt], generation_config=genai.GenerationConfig(
+            max_output_tokens=1000,
+            temperature=0.5,))
+    score = model.generate_content(
+        [text, prompt2], generation_config=genai.GenerationConfig(
+            max_output_tokens=1000,
+            temperature=0.5,))
+    
+    return response, score
+    
 def process_txt_file(path):
     with open(path, "r") as text_file:
         doc_text = text_file.read()
 
-    # Generate AI responses and scores
-    response = model.generate_content(
-        [doc_text, prompt], generation_config=genai.GenerationConfig(
-            max_output_tokens=200,
-            temperature=0.3,))
-    score = model.generate_content(
-        [doc_text, prompt2], generation_config=genai.GenerationConfig(
-            max_output_tokens=200,
-            temperature=0.3,))
-
-    return response, score
+    return get_evaluate(doc_text)
 
 # Function to process .pdf files
 
@@ -69,11 +72,11 @@ def process_pdf_file(path):
     response = model.generate_content(
         [{'mime_type': 'application/pdf', 'data': doc_data}, prompt], generation_config=genai.GenerationConfig(
             max_output_tokens=200,
-            temperature=1,))
+            temperature=0.5,))
     score = model.generate_content(
         [{'mime_type': 'application/pdf', 'data': doc_data}, prompt2], generation_config=genai.GenerationConfig(
             max_output_tokens=200,
-            temperature=0.1,))
+            temperature=0.5,))
 
     return response, score
 
@@ -82,15 +85,7 @@ def process_pdf_file(path):
 
 def process_img_file(path):
     img_file = PIL.Image.open(path)
-    response = model.generate_content(
-        [img_file, prompt], generation_config=genai.GenerationConfig(
-            max_output_tokens=1000,
-            temperature=1,))
-    score = model.generate_content(
-        [img_file, prompt2], generation_config=genai.GenerationConfig(
-            max_output_tokens=1000,
-            temperature=1,))
-    return response, score
+    return get_evaluate(img_file)
 
 # Function to process .docx files
 
@@ -100,15 +95,7 @@ def process_docx_file(path):
     full_text = [paragraph.text for paragraph in doc.paragraphs]
     docx_text = '\n'.join(full_text)
 
-    response = model.generate_content(
-        [docx_text, prompt], generation_config=genai.GenerationConfig(
-            max_output_tokens=1000,
-            temperature=1,))
-    score = model.generate_content(
-        [docx_text, prompt2], generation_config=genai.GenerationConfig(
-            max_output_tokens=1000,
-            temperature=1,))
-    return response, score
+    return get_evaluate(docx_text)
 
 # Function to process .odt files
 
@@ -119,15 +106,7 @@ def process_odt_file(path):
         para.text for para in odt_file.body.get_elements("//text:p")]
     odt_text = '\n'.join(text_content)
 
-    response = model.generate_content(
-        [odt_text, prompt], generation_config=genai.GenerationConfig(
-            max_output_tokens=1000,
-            temperature=1,))
-    score = model.generate_content(
-        [odt_text, prompt2], generation_config=genai.GenerationConfig(
-            max_output_tokens=1000,
-            temperature=1,))
-    return response, score
+    return get_evaluate(odt_text)
 
 # Route for home page
 
@@ -146,14 +125,37 @@ def input():
 # Route for evaluation logic
 
 
-@app.route("/roadmap")
+@app.route('/roadmap')
 def roadmap():
     return render_template("roadmap.html")
 
+@app.route('/summary')
+def summary():
+    return render_template("summary.html")
+
+@app.route('/summary_out', methods=['POST'])
+def summary_out():
+    if request.method == 'POST':
+        check_file = 'file' in request.files and request.files['file'].filename
+        check_fname = 'fname' in request.form and request.form['fname']
+        if check_file and check_fname:
+            data = request.form['fname']
+            return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}") 
+        elif check_file:
+            f = request.files['file']
+            return render_template("summary_out.html", output="You will only get summary of file") 
+        elif check_fname:
+            data = request.form['fname']
+            print(data)
+            return render_template("summary_out.html", output=data)
+        else:
+            return render_template("summary_out.html", output="Invalid input received.")
+            
+    
 
 @app.route('/get_roadmap', methods=['POST'])
 def get_roadmap():
-    topic = request.form.get('topic', '').strip()
+    topic = request.form['topic']
     if not topic:
         return "Please enter a valid topic", 400
 
@@ -214,14 +216,8 @@ def evaluate():
             data = request.form['fname']
             try:
                 # Generate AI response
-                response = model.generate_content([data, prompt], generation_config=genai.GenerationConfig(
-                    max_output_tokens=200,
-                    temperature=0.3,
-                ))
-                score = model.generate_content([data, prompt2], generation_config=genai.GenerationConfig(
-                    max_output_tokens=200,
-                    temperature=0.3,
-                ))
+
+                response, score = get_evaluate(data)
 
                 response_text = response.text if response and response.candidates else "No response from the AI."
                 score_text = score.text if score and score.candidates else "No score available."
