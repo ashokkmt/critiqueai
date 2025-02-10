@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify, session
 import os
 import json
 from werkzeug.utils import secure_filename
@@ -7,6 +7,19 @@ import base64
 import PIL.Image
 import docx
 from odfdo import Document
+import firebase_admin
+from firebase_admin import credentials, storage, firestore
+import uuid
+from datetime import datetime, timezone
+
+
+cred = credentials.Certificate("code/firebase.json")
+firebase_admin.initialize_app(cred, {
+    "storageBucket": "instant-theater-449913-h4.firebasestorage.app"
+})
+
+bucket = storage.bucket()
+db = firestore.client()
 
 with open('code/config.json', 'r') as c:
     params = json.load(c)["params"]
@@ -14,15 +27,16 @@ with open('code/config.json', 'r') as c:
 # Configure the Google Generative AI API
 genai.configure(api_key=params['gen_api'])
 model = genai.GenerativeModel("gemini-1.5-flash")
-model_pro = genai.GenerativeModel("gemini-1.5-flash")  
+model_pro = genai.GenerativeModel("gemini-1.5-flash")
 # model_pro = genai.GenerativeModel("gemini-1.5-pro")  # Output not aligning incorrect when using gemini-1.5-pro
 
 # Initialize Flask app
 app = Flask(__name__)
+app.secret_key = params['session_key']
 
 # Configure upload folder and file size limits
 # Path to save uploaded files
-app.config['UPLOAD_FOLDER'] = params['upload_folder2']
+app.config['UPLOAD_FOLDER'] = params['upload_folder']
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
 
 # Prompts for AI evaluation
@@ -44,6 +58,7 @@ def allowed_file(filename):
 
 # Function to process .txt files
 
+
 def get_evaluate(text):
     response = model.generate_content(
         [text, prompt], generation_config=genai.GenerationConfig(
@@ -53,9 +68,10 @@ def get_evaluate(text):
         [text, prompt2], generation_config=genai.GenerationConfig(
             max_output_tokens=1000,
             temperature=0.5,))
-    
+
     return response, score
-    
+
+
 def process_txt_file(path):
     with open(path, "r") as text_file:
         doc_text = text_file.read()
@@ -108,6 +124,13 @@ def process_odt_file(path):
 
     return get_evaluate(odt_text)
 
+
+@app.before_request
+def set_session():
+    if 'session_id' not in session:
+        session['session_id'] = str(uuid.uuid4())
+        print("Session ID - ", session['session_id'])
+
 # Route for home page
 
 
@@ -129,9 +152,11 @@ def input():
 def roadmap():
     return render_template("roadmap.html")
 
+
 @app.route('/summary')
 def summary():
     return render_template("summary.html")
+
 
 @app.route('/summary_out', methods=['POST'])
 def summary_out():
@@ -140,18 +165,43 @@ def summary_out():
         check_fname = 'fname' in request.form and request.form['fname']
         if check_file and check_fname:
             data = request.form['fname']
-            return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}") 
+            return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}")
+
         elif check_file:
             f = request.files['file']
-            return render_template("summary_out.html", output="You will only get summary of file") 
+
+            session_id = session.get('session_id')
+            unique_filename = f"{uuid.uuid4()}.{f.filename.split('.')[-1]}"
+            blob = bucket.blob(f"sessions/{session_id}/{unique_filename}")
+            blob.upload_from_file(f)
+            blob.make_public()
+
+            print(session_id)
+            print(unique_filename)
+            print(blob.public_url)
+            print(datetime.now(timezone.utc))
+            print("file uploaded now updating db")
+            
+            db.collection("user_files").document(unique_filename).set({
+                "session_id": session_id,
+                "filename": unique_filename,
+                "url": blob.public_url,
+                "uploaded_at": datetime.now(timezone.utc)
+            })
+
+            res = jsonify({"message": "File uploaded", "url": blob.public_url})
+            print(res)
+
+            return render_template("summary_out.html", output=f"You will only get summary of file.\n{res}")
+
         elif check_fname:
             data = request.form['fname']
             print(data)
             return render_template("summary_out.html", output=data)
+
         else:
             return render_template("summary_out.html", output="Invalid input received.")
-            
-    
+
 
 @app.route('/get_roadmap', methods=['POST'])
 def get_roadmap():
