@@ -7,6 +7,22 @@ import base64
 import PIL.Image
 import docx
 from odfdo import Document
+from pymongo import MongoClient
+import mongoengine
+from mongoengine import connect, Document, FileField, StringField, IntField
+
+
+class PDFFile(Document):
+    name = StringField(required=True)
+    file = FileField(required=True)
+
+# print(mongoengine.__version__)
+
+
+connect(
+    db="pdfAI",      # Database name
+    host="mongodb://localhost:27017/pdfAI"  # Connection string for local MongoDB
+)
 
 with open('code/config.json', 'r') as c:
     params = json.load(c)["params"]
@@ -14,7 +30,7 @@ with open('code/config.json', 'r') as c:
 # Configure the Google Generative AI API
 genai.configure(api_key=params['gen_api'])
 model = genai.GenerativeModel("gemini-1.5-flash")
-model_pro = genai.GenerativeModel("gemini-1.5-flash")  
+model_pro = genai.GenerativeModel("gemini-1.5-flash")
 # model_pro = genai.GenerativeModel("gemini-1.5-pro")  # Output not aligning incorrect when using gemini-1.5-pro
 
 # Initialize Flask app
@@ -22,7 +38,7 @@ app = Flask(__name__)
 
 # Configure upload folder and file size limits
 # Path to save uploaded files
-app.config['UPLOAD_FOLDER'] = params['upload_folder2']
+app.config['UPLOAD_FOLDER'] = params['upload_folder']
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
 
 # Prompts for AI evaluation
@@ -30,7 +46,7 @@ prompt = "Evaluate the following question and answer pair for accuracy and relev
 
 prompt2 = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score : 7'. (Always give 0 if answer is absolutely wrong) "
 
-ROADMAP_PROMPT = '''Provide a step-by-step learning roadmap for {topic}. Include key concepts, practice tasks, and real-world applications. 
+ROADMAP_PROMPT = '''Provide a step-by-step learning roadmap for {topic}. Include key concepts, practice tasks, and real-world applications.
 Also, list the best resources (books, websites, courses, and tools) at the end. explain each sub point in atleast 80-100 words , dont forget to add working links without description and try to check that links may not be broken  '''
 
 # Define allowed file extensions
@@ -44,6 +60,7 @@ def allowed_file(filename):
 
 # Function to process .txt files
 
+
 def get_evaluate(text):
     response = model.generate_content(
         [text, prompt], generation_config=genai.GenerationConfig(
@@ -53,9 +70,10 @@ def get_evaluate(text):
         [text, prompt2], generation_config=genai.GenerationConfig(
             max_output_tokens=1000,
             temperature=0.5,))
-    
+
     return response, score
-    
+
+
 def process_txt_file(path):
     with open(path, "r") as text_file:
         doc_text = text_file.read()
@@ -129,9 +147,16 @@ def input():
 def roadmap():
     return render_template("roadmap.html")
 
+
 @app.route('/summary')
 def summary():
     return render_template("summary.html")
+
+
+class User(Document):
+    name = StringField(required=True)
+    age = IntField(required=True)
+
 
 @app.route('/summary_out', methods=['POST'])
 def summary_out():
@@ -140,10 +165,25 @@ def summary_out():
         check_fname = 'fname' in request.form and request.form['fname']
         if check_file and check_fname:
             data = request.form['fname']
-            return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}") 
+            return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}")
         elif check_file:
-            f = request.files['file']
-            return render_template("summary_out.html", output="You will only get summary of file") 
+            # f = request.files['file']
+            files = request.files.getlist("file")
+            # Iterate for each file in the files List, and Save them
+            for file in files:
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    user = User(name="Alice", age=25)
+
+
+                    user.save()  # Inserts the document into MongoDB
+                    print(f"User saved with ID: {user.id}")
+
+                    # file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    # file_ext = os.path.splitext(filename)[1].lower()
+                    # file.save(file_path)
+
+            return render_template("summary_out.html", output="You will only get summary of file")
         elif check_fname:
             data = request.form['fname']
             print(data)
