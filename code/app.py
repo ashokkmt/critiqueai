@@ -36,7 +36,7 @@ app.secret_key = params['session_key']
 
 # Configure upload folder and file size limits
 # Path to save uploaded files
-app.config['UPLOAD_FOLDER'] = params['upload_folder']
+app.config['UPLOAD_FOLDER'] = params['upload_folder2']
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
 
 # Prompts for AI evaluation
@@ -168,31 +168,32 @@ def summary_out():
             return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}")
 
         elif check_file:
-            f = request.files['file']
+            files = request.files.getlist('file')
 
-            session_id = session.get('session_id')
-            unique_filename = f"{uuid.uuid4()}.{f.filename.split('.')[-1]}"
-            blob = bucket.blob(f"sessions/{session_id}/{unique_filename}")
-            blob.upload_from_file(f)
-            blob.make_public()
+            for f in files:
+                session_id = session.get('session_id')
+                unique_filename = f"{uuid.uuid4()}.{f.filename.split('.')[-1]}"
+                blob = bucket.blob(f"sessions/{session_id}/{unique_filename}")
+                blob.upload_from_file(f)
+                blob.make_public()
 
-            print(session_id)
-            print(unique_filename)
-            print(blob.public_url)
-            print(datetime.now(timezone.utc))
-            print("file uploaded now updating db")
-            
-            db.collection("user_files").document(unique_filename).set({
-                "session_id": session_id,
-                "filename": unique_filename,
-                "url": blob.public_url,
-                "uploaded_at": f"{datetime.now(timezone.utc)}"
-            })
+                print(session_id)
+                # print(unique_filename)
+                # print(blob.public_url)
+                # print(datetime.now(timezone.utc))
+                print("file uploaded now updating db")
 
-            res = jsonify({"message": "File uploaded", "url": blob.public_url})
-            print(res)
+                db.collection("user_files").document(unique_filename).set({
+                    "session_id": session_id,
+                    "filename": unique_filename,
+                    "url": blob.public_url,
+                    "uploaded_at": datetime.now(timezone.utc)
+                })
 
-            return render_template("summary_out.html", output=f"You will only get summary of file.\n{res}")
+            # res = jsonify({"message": "File uploaded", "url": blob.public_url})
+            # print(res)
+
+            return render_template("summary_out.html", output=f"You will only get summary of file.\n")
 
         elif check_fname:
             data = request.form['fname']
@@ -201,6 +202,40 @@ def summary_out():
 
         else:
             return render_template("summary_out.html", output="Invalid input received.")
+
+
+@app.route('/delete-user-files', methods=['POST'])
+def delete_user_files():
+    session_id = session.get('session_id')
+    
+    print(f"\nSession ID: {session_id}\n")
+
+    if not session_id:
+        return jsonify({"error": "No session found"}), 400
+
+    # Fetch all files linked to this session
+    user_files = db.collection("user_files").where("session_id", "==", session_id).stream()
+
+    deleted_files = []
+
+    for file in user_files:
+        file_data = file.to_dict()
+        filename = file_data.get("filename")
+        
+        print(f"\nFile Name: {filename}\n")
+
+        # Delete file from Firebase Storage
+        blob = bucket.blob(f"sessions/{session_id}/{filename}")
+        blob.delete()  # Delete file from Firebase Storage
+
+        db.collection("user_files").document(file.id).delete()
+
+        deleted_files.append(filename)
+
+    return jsonify({
+        "message": "Session deleted successfully",
+        "deleted_files": deleted_files
+    }), 200
 
 
 @app.route('/get_roadmap', methods=['POST'])
