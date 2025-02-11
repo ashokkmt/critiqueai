@@ -186,7 +186,7 @@ def summary_out():
                 "session_id": session_id,
                 "filename": unique_filename,
                 "url": blob.public_url,
-                "uploaded_at": datetime.now(timezone.utc)
+                "uploaded_at": f"{datetime.now(timezone.utc)}"
             })
 
             res = jsonify({"message": "File uploaded", "url": blob.public_url})
