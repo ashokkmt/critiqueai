@@ -10,7 +10,7 @@ from odfdo import Document
 import firebase_admin
 from firebase_admin import credentials, storage, firestore
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 
 cred = credentials.Certificate("code/firebase.json")
@@ -36,7 +36,7 @@ app.secret_key = params['session_key']
 
 # Configure upload folder and file size limits
 # Path to save uploaded files
-app.config['UPLOAD_FOLDER'] = params['upload_folder2']
+app.config['UPLOAD_FOLDER'] = params['upload_folder']
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
 
 # Prompts for AI evaluation
@@ -207,21 +207,22 @@ def summary_out():
 @app.route('/delete-user-files', methods=['POST'])
 def delete_user_files():
     session_id = session.get('session_id')
-    
+
     print(f"\nSession ID: {session_id}\n")
 
     if not session_id:
         return jsonify({"error": "No session found"}), 400
 
     # Fetch all files linked to this session
-    user_files = db.collection("user_files").where("session_id", "==", session_id).stream()
+    user_files = db.collection("user_files").where(
+        "session_id", "==", session_id).stream()
 
     deleted_files = []
 
     for file in user_files:
         file_data = file.to_dict()
         filename = file_data.get("filename")
-        
+
         print(f"\nFile Name: {filename}\n")
 
         # Delete file from Firebase Storage
@@ -236,6 +237,41 @@ def delete_user_files():
         "message": "Session deleted successfully",
         "deleted_files": deleted_files
     }), 200
+
+
+@app.route('/delete-user-files2', methods=['GET'])
+def accountcleanup():
+    print("Function is called.")
+    expiration_time = datetime.now(timezone.utc) - timedelta(minutes=1)
+
+    docs = db.collection("user_files").where(
+        "uploaded_at", "<", expiration_time).stream()
+
+
+    deleted_files = []
+    
+    for doc in docs:
+        data = doc.to_dict()
+        session_id = data.get("session_id")
+        filename = data.get("filename")
+
+        if session_id and filename:
+            file_path = f"sessions/{session_id}/{filename}"
+            blob = bucket.blob(file_path)
+
+            try:
+                blob.delete()
+                db.collection("user_files").document(doc.id).delete()
+                print(f"Deleted: {file_path}")
+                deleted_files.append(filename)
+            except Exception as e:
+                print(f"Failed to delete {file_path}: {e}")
+      
+    
+    if not deleted_files:
+        return "No Files at Firebase\n", 200   
+
+    return jsonify({"deleted_files": deleted_files}), 200
 
 
 @app.route('/get_roadmap', methods=['POST'])
