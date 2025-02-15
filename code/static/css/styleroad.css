@@ -94,3 +94,37 @@ pre {
     align-items: center;
     height: 100%;
 }
+
+.styled-content {
+    font-family: Arial, sans-serif;
+    color: #fff; /* White text */
+    background-color: #333; /* Dark background */
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.styled-content h2, .styled-content h3, .styled-content h4 {
+    color: #aea591; /* Green headings */
+}
+
+.styled-content p {
+    line-height: 1.6;
+}
+
+.styled-content a {
+    color: #ba0000; /* Green links */
+    text-decoration: none;
+}
+
+.styled-content a:hover {
+    text-decoration: underline;
+}
+
+.styled-content ul, .styled-content ol {
+    margin-left: 20px;
+}
+
+.styled-content li {
+    margin-bottom: 10px;
+}
