@@ -60,6 +60,8 @@ def allowed_file(filename):
 
 
 def get_evaluate(text):
+    print("in evaluation function")
+    print(text)
     response = model.generate_content(
         [text, prompt], generation_config=genai.GenerationConfig(
             max_output_tokens=1000,
@@ -125,6 +127,24 @@ def process_odt_file(path):
     return get_evaluate(odt_text)
 
 
+def upload_files(file):
+    session_id = session.get('session_id')
+    unique_filename = f"{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    blob = bucket.blob(f"sessions/{session_id}/{unique_filename}")
+    blob.upload_from_file(file)
+    blob.make_public()
+
+    print(session_id)
+    print("file uploaded now updating db")
+
+    db.collection("user_files").document(unique_filename).set({
+        "session_id": session_id,
+        "filename": unique_filename,
+        "url": blob.public_url,
+        "uploaded_at": datetime.now(timezone.utc)
+    })
+
+
 @app.before_request
 def set_session():
     if 'session_id' not in session:
@@ -171,27 +191,7 @@ def summary_out():
             files = request.files.getlist('file')
 
             for f in files:
-                session_id = session.get('session_id')
-                unique_filename = f"{uuid.uuid4()}.{f.filename.split('.')[-1]}"
-                blob = bucket.blob(f"sessions/{session_id}/{unique_filename}")
-                blob.upload_from_file(f)
-                blob.make_public()
-
-                print(session_id)
-                # print(unique_filename)
-                # print(blob.public_url)
-                # print(datetime.now(timezone.utc))
-                print("file uploaded now updating db")
-
-                db.collection("user_files").document(unique_filename).set({
-                    "session_id": session_id,
-                    "filename": unique_filename,
-                    "url": blob.public_url,
-                    "uploaded_at": datetime.now(timezone.utc)
-                })
-
-            # res = jsonify({"message": "File uploaded", "url": blob.public_url})
-            # print(res)
+                upload_files(f)
 
             return render_template("summary_out.html", output=f"You will only get summary of file.\n")
 
@@ -204,42 +204,7 @@ def summary_out():
             return render_template("summary_out.html", output="Invalid input received.")
 
 
-@app.route('/delete-user-files', methods=['POST'])
-def delete_user_files():
-    session_id = session.get('session_id')
-
-    print(f"\nSession ID: {session_id}\n")
-
-    if not session_id:
-        return jsonify({"error": "No session found"}), 400
-
-    # Fetch all files linked to this session
-    user_files = db.collection("user_files").where(
-        "session_id", "==", session_id).stream()
-
-    deleted_files = []
-
-    for file in user_files:
-        file_data = file.to_dict()
-        filename = file_data.get("filename")
-
-        print(f"\nFile Name: {filename}\n")
-
-        # Delete file from Firebase Storage
-        blob = bucket.blob(f"sessions/{session_id}/{filename}")
-        blob.delete()  # Delete file from Firebase Storage
-
-        db.collection("user_files").document(file.id).delete()
-
-        deleted_files.append(filename)
-
-    return jsonify({
-        "message": "Session deleted successfully",
-        "deleted_files": deleted_files
-    }), 200
-
-
-@app.route('/delete-user-files2', methods=['GET'])
+@app.route('/delete-user-files', methods=['GET'])
 def accountcleanup():
     print("Function is called.")
     expiration_time = datetime.now(timezone.utc) - timedelta(minutes=1)
@@ -247,9 +212,8 @@ def accountcleanup():
     docs = db.collection("user_files").where(
         "uploaded_at", "<", expiration_time).stream()
 
-
     deleted_files = []
-    
+
     for doc in docs:
         data = doc.to_dict()
         session_id = data.get("session_id")
@@ -266,10 +230,9 @@ def accountcleanup():
                 deleted_files.append(filename)
             except Exception as e:
                 print(f"Failed to delete {file_path}: {e}")
-      
-    
+
     if not deleted_files:
-        return "No Files at Firebase\n", 200   
+        return "No Files at Firebase\n", 200
 
     return jsonify({"deleted_files": deleted_files}), 200
 
@@ -306,19 +269,29 @@ def evaluate():
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file_ext = os.path.splitext(filename)[1].lower()
                 f.save(file_path)
+                blob = bucket.blob(
+                    f"sessions/895c9db0-ea77-4c65-9203-141b1122ec24/2a249d38-5991-4bab-9962-4e8ac499b740.docx")
+                file_data = blob.download_as_bytes()
+                file_uri = "gs://instant-theater-449913-h4.firebasestorage.app/sessions/895c9db0-ea77-4c65-9203-141b1122ec24/146abc1f-2f9c-45e6-9bf1-74264471cb0a.txt"
+                file_uri2 = "https://storage.googleapis.com/instant-theater-449913-h4.firebasestorage.app/sessions/895c9db0-ea77-4c65-9203-141b1122ec24/146abc1f-2f9c-45e6-9bf1-74264471cb0a.txt"
 
                 try:
+                    gemini_file = {
+                        "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # Change according to file type
+                        "data": file_data
+                    }
+                    response, score = get_evaluate(gemini_file)
                     # Process the uploaded file based on its extension
-                    if file_ext == ".txt":
-                        response, score = process_txt_file(file_path)
-                    elif file_ext == ".pdf":
-                        response, score = process_pdf_file(file_path)
-                    elif file_ext in [".png", ".jpg", ".jpeg"]:
-                        response, score = process_img_file(file_path)
-                    elif file_ext == ".docx":
-                        response, score = process_docx_file(file_path)
-                    elif file_ext == ".odt":
-                        response, score = process_odt_file(file_path)
+                    # if file_ext == ".txt":
+                    #     response, score = process_txt_file(file_path)
+                    # elif file_ext == ".pdf":
+                    #     response, score = process_pdf_file(file_path)
+                    # elif file_ext in [".png", ".jpg", ".jpeg"]:
+                    #     response, score = process_img_file(file_path)
+                    # elif file_ext == ".docx":
+                    #     response, score = process_docx_file(file_path)
+                    # elif file_ext == ".odt":
+                    #     response, score = process_odt_file(file_path)
 
                     # Extract text and score for rendering
                     response_text = response.text if response and response.candidates else "No response from the AI."
