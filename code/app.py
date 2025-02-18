@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify, session
 import os
 import json
 from werkzeug.utils import secure_filename
@@ -7,6 +7,19 @@ import base64
 import PIL.Image
 import docx
 from odfdo import Document
+import firebase_admin
+from firebase_admin import credentials, storage, firestore
+import uuid
+from datetime import datetime, timezone, timedelta
+
+
+cred = credentials.Certificate("code/firebase.json")
+firebase_admin.initialize_app(cred, {
+    "storageBucket": "instant-theater-449913-h4.firebasestorage.app"
+})
+
+bucket = storage.bucket()
+db = firestore.client()
 
 with open('code/config.json', 'r') as c:
     params = json.load(c)["params"]
@@ -14,15 +27,16 @@ with open('code/config.json', 'r') as c:
 # Configure the Google Generative AI API
 genai.configure(api_key=params['gen_api'])
 model = genai.GenerativeModel("gemini-1.5-flash")
-model_pro = genai.GenerativeModel("gemini-1.5-flash")  
+model_pro = genai.GenerativeModel("gemini-1.5-flash")
 # model_pro = genai.GenerativeModel("gemini-1.5-pro")  # Output not aligning incorrect when using gemini-1.5-pro
 
 # Initialize Flask app
 app = Flask(__name__)
+app.secret_key = params['session_key']
 
 # Configure upload folder and file size limits
 # Path to save uploaded files
-app.config['UPLOAD_FOLDER'] = params['upload_folder2']
+app.config['UPLOAD_FOLDER'] = params['upload_folder']
 app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
 
 # Prompts for AI evaluation
@@ -44,7 +58,10 @@ def allowed_file(filename):
 
 # Function to process .txt files
 
+
 def get_evaluate(text):
+    print("in evaluation function")
+    print(text)
     response = model.generate_content(
         [text, prompt], generation_config=genai.GenerationConfig(
             max_output_tokens=1000,
@@ -53,9 +70,10 @@ def get_evaluate(text):
         [text, prompt2], generation_config=genai.GenerationConfig(
             max_output_tokens=1000,
             temperature=0.5,))
-    
+
     return response, score
-    
+
+
 def process_txt_file(path):
     with open(path, "r") as text_file:
         doc_text = text_file.read()
@@ -108,6 +126,31 @@ def process_odt_file(path):
 
     return get_evaluate(odt_text)
 
+
+def upload_files(file):
+    session_id = session.get('session_id')
+    unique_filename = f"{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    blob = bucket.blob(f"sessions/{session_id}/{unique_filename}")
+    blob.upload_from_file(file)
+    blob.make_public()
+
+    print(session_id)
+    print("file uploaded now updating db")
+
+    db.collection("user_files").document(unique_filename).set({
+        "session_id": session_id,
+        "filename": unique_filename,
+        "url": blob.public_url,
+        "uploaded_at": datetime.now(timezone.utc)
+    })
+
+
+@app.before_request
+def set_session():
+    if 'session_id' not in session:
+        session['session_id'] = str(uuid.uuid4())
+        print("Session ID - ", session['session_id'])
+
 # Route for home page
 
 
@@ -129,9 +172,11 @@ def input():
 def roadmap():
     return render_template("roadmap.html")
 
+
 @app.route('/summary')
 def summary():
     return render_template("summary.html")
+
 
 @app.route('/summary_out', methods=['POST'])
 def summary_out():
@@ -140,18 +185,57 @@ def summary_out():
         check_fname = 'fname' in request.form and request.form['fname']
         if check_file and check_fname:
             data = request.form['fname']
-            return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}") 
+            return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}")
+
         elif check_file:
-            f = request.files['file']
-            return render_template("summary_out.html", output="You will only get summary of file") 
+            files = request.files.getlist('file')
+
+            for f in files:
+                upload_files(f)
+
+            return render_template("summary_out.html", output=f"You will only get summary of file.\n")
+
         elif check_fname:
             data = request.form['fname']
             print(data)
             return render_template("summary_out.html", output=data)
+
         else:
             return render_template("summary_out.html", output="Invalid input received.")
-            
-    
+
+
+@app.route('/delete-user-files', methods=['GET'])
+def accountcleanup():
+    print("Function is called.")
+    expiration_time = datetime.now(timezone.utc) - timedelta(minutes=1)
+
+    docs = db.collection("user_files").where(
+        "uploaded_at", "<", expiration_time).stream()
+
+    deleted_files = []
+
+    for doc in docs:
+        data = doc.to_dict()
+        session_id = data.get("session_id")
+        filename = data.get("filename")
+
+        if session_id and filename:
+            file_path = f"sessions/{session_id}/{filename}"
+            blob = bucket.blob(file_path)
+
+            try:
+                blob.delete()
+                db.collection("user_files").document(doc.id).delete()
+                print(f"Deleted: {file_path}")
+                deleted_files.append(filename)
+            except Exception as e:
+                print(f"Failed to delete {file_path}: {e}")
+
+    if not deleted_files:
+        return "No Files at Firebase\n", 200
+
+    return jsonify({"deleted_files": deleted_files}), 200
+
 
 @app.route('/get_roadmap', methods=['POST'])
 def get_roadmap():
@@ -185,19 +269,29 @@ def evaluate():
                 file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file_ext = os.path.splitext(filename)[1].lower()
                 f.save(file_path)
+                blob = bucket.blob(
+                    f"sessions/895c9db0-ea77-4c65-9203-141b1122ec24/2a249d38-5991-4bab-9962-4e8ac499b740.docx")
+                file_data = blob.download_as_bytes()
+                file_uri = "gs://instant-theater-449913-h4.firebasestorage.app/sessions/895c9db0-ea77-4c65-9203-141b1122ec24/146abc1f-2f9c-45e6-9bf1-74264471cb0a.txt"
+                file_uri2 = "https://storage.googleapis.com/instant-theater-449913-h4.firebasestorage.app/sessions/895c9db0-ea77-4c65-9203-141b1122ec24/146abc1f-2f9c-45e6-9bf1-74264471cb0a.txt"
 
                 try:
+                    gemini_file = {
+                        "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # Change according to file type
+                        "data": file_data
+                    }
+                    response, score = get_evaluate(gemini_file)
                     # Process the uploaded file based on its extension
-                    if file_ext == ".txt":
-                        response, score = process_txt_file(file_path)
-                    elif file_ext == ".pdf":
-                        response, score = process_pdf_file(file_path)
-                    elif file_ext in [".png", ".jpg", ".jpeg"]:
-                        response, score = process_img_file(file_path)
-                    elif file_ext == ".docx":
-                        response, score = process_docx_file(file_path)
-                    elif file_ext == ".odt":
-                        response, score = process_odt_file(file_path)
+                    # if file_ext == ".txt":
+                    #     response, score = process_txt_file(file_path)
+                    # elif file_ext == ".pdf":
+                    #     response, score = process_pdf_file(file_path)
+                    # elif file_ext in [".png", ".jpg", ".jpeg"]:
+                    #     response, score = process_img_file(file_path)
+                    # elif file_ext == ".docx":
+                    #     response, score = process_docx_file(file_path)
+                    # elif file_ext == ".odt":
+                    #     response, score = process_odt_file(file_path)
 
                     # Extract text and score for rendering
                     response_text = response.text if response and response.candidates else "No response from the AI."
