@@ -18,7 +18,9 @@ dropZone.addEventListener("drop", function (e) {
     const files = e.dataTransfer.files;
     if (files.length > 0) {
         fileInput.files = files;
-        fileInput.closest("form").submit();
+        const form = fileInput.closest("form");
+        form.action = "/evaluate";
+        form.submit();
     }
 });
 
@@ -29,5 +31,7 @@ dropZone.addEventListener("click", function () {
 
 // Submit form programmatically
 fileInput.addEventListener("change", function () {
-    this.closest("form").submit();
+    const form = this.closest("form");
+    form.action = "/evaluate";
+    form.submit();
 });
