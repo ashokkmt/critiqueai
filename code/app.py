@@ -1,134 +1,161 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 import os
 import json
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
 import base64
-import PIL.Image
 import docx
 from odfdo import Document
+import markdown
+import requests
+import tempfile
+from google.cloud import storage, vision
+from datetime import datetime, timezone
+from PIL import Image
+from io import BytesIO
+import uuid
 
 with open('code/config.json', 'r') as c:
     params = json.load(c)["params"]
 
 # Configure the Google Generative AI API
 genai.configure(api_key=params['gen_api'])
-model = genai.GenerativeModel("gemini-1.5-flash")
-model_pro = genai.GenerativeModel("gemini-1.5-flash")  
-# model_pro = genai.GenerativeModel("gemini-1.5-pro")  # Output not aligning incorrect when using gemini-1.5-pro
+model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Initialize Flask app
 app = Flask(__name__)
+app.secret_key = os.urandom(24)
 
-# Configure upload folder and file size limits
-# Path to save uploaded files
-app.config['UPLOAD_FOLDER'] = params['upload_folder2']
-app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
+# Initialize GCS client
+service_account_path = 'code/service-account.json'
+storage_client = storage.Client.from_service_account_json(service_account_path)
+bucket = storage_client.bucket(params['gcs_bucket_name'])
 
-# Prompts for AI evaluation
-prompt = "Evaluate the following question and answer pair for accuracy and relevance, provide a concise summary (max 60-70 words, human-like legal language but simple), give proper justification for your evaluations, and suggest specific improvements."
+# Initialize Google Cloud Vision client
+if 'GOOGLE_APPLICATION_CREDENTIALS' in os.environ:
+    vision_client = vision.ImageAnnotatorClient()
+else:
+    vision_client = vision.ImageAnnotatorClient.from_service_account_json(service_account_path)
 
-prompt2 = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score : 7'. (Always give 0 if answer is absolutely wrong) "
+# Updated prompts for AI evaluation
+EVALUATION_PROMPT = "Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text."
+SCORE_PROMPT = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score: 7'. (Always give 0 if the answer is absolutely wrong)"
 
-ROADMAP_PROMPT = '''Provide a step-by-step learning roadmap for {topic}. Include key concepts, practice tasks, and real-world applications. 
-Also, list the best resources (books, websites, courses, and tools) at the end. explain each sub point in atleast 80-100 words , dont forget to add working links without description and try to check that links may not be broken  '''
+# Updated roadmap prompt to restrict topics to educational subjects
+ROADMAP_PROMPT = '''Generate a structured and detailed roadmap for learning {topic}. The roadmap should be divided into logical sections covering in phase-wise manner and also weeks to cover all this in best way:
+(Do not add any greetings like okay, sure, here it is. JUST PROVIDE ROADMAP)
+
+Key Concepts – Explain foundational theories, principles, and subtopics in {topic} with at least 25-35 words per subtopic.
+Practice Tasks – Provide hands-on exercises, projects, and challenges that reinforce the concepts learned. Each task should include clear instructions and expected outcomes.
+
+(ADD RESOURCES AND BOOK AT THE END)
+Best Resources – List the most effective books, courses, websites, and tools to master {topic}. Each resource should be a clickable working link. (ADD SOME DETAIL OF BEST RESOURCES IN 1-2 LINE ONLY)
+Books – Include relevant books with their titles and authors for in-depth learning.
+The output should be formatted in Markdown for easy readability. (Do not add any markdown word)
+Only provide roadmaps for educational topics.'''
 
 # Define allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'txt', 'pdf', 'docx', 'odt'}
 
-# function to check allowed file extensions
-
-
+# Function to check allowed file extensions
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Function to process .txt files
-
+# Function to evaluate text content
 def get_evaluate(text):
     response = model.generate_content(
-        [text, prompt], generation_config=genai.GenerationConfig(
+        [text, EVALUATION_PROMPT], generation_config=genai.GenerationConfig(
             max_output_tokens=1000,
-            temperature=0.5,))
+            temperature=0.5))
     score = model.generate_content(
-        [text, prompt2], generation_config=genai.GenerationConfig(
+        [text, SCORE_PROMPT], generation_config=genai.GenerationConfig(
             max_output_tokens=1000,
-            temperature=0.5,))
-    
+            temperature=0.5))
     return response, score
-    
-def process_txt_file(path):
-    with open(path, "r") as text_file:
-        doc_text = text_file.read()
 
-    return get_evaluate(doc_text)
+def process_txt_file(content):
+    return get_evaluate(content)
 
 # Function to process .pdf files
-
-
-def process_pdf_file(path):
-    with open(path, "rb") as doc_file:
-        doc_data = base64.standard_b64encode(doc_file.read()).decode("utf-8")
-
+def process_pdf_file(content):
     response = model.generate_content(
-        [{'mime_type': 'application/pdf', 'data': doc_data}, prompt], generation_config=genai.GenerationConfig(
+        [{'mime_type': 'application/pdf', 'data': content}, EVALUATION_PROMPT], generation_config=genai.GenerationConfig(
             max_output_tokens=200,
-            temperature=0.5,))
+            temperature=0.5))
     score = model.generate_content(
-        [{'mime_type': 'application/pdf', 'data': doc_data}, prompt2], generation_config=genai.GenerationConfig(
+        [{'mime_type': 'application/pdf', 'data': content}, SCORE_PROMPT], generation_config=genai.GenerationConfig(
             max_output_tokens=200,
-            temperature=0.5,))
-
+            temperature=0.5))
     return response, score
 
 # Function to process image files (png, jpg, jpeg)
-
-
-def process_img_file(path):
-    img_file = PIL.Image.open(path)
-    return get_evaluate(img_file)
+def process_img_file(content):
+    image = vision.Image(content=content)
+    response = vision_client.text_detection(image=image)
+    annotations = response.text_annotations
+    if annotations:
+        img_text = annotations[0].description
+        return get_evaluate(img_text)
+    else:
+        raise ValueError("No text detected in the image")
 
 # Function to process .docx files
-
-
-def process_docx_file(path):
-    doc = docx.Document(path)
+def process_docx_file(content):
+    doc = docx.Document(content)
     full_text = [paragraph.text for paragraph in doc.paragraphs]
     docx_text = '\n'.join(full_text)
-
     return get_evaluate(docx_text)
 
 # Function to process .odt files
-
-
-def process_odt_file(path):
-    odt_file = Document(path)
-    text_content = [
-        para.text for para in odt_file.body.get_elements("//text:p")]
+def process_odt_file(content):
+    odt_file = Document(content)
+    text_content = [para.text for para in odt_file.body.get_elements("//text:p")]
     odt_text = '\n'.join(text_content)
-
     return get_evaluate(odt_text)
 
+# Function to upload file to Google Cloud Storage
+def upload_files(file):
+    session_id = session.get('session_id')
+    unique_filename = f"{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    folder_name = f"sessions/{session_id}/"
+    blob = bucket.blob(f"{folder_name}{unique_filename}")
+    blob.upload_from_file(file)
+
+    print(session_id)
+    print("file uploaded to GCS")
+
+    return f"https://storage.googleapis.com/{bucket.name}/{folder_name}{unique_filename}"
+
+# Function to get file content from Google Cloud Storage
+def get_file_content_from_gcs(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    response.encoding = 'utf-8'
+    return response.content
+
+# Set session before each request
+@app.before_request
+def set_session():
+    if 'session_id' not in session:
+        session['session_id'] = str(uuid.uuid4())
+        print("Session ID - ", session['session_id'])
+
 # Route for home page
-
-
 @app.route('/')
 def home():
     return render_template("index.html")
 
 # Route for input page
-
-
 @app.route('/input')
 def input():
     return render_template("input.html")
 
-# Route for evaluation logic
-
-
+# Route for roadmap page
 @app.route('/roadmap')
 def roadmap():
     return render_template("roadmap.html")
 
+# Route for summary page
 @app.route('/summary')
 def summary():
     return render_template("summary.html")
@@ -140,18 +167,16 @@ def summary_out():
         check_fname = 'fname' in request.form and request.form['fname']
         if check_file and check_fname:
             data = request.form['fname']
-            return render_template("summary_out.html", output=f"Your file and text both will get evaluted. Data = {data}") 
+            return render_template("summary_out.html", output=f"Your file and text both will get evaluated. Data = {data}")
         elif check_file:
             f = request.files['file']
-            return render_template("summary_out.html", output="You will only get summary of file") 
+            return render_template("summary_out.html", output="You will only get summary of file")
         elif check_fname:
             data = request.form['fname']
             print(data)
             return render_template("summary_out.html", output=data)
         else:
             return render_template("summary_out.html", output="Invalid input received.")
-            
-    
 
 @app.route('/get_roadmap', methods=['POST'])
 def get_roadmap():
@@ -161,77 +186,93 @@ def get_roadmap():
 
     try:
         full_prompt = ROADMAP_PROMPT.format(topic=topic)
-        response = model_pro.generate_content(
+        response = model.generate_content(
             contents=full_prompt,
             generation_config=genai.GenerationConfig(
-                max_output_tokens=1000,
-                temperature=0.3
+                max_output_tokens=8192,
+                temperature=0.5
             )
         )
-        return response.text if response.candidates else "Failed to generate roadmap"
+        temp = markdown.markdown(response.text)
+        print(temp)
+        print("HTML file created successfully!")
+        return temp if response.candidates else "Failed to generate roadmap"
 
     except Exception as e:
         return f"Error generating roadmap: {str(e)}", 500
 
-
 @app.route('/evaluate', methods=['GET', 'POST'])
 def evaluate():
-    if request.method == 'POST':
-        if 'file' in request.files and request.files['file'].filename:
-            # Handle file upload
-            f = request.files['file']
-            if f and allowed_file(f.filename):
-                filename = secure_filename(f.filename)
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                file_ext = os.path.splitext(filename)[1].lower()
-                f.save(file_path)
+    try:
+        if request.method == 'POST':
+            if 'file' in request.files and request.files['file'].filename:
+                file = request.files['file']
+                if file.filename == '':
+                    return "No file selected.", 400
+                
+                if file and allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    public_url = upload_files(file)
+                    file_content = get_file_content_from_gcs(public_url)
+                    file_extension = filename.rsplit('.', 1)[1].lower()
+                    
+                    if file_extension == 'txt':
+                        response, score_response = process_txt_file(file_content.decode('utf-8'))
+                    elif file_extension == 'pdf':
+                        response, score_response = process_pdf_file(base64.standard_b64encode(file_content).decode('utf-8'))
+                    elif file_extension in {'png', 'jpg', 'jpeg'}:
+                        response, score_response = process_img_file(file_content)
+                    elif file_extension == 'docx':
+                        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                            temp_file.write(file_content)
+                            temp_file_path = temp_file.name
+                        response, score_response = process_docx_file(temp_file_path)
+                        os.remove(temp_file_path)
+                    elif file_extension == 'odt':
+                        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                            temp_file.write(file_content)
+                            temp_file_path = temp_file.name
+                        response, score_response = process_odt_file(temp_file_path)
+                        os.remove(temp_file_path)
+                    else:
+                        return "File type not allowed", 400
 
-                try:
-                    # Process the uploaded file based on its extension
-                    if file_ext == ".txt":
-                        response, score = process_txt_file(file_path)
-                    elif file_ext == ".pdf":
-                        response, score = process_pdf_file(file_path)
-                    elif file_ext in [".png", ".jpg", ".jpeg"]:
-                        response, score = process_img_file(file_path)
-                    elif file_ext == ".docx":
-                        response, score = process_docx_file(file_path)
-                    elif file_ext == ".odt":
-                        response, score = process_odt_file(file_path)
+                    score_list = score_response.text.split(":")
+                    if len(score_list) > 1:
+                        score = score_list[1].strip()
+                        if not score.isdigit():
+                            score = "Error: Invalid score format"
+                    else:
+                        score = "Error: Try again"
 
-                    # Extract text and score for rendering
-                    response_text = response.text if response and response.candidates else "No response from the AI."
-                    score_text = score.text if score and score.candidates else "No score available."
+                    evaluation_md = response.text
+                    evaluation_html = markdown.markdown(evaluation_md)
 
-                    # Render evaluate.html with results
-                    return render_template("evaluate.html", prompt=response_text, score=score_text)
+                    return render_template('evaluate.html', evaluation=evaluation_html, score=score)
 
-                except Exception as e:
-                    return render_template("evaluate.html", prompt=f"Error: {str(e)}", score="No score generated.")
+            elif 'fname' in request.form:
+                text = request.form['fname']
+                print(f"Text content: {text[:100]}")
+                response, score_response = get_evaluate(text)
+                score_list = score_response.text.split(":")
+                if len(score_list) > 1:
+                    score = score_list[1].strip()
+                    if not score.isdigit():
+                        score = "Error: Invalid score format"
+                else:
+                    score = "Error: Try again"
 
-            return render_template("evaluate.html", prompt="Invalid file type or no file uploaded.", score="")
+                evaluation_md = response.text
+                evaluation_html = markdown.markdown(evaluation_md)
 
-        elif 'fname' in request.form and request.form['fname']:
-            # Handle text input for question and answer evaluation
-            data = request.form['fname']
-            try:
-                # Generate AI response
+                return render_template('evaluate.html', evaluation=evaluation_html, score=score)
+            else:
+                return "No input provided.", 400
 
-                response, score = get_evaluate(data)
-
-                response_text = response.text if response and response.candidates else "No response from the AI."
-                score_text = score.text if score and score.candidates else "No score available."
-
-                return render_template("evaluate.html", prompt=response_text, score=score_text)
-
-            except Exception as e:
-                return render_template("evaluate.html", prompt=f"Error: {str(e)}", score="")
-
-        else:
-            return render_template("evaluate.html", prompt="No valid input received.", score="")
+    except Exception as e:
+        return f"An error occurred: {str(e)}", 500
 
     return render_template("evaluate.html", prompt="Submit a file or text.", score="")
-
 
 # Run the app in debug mode for development
 if __name__ == '__main__':
