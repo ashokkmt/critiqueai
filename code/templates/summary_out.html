@@ -4,24 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Output Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 50px;
-        }
-        #outputContainer {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-            display: inline-block;
-            min-width: 300px;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/css/style_summout.css">
 </head>
 <body>
-    <h2>Processed Output</h2>
-    <div id="outputContainer">{{ output }}</div>
+    <div class="container">
+        <h2>Processed Output</h2>
+        <div id="outputContainer" class="styled-content">{{ output | safe }}</div>
+        <button id="download-btn" style="display: none;">Download Summary</button>
+    </div>
+    <script src="../static/script/scriptroad.js"></script>
 </body>
 </html>
