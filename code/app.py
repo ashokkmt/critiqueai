@@ -8,10 +8,8 @@ import docx
 from odfdo import Document
 import markdown
 import requests
-import tempfile
 from google.cloud import storage, vision
 from datetime import datetime, timezone
-from PIL import Image
 from io import BytesIO
 import uuid
 
@@ -101,14 +99,14 @@ def process_img_file(content):
 
 # Function to process .docx files
 def process_docx_file(content):
-    doc = docx.Document(content)
+    doc = docx.Document(BytesIO(content))
     full_text = [paragraph.text for paragraph in doc.paragraphs]
     docx_text = '\n'.join(full_text)
     return get_evaluate(docx_text)
 
 # Function to process .odt files
 def process_odt_file(content):
-    odt_file = Document(content)
+    odt_file = Document(BytesIO(content))
     text_content = [para.text for para in odt_file.body.get_elements("//text:p")]
     odt_text = '\n'.join(text_content)
     return get_evaluate(odt_text)
@@ -223,17 +221,9 @@ def evaluate():
                     elif file_extension in {'png', 'jpg', 'jpeg'}:
                         response, score_response = process_img_file(file_content)
                     elif file_extension == 'docx':
-                        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                            temp_file.write(file_content)
-                            temp_file_path = temp_file.name
-                        response, score_response = process_docx_file(temp_file_path)
-                        os.remove(temp_file_path)
+                        response, score_response = process_docx_file(file_content)
                     elif file_extension == 'odt':
-                        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                            temp_file.write(file_content)
-                            temp_file_path = temp_file.name
-                        response, score_response = process_odt_file(temp_file_path)
-                        os.remove(temp_file_path)
+                        response, score_response = process_odt_file(file_content)
                     else:
                         return "File type not allowed", 400
 
