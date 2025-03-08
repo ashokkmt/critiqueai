@@ -4,3 +4,5 @@ google-generativeai
 pillow
 python-docx
 odfdo
+firebase-admin
+google-genai

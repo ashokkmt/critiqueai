@@ -23,13 +23,16 @@ Best Resources – List the most effective books, courses, websites, and tools t
 Books – Include relevant books with their titles and authors for in-depth learning.
 The output should be formatted in Markdown for easy readability.(Dont add any markdown word)'''
 
+
 @app.route('/get_roadmap', methods=['POST'])
 def get_roadmap():
+    # topic = request.form.get('topic', '').strip()
     data = request.form['topic']
+    # print(topic)
     print(data)
     if not data:
         return "Please enter a valid topic", 400
-    
+
     try:
         full_prompt = ROADMAP_PROMPT.format(topic=data)
         response = model.generate_content(
@@ -39,21 +42,23 @@ def get_roadmap():
                 temperature=0.5
             )
         )
-        # print(response.text)
+        print(response.text)
         temp = markdown.markdown(response.text)
-        print(temp)
-        # path = fr"C:\Users\pprer\OneDrive\Desktop\git\critiqueai\test\{data}.html"
-        # with open(path, "w", encoding="utf-8") as file:
-        #     file.write(temp)
+        path = f"/home/ashok/Desktop/project/tests/{data}.html"
+        # path2 = f"C:\\Users\\ashok\\Desktop\\project\\tests\\{data}.html"         # Desktop
+        with open(path, "w", encoding="utf-8") as file:
+            file.write(temp)
         print("HTML file created successfully!")
-        return temp if response.candidates else "Failed to generate roadmap"
-    
+        return response.text if response.candidates else "Failed to generate roadmap"
+
     except Exception as e:
         return f"Error generating roadmap: {str(e)}", 500
+
 
 @app.route("/")
 def home():
     return render_template("roadmap.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
