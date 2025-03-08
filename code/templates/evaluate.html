@@ -1,29 +1,22 @@
 {% extends "layout.html" %}
 {% block body %}
 
-
 <link rel="stylesheet" href="../static/css/style_eval.css">
 <center>
-
     <div class="page">
         <h1>Evaluation done successfully</h1>
-
-        <!-- <div class="evl-box"> -->
-            <div class="score">
-                {{score}}
+        <div class="score">
+            {{ score }}
+        </div>
+        <div class="answer">
+            <div class="evl-heading">Evaluation of your Answer</div>
+            <div class="evl-answer">
+                {{ evaluation | safe }}
             </div>
-            <div class="answer">
-                <div class="evl-heading" >Evaluation of your Answer </div>
-                <div class="evl-answer">{{prompt}}</div>
-            </div>
-        <!-- </div> -->
+        </div>
     </div>
     <div class="back">
-        
         <button><a href="/input" class="try-now-button">Back</a></button>
     </div>
 </center>
-</div>
-
-
 {% endblock %}
