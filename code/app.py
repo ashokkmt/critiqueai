@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session
 import os
+import io
 import json
 from werkzeug.utils import secure_filename
 import google.generativeai as genai
@@ -11,6 +12,9 @@ import firebase_admin
 from firebase_admin import credentials, storage, firestore
 import uuid
 from datetime import datetime, timezone, timedelta
+import markdown
+from pdf2image import convert_from_bytes
+import concurrent.futures
 
 
 cred = credentials.Certificate("code/firebase.json")
@@ -26,8 +30,8 @@ with open('code/config.json', 'r') as c:
 
 # Configure the Google Generative AI API
 genai.configure(api_key=params['gen_api'])
-model = genai.GenerativeModel("gemini-1.5-flash")
-model_pro = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-2.0-flash")
+model_pro = genai.GenerativeModel("gemini-2.0-flash")
 # model_pro = genai.GenerativeModel("gemini-1.5-pro")  # Output not aligning incorrect when using gemini-1.5-pro
 
 # Initialize Flask app
@@ -46,6 +50,17 @@ prompt2 = "Evaluate the following question and answer pair and give it a combine
 
 ROADMAP_PROMPT = '''Provide a step-by-step learning roadmap for {topic}. Include key concepts, practice tasks, and real-world applications. 
 Also, list the best resources (books, websites, courses, and tools) at the end. explain each sub point in atleast 80-100 words , dont forget to add working links without description and try to check that links may not be broken  '''
+
+pdf_extract_prompt = """Extract all possible information from the given image while maintaining its original structure and meaning. Ensure that:
+- **For Text:** Extract all visible text exactly as it appears, preserving formatting, font styles (bold, italic, underline), and special symbols.
+- **For Tables:** Identify and extract all tabular data while preserving row and column structure.
+- **For Charts & Graphs:** Describe the type of chart, key trends, axes labels, legends, and any numerical values present.
+- **For Diagrams & Figures:** Identify objects, flowcharts, and connections, and describe their meaning.
+- **For Mathematical Equations:** Extract equations exactly as shown, maintaining proper mathematical notation.
+- **For Images with Embedded References:** Identify references, labels, and any related annotations.
+
+If any one of the field is not present then simply write NONE there.
+"""
 
 # Define allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'txt', 'pdf', 'docx', 'odt'}
@@ -144,6 +159,123 @@ def upload_files(file):
         "url": url,
         "uploaded_at": datetime.now(timezone.utc)
     })
+    
+def get_user_files(session_id):
+    """Fetches gs:// URLs for a user from Firestore."""
+    docs = db.collection("user_files").where(
+        "session_id", "==", session_id).stream()
+    file_urls = []
+    for doc in docs:
+        file_url = doc.to_dict()["url"]
+        print(file_url)
+        file_urls.append(file_url)
+
+    return file_urls
+
+
+def read_file_from_gcs(gs_url):
+    """Reads a file as bytes directly from Firebase Storage."""
+    file_path = '/'.join(gs_url.split('/')[3:])
+    print(file_path)
+    blob = bucket.blob(file_path)
+    return blob.download_as_bytes(), blob.name
+
+
+def extract_images_from_pdf(pdf_bytes):
+    """Extracts images from a PDF using pdf2image."""
+    images = convert_from_bytes(pdf_bytes)  # Converts each page into an image
+    return images  # Returns list of PIL images
+
+
+def encode_image(image):
+    """Convert PIL Image to Base64 format for Gemini."""
+    buffered = io.BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+
+def describe_image_with_gemini(image, flag=False):
+    """Sends an image to Gemini for description."""
+    model = genai.GenerativeModel("gemini-2.0-flash-lite")
+    if not flag:
+        img_base64 = encode_image(image)
+    else:
+        img_base64 = image
+
+    contents = [
+        {
+            "parts": [
+                {"text": pdf_extract_prompt},
+                {"inline_data": {"mime_type": "image/png", "data": img_base64}}
+            ]
+        }
+    ]
+
+    response = model.generate_content(contents)
+    return response.text  # Return AI-generated description
+
+
+def process_pdf(pdf_bytes):
+    """Extracts text and images, processes them, and prepares final content for Gemini."""
+    # extracted_text = extract_text_from_pdf(pdf_bytes)
+    images = extract_images_from_pdf(pdf_bytes)
+
+    # Process images and get descriptions only if images are found
+    image_descriptions = []
+    if images:
+        image_descriptions = [
+            describe_image_with_gemini(img) for img in images]
+
+    # Append image descriptions to extracted text
+    final_text = ""
+    if image_descriptions:
+        final_text += "\n\nImage Descriptions:\n" + \
+            "\n".join(image_descriptions)
+
+    return final_text
+
+
+def process_file(gs_url):
+    """Processes a file based on its type (Text, PDF, DOCX, Image)."""
+    file_bytes, file_name = read_file_from_gcs(gs_url)
+    file_ext = file_name.split(".")[-1].lower()
+
+    if file_ext in ["txt", "csv", "json"]:  # Plain text files
+        return file_bytes.decode("utf-8")
+
+    elif file_ext == "pdf":  # PDF files (Text + Images)
+        final_extracted_content = process_pdf(file_bytes)
+        return final_extracted_content
+
+    elif file_ext == "docx":  # Word documents
+        doc = docx.Document(io.BytesIO(file_bytes))
+        return "\n".join([para.text for para in doc.paragraphs])
+
+    # Image files (OCR + Gemini Vision)
+    elif file_ext in ["png", "jpg", "jpeg"]:
+        return describe_image_with_gemini(file_bytes, True)
+
+    else:
+        return f"[Unsupported file type: {file_name}]"
+
+
+def generate_content_for_user(user_id):
+    """Processes all user files and generates a compiled response using Gemini AI."""
+    file_urls = get_user_files(user_id)
+
+    print("\n")
+    # Process files in parallel
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        file_contents = list(executor.map(process_file, file_urls))
+
+    print("\n")
+    # # Combine extracted content
+    combined_text = "\n\n".join(file_contents)
+
+    with open("output.txt", "w") as file:
+        file.write(combined_text)
+
+    return combined_text
 
 
 @app.before_request
@@ -194,7 +326,10 @@ def summary_out():
             for f in files:
                 upload_files(f)
 
-            return render_template("summary_out.html", output=f"You will only get summary of file.\n")
+            session_id = session.get('session_id')
+            print(session_id)
+            response = generate_content_for_user(session_id)
+            return render_template("summary_out.html", output=f"File is generated\n\n{response}")
 
         elif check_fname:
             data = request.form['fname']
@@ -253,7 +388,8 @@ def get_roadmap():
                 temperature=0.3
             )
         )
-        return response.text if response.candidates else "Failed to generate roadmap"
+        temp = markdown.markdown(response.text)
+        return temp
 
     except Exception as e:
         return f"Error generating roadmap: {str(e)}", 500
