@@ -37,7 +37,7 @@ app.secret_key = params['session_key']
 # Configure upload folder and file size limits
 # Path to save uploaded files
 app.config['UPLOAD_FOLDER'] = params['upload_folder']
-app.config['MAX_CONTENT_LENGTH'] = 8 * 1024 * 1024  # Max file size: 8 MB
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Max file size: 8 MB
 
 # Prompts for AI evaluation
 prompt = "Evaluate the following question and answer pair for accuracy and relevance, provide a concise summary (max 60-70 words, human-like legal language but simple), give proper justification for your evaluations, and suggest specific improvements."
