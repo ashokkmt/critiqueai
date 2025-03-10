@@ -6,3 +6,6 @@ python-docx
 odfdo
 firebase-admin
 google-genai
+markdown
+PyPDF2
+pdf2image
