@@ -11,3 +11,4 @@ markdown
 PyPDF2
 pdf2image
 python-dotenv
+google-cloud-secret-manager

@@ -16,11 +16,21 @@ import markdown
 from pdf2image import convert_from_bytes
 import concurrent.futures
 from dotenv import load_dotenv
+from google.cloud import secretmanager
 
 
 load_dotenv()
 
-cred = credentials.Certificate("code/firebase.json")
+sec_client = secretmanager.SecretManagerServiceClient()
+secret_name = "projects/952301619936/secrets/firebase-config/versions/latest"
+gen_secret = "projects/952301619936/secrets/gemini-api/versions/latest"
+get_key = sec_client.access_secret_version(request={"name": gen_secret})
+gen_key = get_key.payload.data.decode("UTF-8")
+response = sec_client.access_secret_version(request={"name": secret_name})
+firebase_json = json.loads(response.payload.data.decode("UTF-8"))
+
+
+cred = credentials.Certificate(firebase_json)
 firebase_admin.initialize_app(cred, {
     "storageBucket": "instant-theater-449913-h4.firebasestorage.app"
 })
@@ -29,13 +39,13 @@ bucket = storage.bucket()
 db = firestore.client()
 
 # Configure the Google Generative AI API
-genai.configure(api_key=os.getenv("GEN_API"))
+genai.configure(api_key=gen_key)
 model = genai.GenerativeModel("gemini-2.0-flash")
 model_pro = genai.GenerativeModel("gemini-2.0-flash")
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.getenv("SESSION_KEY")
+app.secret_key = os.urandom(24)
 
 # Configure upload folder and file size limits
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Max file size: 8 MB
