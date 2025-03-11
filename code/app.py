@@ -15,7 +15,10 @@ from datetime import datetime, timezone, timedelta
 import markdown
 from pdf2image import convert_from_bytes
 import concurrent.futures
+from dotenv import load_dotenv
 
+
+load_dotenv()
 
 cred = credentials.Certificate("code/firebase.json")
 firebase_admin.initialize_app(cred, {
@@ -25,22 +28,16 @@ firebase_admin.initialize_app(cred, {
 bucket = storage.bucket()
 db = firestore.client()
 
-with open('code/config.json', 'r') as c:
-    params = json.load(c)["params"]
-
 # Configure the Google Generative AI API
-genai.configure(api_key=params['gen_api'])
+genai.configure(api_key=os.getenv("GEN_API"))
 model = genai.GenerativeModel("gemini-2.0-flash")
 model_pro = genai.GenerativeModel("gemini-2.0-flash")
-# model_pro = genai.GenerativeModel("gemini-1.5-pro")  # Output not aligning incorrect when using gemini-1.5-pro
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = params['session_key']
+app.secret_key = os.getenv("SESSION_KEY")
 
 # Configure upload folder and file size limits
-# Path to save uploaded files
-app.config['UPLOAD_FOLDER'] = params['upload_folder']
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # Max file size: 8 MB
 
 # Prompts for AI evaluation
@@ -403,9 +400,9 @@ def evaluate():
             f = request.files['file']
             if f and allowed_file(f.filename):
                 filename = secure_filename(f.filename)
-                file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                # file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 file_ext = os.path.splitext(filename)[1].lower()
-                f.save(file_path)
+                # f.save(file_path)
                 blob = bucket.blob(
                     f"sessions/895c9db0-ea77-4c65-9203-141b1122ec24/2a249d38-5991-4bab-9962-4e8ac499b740.docx")
                 file_data = blob.download_as_bytes()
