@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, session
+import fitz  # PyMuPDF
+import pdfplumber
 import os
 import json
 import docx
@@ -15,6 +17,8 @@ import uuid
 from google.oauth2 import service_account  # Added import
 import tempfile  # Added import
 from dotenv import load_dotenv  # Added import
+import io
+import base64
 
 # Load environment variables from .env file
 load_dotenv()
@@ -112,40 +116,179 @@ def process_txt_file(content):
     return get_evaluate(content)
 
 # Helper function to extract text from images
-def extract_text_from_image(content):
-    image = vision.Image(content=content)
-    response = vision_client.text_detection(image=image)
-    annotations = response.text_annotations
-    if annotations:
-        return annotations[0].description
-    else:
-        raise ValueError("No text detected in the image")
-
+def describe_image_with_gemini(image_bytes, prompt="Describe this image in detail"):
+    """
+    Process image using Gemini with proper encoding and fallback
+    Returns: Gemini description (preferred) or Vision API analysis (fallback)
+    """
+    try:
+        # Convert bytes to PIL Image
+        image = Image.open(io.BytesIO(image_bytes))
+        
+        # Convert to RGB if needed (for JPEG compatibility)
+        if image.mode in ('RGBA', 'P', 'LA'):
+            image = image.convert('RGB')
+            
+        # Encode to base64
+        buffered = io.BytesIO()
+        image.save(buffered, format="PNG")  # Convert all formats to PNG for Gemini
+        img_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
+        
+        # Generate description with Gemini
+        response = model.generate_content(
+            contents=[
+                {"text": prompt},
+                {"inline_data": {
+                    "mime_type": "image/png",
+                    "data": img_base64
+                }}
+            ],
+            generation_config={
+                "temperature": 0.3,
+                "max_output_tokens": 1000
+            }
+        )
+        
+        # Return formatted response
+        if response.candidates:
+            return response.text.strip()
+        return "No description generated"
+        
+    except Exception as e:
+        print(f"Gemini Error: {str(e)} - Falling back to Vision API")
+        # Fallback to Vision API processing
+        try:
+            image = vision.Image(content=image_bytes)
+            text_response = vision_client.text_detection(image=image)
+            labels_response = vision_client.label_detection(image=image)
+            
+            text = text_response.text_annotations[0].description if text_response.text_annotations else ""
+            labels = [label.description for label in labels_response.label_annotations]
+            
+            return f"Vision API Analysis:\nText: {text}\nObjects: {', '.join(labels)}"
+            
+        except Exception as vision_error:
+            return f"Both Gemini and Vision API failed: {str(vision_error)}"
+        
 # Modified image processing function
 def process_img_file(content):
     try:
-        img_text = extract_text_from_image(content)
-        return get_evaluate(img_text)
+        description = describe_image_with_gemini(content)
+        return get_evaluate(description)
     except Exception as e:
-        return f"Image Error: {str(e)}"
+        error_response = type('obj', (object,), {'text': f"Image Error: {str(e)}"})  # Mock response object
+        error_score = type('obj', (object,), {'text': "Score: 0"})  # Default error score
+        return error_response, error_score
 
 # Helper function to extract text from PDF files
-def extract_text_from_pdf(content):
-    request = {
-        "name": processor_name,
-        "raw_document": {
-            "content": content,
-            "mime_type": "application/pdf",
+def encode_image(image):
+    """Convert PIL Image to Base64 format for Gemini."""
+    buffered = io.BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+def extract_images(pdf_file, page_index):
+    """Extracts images from a PDF page with Gemini descriptions."""
+    page = pdf_file.load_page(page_index)
+    image_list = page.get_images(full=True)
+    images = []
+
+    for img_index, img in enumerate(image_list, start=1):
+        try:
+            xref = img[0]
+            base_image = pdf_file.extract_image(xref)
+            image_bytes = base_image["image"]  # Raw bytes
+            image_ext = base_image["ext"]
+            image_name = f"image_{page_index+1}_{img_index}.{image_ext}"
+
+            # Generate description using Gemini with raw bytes
+            image_description = describe_image_with_gemini(image_bytes)
+
+            images.append({
+                "name": image_name,
+                "description": image_description
+            })
+        except Exception as e:
+            images.append(f"[Image extraction error: {str(e)}]")
+    return images
+
+def extract_text(pdf_file, page_index):
+    """Extracts text from a given PDF page."""
+    page = pdf_file.load_page(page_index)
+    return page.get_text("text")
+
+def extract_tables(content, page_index):
+    """Extracts tables using pdfplumber."""
+    tables = []
+    try:
+        with pdfplumber.open(io.BytesIO(content)) as pdf:
+            if page_index < len(pdf.pages):
+                page = pdf.pages[page_index]
+                extracted_tables = page.extract_tables()
+            for table_index, table in enumerate(extracted_tables, start=1):
+                tables.append({
+                    "table_number": table_index,
+                    "data": table
+                })
+    except Exception as e:
+        tables.append(f"[Table error: {str(e)}]")
+    return tables
+
+def extract_pdf_content(pdf_bytes):
+    """Extracts text, images, and tables from PDF bytes and returns as a string."""
+    pdf_file = fitz.open(stream=pdf_bytes, filetype="pdf")  # Open from bytes
+    extracted_data = []
+
+    for page_index in range(len(pdf_file)):
+        page_content = {
+            "page_number": page_index + 1,
+            "text": extract_text(pdf_file, page_index),
+            "images": extract_images(pdf_file, page_index),
+            "tables": extract_tables(pdf_bytes, page_index)  # Directly pass bytes
         }
-    }
-    result = docai_client.process_document(request)
-    return result.document.text
+        extracted_data.append(page_content)
+        
+    # json_filename = "output.json"
+    # with open(json_filename, "w", encoding="utf-8") as json_file:
+    #     json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
+
+    # print(f"[+] Extraction complete. Data saved to {json_filename}")
+
+
+    # Convert the extracted_data list to a string
+    result = ""
+    for page in extracted_data:
+        result += f"Page {page['page_number']}:\n"
+        result += f"Text:\n{page['text']}\n\n"
+        
+        result += "Images:\n"
+        for img in page['images']:
+            if isinstance(img, dict):
+                result += f"- {img['name']}: {img['description']}\n"
+            else:
+                result += f"- {img}\n"  # Error message case
+        result += "\n"
+        
+        result += "Tables:\n"
+        for table in page['tables']:
+            if isinstance(table, dict):
+                result += f"Table {table['table_number']}:\n"
+                for row in table['data']:
+                    result += f"{row}\n"
+                result += "\n"
+            else:
+                result += f"- {table}\n"  # Error message case
+        result += "----------------------------------------\n"
+    
+    return result
+
 
 # Function to process .pdf files
 def process_pdf_file(content):
     try:
-        extracted_text = extract_text_from_pdf(content)
-        return get_evaluate(extracted_text)
+        # Use new extraction method
+        extracted_content = extract_pdf_content(content)
+        return get_evaluate(extracted_content)
     except Exception as e:
         return f"PDF Error: {str(e)}"
 
@@ -177,7 +320,7 @@ def process_docx_file(content):
                 if file_info.filename.startswith('word/media/'):
                     image_data = zip_file.read(file_info)
                     try:
-                        img_text = extract_text_from_image(image_data)
+                        img_text = describe_image_with_gemini(image_data)
                         image_texts.append(img_text)
                     except Exception as e:
                         # Handle image processing errors silently or log them
@@ -313,9 +456,9 @@ def process_file(content, filename):
     if filename.endswith('.txt'):
         return content.decode('utf-8')
     elif filename.endswith('.pdf'):
-        return extract_text_from_pdf(content)
+        return extract_pdf_content(content)
     elif filename.endswith('.png') or filename.endswith('.jpg') or filename.endswith('.jpeg'):
-        return extract_text_from_image(content)
+        return describe_image_with_gemini(content) 
     elif filename.endswith('.odt'):
         odt_file = Document(content)
         text_content = [para.text for para in odt_file.body.get_elements("//text:p")]
@@ -328,7 +471,7 @@ def process_file(content, filename):
                 if file_info.filename.startswith('word/media/'):
                     image_data = zip_file.read(file_info)
                     try:
-                        img_text = extract_text_from_image(image_data)
+                        img_text = describe_image_with_gemini(image_data)
                         image_texts.append(img_text)
                     except Exception as e:
                         pass
