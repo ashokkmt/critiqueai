@@ -1,6 +1,13 @@
-Flask
-werkzeug
-google-generativeai
-pillow
+flask
 python-docx
 odfdo
+markdown
+requests
+werkzeug
+google-generativeai
+google-cloud-storage
+google-cloud-vision
+google-cloud-documentai
+google-auth
+dotenv
+gunicorn
