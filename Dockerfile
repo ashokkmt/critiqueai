@@ -1,8 +1,9 @@
 # 1️⃣ Use an official Python runtime as a base image
-FROM python:3.9
+FROM python:3.12
 
 # Set the working directory
-WORKDIR /app/code
+WORKDIR /app
+
 
 # 3️⃣ Copy the requirements file into the container
 COPY requirements.txt .
@@ -20,4 +21,5 @@ ENV PORT=8080
 EXPOSE 8080
 
 # 8️⃣ Start the Flask app using Gunicorn (for production)
+
 CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
