@@ -6,28 +6,142 @@
     <title>Skill Roadmap Generator</title>
     <link rel="stylesheet" href="../static/css/styleroad.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="roadmap-box" class="container">
-        <h1>Skill Roadmap Generator</h1>
-        <form id="roadmap-form">
-            <label for="topic">Topic (e.g., Python): </label>
-            <input type="text" id="topic" name="topic" required>
-            <button type="submit">Generate Roadmap</button>
-        </form>
+    <div id="particles-js"></div>
+    <div class="page-wrapper">
+        <div id="roadmap-box" class="container">
+            <div class="header-section initial-content">
+                <h1><i class="fas fa-map-signs"></i> Skill Roadmap Generator</h1>
+                <p class="tagline">Chart your learning journey with a customized skill roadmap</p>
+            </div>
+            
+            <form id="roadmap-form" class="initial-content">
+                <div class="form-group">
+                    <label for="topic">What would you like to learn?</label>
+                    <div class="input-group">
+                        <input type="text" id="topic" name="topic" placeholder="e.g., Python, Web Development, Machine Learning" required>
+                        <button type="submit"><i class="fas fa-route"></i> Generate Roadmap</button>
+                    </div>
+                </div>
+            </form>
 
-        <div id="loading" class="hidden">
-            <div class="spinner"></div>
-        </div>
+            <div id="loading" class="hidden">
+                <div class="spinner"></div>
+                <p class="loading-text">Creating your personalized roadmap...</p>
+            </div>
 
-        <div id="roadmap-result">
-            <h2>Generated Roadmap</h2>
-            <div id="roadmap-content" class="roadmap-container styled-content"></div>
-            <button id="download-btn" style="display: none;">Download Roadmap</button>
+            <div id="roadmap-result" class="fullscreen-result">
+                <div class="result-header">
+                    <button id="download-btn" class="action-button" style="display: none;">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                </div>
+                <div id="roadmap-content" class="roadmap-container styled-content"></div>
+            </div>
         </div>
+        
+        <footer class="footer initial-content">
+            <p>Create your personal learning journey with our roadmap generator</p>
+        </footer>
     </div>
 
     <script src="../static/script/scriptroad.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#4CAF50'
+                },
+                shape: {
+                    type: 'circle',
+                    stroke: {
+                        width: 0,
+                        color: '#000000'
+                    }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 1,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 2,
+                        size_min: 0.1,
+                        sync: false
+                    }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#4CAF50',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: 'none',
+                    random: true,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'grab'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 140,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
 </body>
 </html>

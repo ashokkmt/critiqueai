@@ -1,3 +1,15 @@
+* {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    overflow-x: hidden;
+}
 
 h1 {
     font-size: 65px;
@@ -145,4 +157,72 @@ border: 2px solid #3f4a5d;
     font-weight: 600;
     color: rgb(208, 208, 208);
 
+}
+
+/* About Section Styles */
+.about-section {
+    padding: 60px 0;
+    text-align: center;
+    width: 100%;
+    max-width: 1200px;
+}
+
+.about-section h2 {
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    color: #3fe493;
+}
+
+.about-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.about-content p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #c3d0e5;
+}
+
+.about-features {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.about-feature {
+    flex: 1;
+    min-width: 250px;
+    max-width: 350px;
+    padding: 25px;
+    background-color: #161a20;
+    border: 2px solid #202630;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.about-feature:hover {
+    border: 2px solid #3f4a5d;
+    transform: translateY(-5px);
+}
+
+.about-feature i {
+    font-size: 2em;
+    color: #3fe493;
+    margin-bottom: 15px;
+}
+
+.about-feature h3 {
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    color: #e8effc;
+}
+
+.about-feature p {
+    font-size: 0.9em;
+    color: #8990a0;
 }

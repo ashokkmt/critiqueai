@@ -3,21 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload and Text Input</title>
+    <title>Content Notes</title>
     <link rel="stylesheet" href="../static/css/style_summ.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
-    <h2>Upload Multiple Files and Enter Text</h2>
+    <div class="particles-container" id="particles-js"></div>
     
-    <form action="/summary_out" method="post" enctype="multipart/form-data">
-        <!-- Multiple File Input -->
-        <input type="file" id="fileInput" name="file" multiple>
-        <!-- Text Input -->
-        <input type="text" id="textInput" placeholder="Enter text here" name="fname">
-
-        <button type="submit">Submit</button>
-    </form>
-
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="logo">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <h1>Content Notes</h1>
+                <p class="tagline">Upload files or add detailed notes on your topic</p>
+            </div>
+            
+            <form action="/summary_out" method="post" enctype="multipart/form-data" id="upload-form">
+                <div class="drag-area">
+                    <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <h3>Drag & Drop Files</h3>
+                    <span>OR</span>
+                    <button type="button" class="browse-btn">Browse Files</button>
+                    <input type="file" id="fileInput" name="file" multiple hidden>
+                    <div class="selected-files" id="selected-files-container"></div>
+                </div>
+                
+                <div class="text-input-container">
+                    <div class="input-wrapper">
+                        <i class="fas fa-align-left icon-left"></i>
+                        <textarea id="textInput" placeholder="Enter detailed notes on your topic..." name="fname"></textarea>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Submit Content
+                </button>
+            </form>
+            
+            <div class="features">
+                <div class="feature">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Multiple Formats</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Fast Analysis</span>
+                </div>
+                <div class="feature">
+                    <i class="fas fa-brain"></i>
+                    <span>AI-Powered</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="../static/script/summary.js"></script>
 </body>
 </html>
