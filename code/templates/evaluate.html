@@ -1,22 +1,160 @@
-{% extends "layout.html" %}
-{% block body %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Results</title>
+    <link rel="stylesheet" href="../static/css/style_eval.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div class="page-wrapper">
+        <div class="result-card">
+            <div class="card-header">
+                <div class="header-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h1>Evaluation Results</h1>
+            </div>
 
-<link rel="stylesheet" href="../static/css/style_eval.css">
-<center>
-    <div class="page">
-        <h1>Evaluation done successfully</h1>
-        <div class="score">
-            {{ score }}
-        </div>
-        <div class="answer">
-            <div class="evl-heading">Evaluation of your Answer</div>
-            <div class="evl-answer">
-                {{ evaluation | safe }}
+            <div class="score-section">
+                <div class="score-circle">
+                    <span class="score-value">{{ score }}</span>
+                    <span class="score-label">Score</span>
+                </div>
+            </div>
+
+            <div class="evaluation-section">
+                <h2><i class="fas fa-clipboard-check"></i> Detailed Feedback</h2>
+                <div class="evaluation-content">
+                    {{ evaluation | safe }}
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button onclick="window.location.href='/input'" class="action-button">
+                    <i class="fas fa-redo"></i> New Evaluation
+                </button>
+                <button id="copy-btn" class="action-button primary-button">
+                    <i class="fas fa-copy"></i> Copy Feedback
+                </button>
             </div>
         </div>
     </div>
-    <div class="back">
-        <button><a href="/input" class="try-now-button">Back</a></button>
-    </div>
-</center>
-{% endblock %}
+
+    <div id="notification-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize copy button
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const content = document.querySelector('.evaluation-content').innerText;
+            navigator.clipboard.writeText(content)
+                .then(() => showNotification('Feedback copied to clipboard!'))
+                .catch(() => showNotification('Failed to copy', 'error'));
+        });
+
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check' : 'fa-times'}"></i> ${message}`;
+            document.getElementById('notification-container').appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // Initialize particles.js with proper configuration
+        particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#4CAF50'
+                },
+                shape: {
+                    type: 'circle',
+                    stroke: {
+                        width: 0,
+                        color: '#000000'
+                    }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 1,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 2,
+                        size_min: 0.1,
+                        sync: false
+                    }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#4CAF50',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: 'none',
+                    random: true,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'grab'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 140,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
