@@ -13,7 +13,7 @@ from firebase_admin import credentials, storage, firestore
 import uuid
 from datetime import datetime, timezone, timedelta
 import markdown
-from pdf2image import convert_from_bytes
+# from pdf2image import convert_from_bytes
 import concurrent.futures
 from dotenv import load_dotenv
 
