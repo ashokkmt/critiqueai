@@ -14,8 +14,9 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding: 0;
-    background-color: #000;
+    padding-top: 60px; /* Add padding for navbar */
+    background-color: #0d1117;
+    background-image: radial-gradient(circle at 50% 50%, #161b22 0%, #0d1117 100%);
     color: #fff;
     min-height: 100vh;
     display: flex;
@@ -36,7 +37,7 @@ a:hover {
 
 /* Buttons */
 button {
-    background-color: #3fe493;
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
     color: white;
     border: none;
     border-radius: 5px;
@@ -44,10 +45,12 @@ button {
     font-weight: 500;
     cursor: pointer;
     margin: 8px;
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #2dad6f;
+    background: linear-gradient(135deg, #2dad6f, #0c89c4);
+    transform: translateY(-2px);
 }
 
 /* Page Layout */
@@ -74,12 +77,12 @@ button:hover {
 }
 
 .evaluation-card {
-    background: rgba(26, 26, 26, 0.85);
+    background: rgba(22, 27, 34, 0.85);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(76, 175, 80, 0.3);
-    border: 1px solid rgba(76, 175, 80, 0.2);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
+    border: 1px solid rgba(63, 228, 147, 0.1);
     padding: 40px;
 }
 
@@ -90,7 +93,7 @@ button:hover {
 
 .header-icon {
     font-size: 2.5rem;
-    color: #4CAF50;
+    color: #3fe493;
     margin-bottom: 15px;
     animation: pulse 2s infinite;
 }
@@ -99,7 +102,7 @@ button:hover {
     font-family: 'Montserrat', sans-serif;
     font-size: 2.2rem;
     margin: 0;
-    background: linear-gradient(90deg, #4CAF50, #81C784);
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -117,17 +120,18 @@ button:hover {
 }
 
 .input-section {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(22, 27, 34, 0.8);
     border-radius: 15px;
     padding: 25px;
     width: 100%;
     padding: 20px;
     box-sizing: border-box;
+    border: 1px solid rgba(63, 228, 147, 0.1);
 }
 
 .input-section h2 {
     font-size: 1.3rem;
-    color: #4CAF50;
+    color: #3fe493;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -180,8 +184,8 @@ button:hover {
 textarea {
     width: 100%;
     height: 200px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    background: rgba(22, 27, 34, 0.8);
+    border: 1px solid rgba(63, 228, 147, 0.1);
     border-radius: 10px;
     padding: 15px;
     color: #fff;
@@ -196,8 +200,8 @@ textarea:hover {
 
 textarea:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 15px rgba(76, 175, 80, 0.2);
+    border-color: #3fe493;
+    box-shadow: 0 0 15px rgba(63, 228, 147, 0.15);
 }
 
 textarea::placeholder {
@@ -223,7 +227,7 @@ textarea::placeholder {
 }
 
 .drag-area {
-    border: 2px dashed rgba(76, 175, 80, 0.5);
+    border: 2px dashed rgba(63, 228, 147, 0.3);
     height: 200px;
     border-radius: 15px;
     display: flex;
@@ -234,14 +238,14 @@ textarea::placeholder {
     transition: all 0.3s ease;
 }
 
-.drag-area.dragover {
-    background: rgba(76, 175, 80, 0.1);
-    border-color: #4CAF50;
+.drag-area.active, .drag-area.dragover {
+    border-color: #3fe493;
+    background: rgba(63, 228, 147, 0.1);
 }
 
 .drag-area .icon {
     font-size: 50px;
-    color: #4CAF50;
+    color: #3fe493;
 }
 
 .file-info {
@@ -251,10 +255,21 @@ textarea::placeholder {
     margin-top: 15px;
 }
 
+.file-chip {
+    background: rgba(63, 228, 147, 0.1);
+}
+
+.file-chip i {
+    color: #3fe493;
+}
+
+.icon-left {
+    color: #3fe493;
+}
+
 #drop-zone.dragover {
-    border: 2px solid #2dad6f;
-    /* border-color: #2dad6f; */
-    background-color: #202630;
+    border-color: #3fe493;
+    background-color: rgba(63, 228, 147, 0.1);
 }
 
 #drop-zone p {
@@ -282,7 +297,7 @@ input[type="file"] {
 }
 
 .action-button {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
     color: #fff;
     border: none;
     padding: 12px 25px;
@@ -296,18 +311,24 @@ input[type="file"] {
 }
 
 .action-button.primary-button {
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
-    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
+}
+
+.action-button.primary-button:hover {
+    background: linear-gradient(135deg, #2dad6f, #0c89c4);
+    transform: translateY(-2px);
 }
 
 .action-button:hover {
+    background: linear-gradient(135deg, #2dad6f, #0c89c4);
     transform: translateY(-2px);
 }
 
 .browse-btn {
     background: transparent;
-    color: #4CAF50;
-    border: 1px solid #4CAF50;
+    color: #3fe493;
+    border: 1px solid #3fe493;
     padding: 8px 20px;
     border-radius: 6px;
     cursor: pointer;
@@ -315,7 +336,8 @@ input[type="file"] {
 }
 
 .browse-btn:hover {
-    background: rgba(76, 175, 80, 0.1);
+    background: rgba(63, 228, 147, 0.1);
+    transform: translateY(-2px);
 }
 
 @keyframes pulse {
