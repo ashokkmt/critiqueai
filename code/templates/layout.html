@@ -1,39 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CritiqueAI</title>
     <link rel="stylesheet" href="../static/css/navbar_and_footer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="navbar">
-        <div class="title-links">
+        <div class="title-links" data-aos="fade-right">
             <a class="title" href="/">
-                <img src="{{ url_for('static', filename='images/logo-svg.svg') }}" 
-                     alt="" class="title-img">
+                <img src="{{ url_for('static', filename='images/logo-svg.svg') }}" alt="CritiqueAI Logo" class="title-img">
                 <span class="title-text">CritiqueAI</span>
             </a>
-            
         </div>
 
-        <div class="link-area">
-            <a href="/">Home</a>
-            <a href="/roadmap">Roadmap</a>
-            <a href="/summary">Summary</a>
-            <a href="#about-section">About Us</a>
-            <button><a href="/input">Try Now</a></button>
+        <div class="link-area" data-aos="fade-left">
+            <a href="/" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <div class="nav-dropdown">
+                <button class="nav-dropdown-btn">
+                    <i class="fas fa-tools"></i>
+                    <span>Tools</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="nav-dropdown-content">
+                    <a href="/input" class="dropdown-item">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Answer Evaluation</span>
+                    </a>
+                    <a href="/roadmap" class="dropdown-item">
+                        <i class="fas fa-road"></i>
+                        <span>Learning Roadmap</span>
+                    </a>
+                    <a href="/summary" class="dropdown-item">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Document Summary</span>
+                    </a>
+                </div>
+            </div>
+            <a href="#about-section" class="nav-link">
+                <i class="fas fa-info-circle"></i>
+                <span>About</span>
+            </a>
         </div>
-
     </div>
-{% block body %} {% endblock %}
-<footer>
-        <p>Made with <span class="heart">&hearts;</span> by Team CritiqueAI</p>
-</footer>
 
+    {% block body %} {% endblock %}
+    
+    <footer class="footer">
+        <div class="footer-content" data-aos="fade-up">
+            <p>Made with <span class="heart">&hearts;</span> by Team CritiqueAI</p>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </footer>
 
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            offset: 100,
+            once: true
+        });
+    </script>
 </body>
-
 </html>
