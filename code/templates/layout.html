@@ -45,25 +45,16 @@
                     </a>
                 </div>
             </div>
-            <a href="#about-section" class="nav-link">
+            <a href="/#about" class="nav-link">
                 <i class="fas fa-info-circle"></i>
                 <span>About</span>
             </a>
         </div>
     </div>
 
-    {% block body %} {% endblock %}
-    
-    <footer class="footer">
-        <div class="footer-content" data-aos="fade-up">
-            <p>Made with <span class="heart">&hearts;</span> by Team CritiqueAI</p>
-            <div class="social-links">
-                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
-                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
-                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
-            </div>
-        </div>
-    </footer>
+    {% block content %}
+        {% block body %}{% endblock %}
+    {% endblock %}
 
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script>

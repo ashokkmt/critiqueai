@@ -13,9 +13,9 @@
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
-    padding: 0;
-    background-color: #000;
-    background-image: radial-gradient(circle at 50% 50%, #111 0%, #000 100%);
+    padding-top: 60px; /* Add padding for navbar */
+    background-color: #0d1117;
+    background-image: radial-gradient(circle at 50% 50%, #161b22 0%, #0d1117 100%);
     color: #fff;
     min-height: 100vh;
     display: flex;
@@ -26,10 +26,10 @@ body {
 
 #particles-js {
     position: fixed;
-    top: 0;
+    top: 60px; /* Adjust for navbar */
     left: 0;
     width: 100%;
-    height: 100%;
+    height: calc(100vh - 60px); /* Adjust height for navbar */
     z-index: -1;
     background-color: transparent;
 }
@@ -38,15 +38,19 @@ body {
     width: 100%;
     max-width: 800px;
     padding: 20px;
+    min-height: calc(100vh - 60px); /* Adjust height for navbar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .result-card {
-    background: rgba(26, 26, 26, 0.85);
+    background: rgba(22, 27, 34, 0.85);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(76, 175, 80, 0.3);
-    border: 1px solid rgba(76, 175, 80, 0.2);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
+    border: 1px solid rgba(63, 228, 147, 0.1);
     padding: 40px;
     animation: fadeIn 0.5s ease-out;
 }
@@ -58,7 +62,7 @@ body {
 
 .header-icon {
     font-size: 2.5rem;
-    color: #4CAF50;
+    color: #3fe493;
     margin-bottom: 15px;
     animation: pulse 2s infinite;
 }
@@ -67,7 +71,7 @@ body {
     font-family: 'Montserrat', sans-serif;
     font-size: 2.2rem;
     margin: 0;
-    background: linear-gradient(90deg, #4CAF50, #81C784);
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -82,12 +86,12 @@ body {
     width: 150px;
     height: 150px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+    box-shadow: 0 0 30px rgba(14, 165, 233, 0.2);
     animation: scaleIn 0.5s ease-out;
 }
 
@@ -109,7 +113,7 @@ body {
 }
 
 .evaluation-section h2 {
-    color: #4CAF50;
+    color: #3fe493;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -128,9 +132,9 @@ body {
 }
 
 .action-button {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(22, 27, 34, 0.8);
     color: #fff;
-    border: none;
+    border: 1px solid rgba(63, 228, 147, 0.1);
     padding: 12px 25px;
     border-radius: 8px;
     cursor: pointer;
@@ -142,11 +146,18 @@ body {
 }
 
 .action-button.primary-button {
-    background: linear-gradient(135deg, #4CAF50, #388E3C);
-    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
 }
 
 .action-button:hover {
+    background: linear-gradient(135deg, #2dad6f, #0c89c4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.primary-button:hover {
+    background: linear-gradient(135deg, #2dad6f, #0c89c4);
     transform: translateY(-2px);
 }
 
@@ -158,7 +169,7 @@ body {
 }
 
 .notification {
-    background-color: rgba(76, 175, 80, 0.9);
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
@@ -259,7 +270,7 @@ h1 {
 .score {
     font-size: 2em;
     font-weight: bold;
-    color: #38d67a;
+    color: #3fe493;
     padding: 10px 20px;
     text-align: center;
 }
@@ -283,7 +294,7 @@ h1 {
     font-weight: 600;
     font-size: 1.3em;
     margin-bottom: 20px;
-    color: #38d67a;
+    color: #3fe493;
 }
 
 .evl-answer {

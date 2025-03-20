@@ -12,8 +12,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 60px;
-    padding: 10px 8vw;
+    height: 50px;
+    padding: 0 5vw; /* Reduced from 15vw to bring elements closer to edges */
     font-size: 15px;
     margin-bottom: 25px;
     border-bottom: 1px solid rgba(255,255,255,0.12);
@@ -45,7 +45,8 @@ body {
     display: flex;
     align-items: center;
     height: inherit;
-    gap: 2rem;
+    gap: 1rem; /* Reduced from 2rem */
+    padding-right: 0; /* Removed right padding to bring icons closer to edge */
 }
 
 .link-area a {
@@ -70,6 +71,7 @@ body {
 .title-links {
     display: flex;
     align-items: center;
+    padding-left: 0; /* Removed left padding to bring logo closer to edge */
 }
 
 .title-links a {
@@ -208,16 +210,17 @@ button:hover{
 .dropdown-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem; /* Reduced from 0.75rem */
     padding: 0.75rem 1rem;
     color: #8990a0;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease; /* Changed transition */
 }
 
 .dropdown-item:hover {
     background: rgba(63, 228, 147, 0.1);
     color: #3fe493;
+    /* Removed box-shadow/glow effect */
 }
 
 @keyframes fadeInDown {
@@ -232,48 +235,34 @@ button:hover{
 }
 
 /* Footer */
-footer{
-    display: block;
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background-color: rgb(13, 54, 222);
-    height: 37px;
-    border-top: 1px solid rgba(255,255,255,0.12);
-    text-align: center;
-    align-items: center;
-}
-footer p {
-    padding: 1.5px;
-    margin: 0;
-}
-.heart{
-    color:red;
-    font-size: 1.4em;
-    color: #ff4d4d;
-    font-size: 1.2em;
-    animation: pulse 1s infinite;
-}
-
 .footer {
+    width: 100%;
     background: rgba(22, 27, 34, 0.95);
     backdrop-filter: blur(10px);
     border-top: 1px solid rgba(63, 228, 147, 0.1);
     padding: 1rem 0;
     text-align: center;
+    margin-top: 4rem;
 }
 
 .footer-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 0.5rem;
+}
+
+.footer-content hr {
+    width: 50%;
+    border: none;
+    border-top: 1px solid rgba(63, 228, 147, 0.2);
+    margin: 0.5rem 0;
 }
 
 .social-links {
-    display: flex;
-    gap: 1.5rem;
+    display: flex;  
+    gap: 1rem; /* Reduced from 2rem */
+    margin-top: 0.5rem;
 }
 
 .social-link {
