@@ -12,12 +12,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 50px;
-    padding: 0 5vw; /* Reduced from 15vw to bring elements closer to edges */
+    height: 63px;
+    padding: 0 7vw; /* Reduced from 15vw to bring elements closer to edges */
     font-size: 15px;
     margin-bottom: 25px;
     border-bottom: 1px solid rgba(255,255,255,0.12);
-    padding-bottom: 8px;
     background: rgba(13, 17, 23, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(63, 228, 147, 0.1);
