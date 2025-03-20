@@ -5,7 +5,6 @@ markdown
 requests
 werkzeug
 google-generativeai
-google-cloud-storage
 google-cloud-vision
 google-auth
 dotenv
