@@ -5,9 +5,11 @@ markdown
 requests
 werkzeug
 google-generativeai
-google-cloud-storage
 google-cloud-vision
-google-cloud-documentai
 google-auth
 dotenv
 gunicorn
+google-cloud-secret-manager
+pdfplumber
+pymupdf
+odfpy

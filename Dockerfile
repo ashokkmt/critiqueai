@@ -21,5 +21,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # 8️⃣ Start the Flask app using Gunicorn (for production)
-
 CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]

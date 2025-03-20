@@ -1,31 +1,33 @@
-from flask import Flask, render_template, request, session
-import fitz  # PyMuPDF
+from flask import Flask, render_template, request, session, jsonify
+import pymupdf
 import pdfplumber
 import os
 import json
 import docx
 from odfdo import Document
 import markdown
-import requests
 from werkzeug.utils import secure_filename
-import google.generativeai as genai
-from google.cloud import storage, vision, documentai_v1 as documentai
+from google import genai
+from google.genai import types
+from datetime import datetime, timezone, timedelta
+from google.cloud import storage, vision
+import PIL.Image
 from PIL import Image
 from io import BytesIO
 import zipfile
+import firebase_admin
+from firebase_admin import credentials, storage, firestore
 import uuid
 from google.oauth2 import service_account  # Added import
-import tempfile  # Added import
 from dotenv import load_dotenv  # Added import
 import io
 import base64
+from odf.opendocument import load
+from odf.text import P
+
 
 # Load environment variables from .env file
 load_dotenv()
-
-# Configure the Google Generative AI API
-genai.configure(api_key=os.getenv('GEN_API'))
-model = genai.GenerativeModel("gemini-2.0-flash")
 
 # Updated prompts for AI evaluation
 EVALUATION_PROMPT = "Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text."
@@ -54,26 +56,33 @@ Best Resources – List the most effective books, courses, websites, and tools t
 Books – Include relevant books with their titles and authors for in-depth learning.
 The output should be formatted in Markdown for easy readability.(Dont add any markdown word)'''
 
+IMG_PROMPT = "Describe the content of the image extracted from the PDF."
+
 # Initialize Flask app
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
+cred = credentials.Certificate("code/firebase.json")
+firebase_admin.initialize_app(cred, {
+    "storageBucket": "instant-theater-449913-h4.firebasestorage.app"
+})
+
+
+# Configure the Google Generative AI API
+client = genai.Client(api_key=os.getenv('GEN_API'))
+FLASH = 'gemini-2.0-flash'
+FLASH_LITE = 'gemini-2.0-flash-lite'
+
+bucket = storage.bucket()
+db = firestore.client()
+
 # Initialize GCS client
-service_account_path = 'code/service-account.json'
-credentials = service_account.Credentials.from_service_account_file(service_account_path)  # Load credentials once
+credentials = service_account.Credentials.from_service_account_file(
+    'code/service-account.json')
 
 # Initialize all Google Cloud clients with the same credentials
-storage_client = storage.Client(credentials=credentials)
-bucket = storage_client.bucket(os.getenv('GCS_BUCKET_NAME'))
 vision_client = vision.ImageAnnotatorClient(credentials=credentials)
-docai_client = documentai.DocumentProcessorServiceClient(credentials=credentials)
 
-# Document AI processor configuration
-processor_name = docai_client.processor_path(
-    os.getenv('DOCAI_PROJECT_ID'),
-    os.getenv('DOCAI_LOCATION'),
-    os.getenv('DOCAI_PROCESSOR_ID')
-)
 
 # Define allowed file extensions
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'txt', 'pdf', 'docx', 'odt'}
@@ -86,107 +95,153 @@ def allowed_file(filename):
 # Function to evaluate text content
 def get_evaluation(text, is_file=False):
     if is_file:
-        response = model.generate_content(
-            [text, SUMMARY_PROMPT], generation_config=genai.GenerationConfig(
+        response = client.models.generate_content(
+            model=FLASH,
+            contents=[text, SUMMARY_PROMPT],
+            config= types.GenerateContentConfig(
                 max_output_tokens=1000,  # Set the token limit back to 1500
                 temperature=0.5))
         content = response.candidates[0].content.parts[0].text if response.candidates else "No summary generated"
     else:
-        response = model.generate_content(
-            [text, NOTES_PROMPT], generation_config=genai.GenerationConfig(
+        response = client.models.generate_content(
+            model=FLASH,
+            contents=[text, NOTES_PROMPT], 
+            config=types.GenerateContentConfig(
                 max_output_tokens=1000,  # Set the token limit back to 1500
                 temperature=0.5))
         content = response.candidates[0].content.parts[0].text if response.candidates else "No response generated"
-    
+
     return content
-# Function to evaluate text content
+
+# <----------------- Evaluation Page Here Starts From Here ------------------->
+# Functions for evaluation page
 def get_evaluate(text):
-    response = model.generate_content(
-        [text, EVALUATION_PROMPT], generation_config=genai.GenerationConfig(
+    response = client.models.generate_content(
+        model=FLASH,
+        contents=[text, EVALUATION_PROMPT], 
+        config=types.GenerateContentConfig(
             max_output_tokens=1000,
             temperature=0.5))
-    score = model.generate_content(
-        [text, SCORE_PROMPT], generation_config=genai.GenerationConfig(
+    score = client.models.generate_content(
+        model=FLASH,
+        contents=[text, SCORE_PROMPT], 
+        config=types.GenerateContentConfig(
             max_output_tokens=1000,
             temperature=0.5))
     return response, score
 
 
+# Text File
 def process_txt_file(content):
     return get_evaluate(content)
 
-# Helper function to extract text from images
-def describe_image_with_gemini(image_bytes, prompt="Describe this image in detail"):
+
+# PDF File
+def process_pdf_file(pdf_bytes):
+    response = client.models.generate_content(
+        model=FLASH,
+        contents=[types.Part.from_bytes(
+            data=pdf_bytes,
+            mime_type='application/pdf'),
+            EVALUATION_PROMPT], 
+        config=types.GenerateContentConfig(
+            max_output_tokens=200,
+            temperature=0.5,
+        )
+    )
+    score = client.models.generate_content(
+        model=FLASH,
+        contents=[types.Part.from_bytes(
+            data=pdf_bytes,
+            mime_type='application/pdf'),
+            SCORE_PROMPT], 
+        config=types.GenerateContentConfig(
+            max_output_tokens=200,
+            temperature=0.5,
+        )
+    )
+    return response, score
+
+# Image File
+def process_img_file(image_content):
+    # img_file = PIL.Image.open(path)
+    image = vision.Image(content=image_content)
+    text_response = vision_client.text_detection(image=image)
+    text = text_response.text_annotations[0].description if text_response.text_annotations else ""
+ 
+    return get_evaluate(text)
+    
+    
+# Docx File
+def process_docx_file(doc_bytes):
+    doc = docx.Document(BytesIO(doc_bytes)) 
+    full_text = [paragraph.text for paragraph in doc.paragraphs]
+    docx_text = '\n'.join(full_text)
+
+    return get_evaluate(docx_text) 
+        
+# ODT File
+def process_odt_file(odt_bytes):
+    """Reads an ODT file from bytes and extracts text."""
+    odt_file = load(BytesIO(odt_bytes))  # Wrap bytes in BytesIO
+    text_content = []
+
+    for element in odt_file.getElementsByType(P):
+        # Handle missing firstChild safely
+        text = element.firstChild.data if element.firstChild and hasattr(element.firstChild, "data") else ""
+        text_content.append(text)
+
+    odt_text = '\n'.join(text_content)
+    return get_evaluate(odt_text)
+# <----------------- Evaluate Page Functions Ends Here ------------------>
+
+
+# <----------------- Helper functions for summary_out page ------------------>
+# Image Extraction for PDF
+def describe_image_with_gemini(image, flag=False):
     """
     Process image using Gemini with proper encoding and fallback
     Returns: Gemini description (preferred) or Vision API analysis (fallback)
     """
-    try:
-        # Convert bytes to PIL Image
-        image = Image.open(io.BytesIO(image_bytes))
-        
-        # Convert to RGB if needed (for JPEG compatibility)
-        if image.mode in ('RGBA', 'P', 'LA'):
-            image = image.convert('RGB')
-            
-        # Encode to base64
-        buffered = io.BytesIO()
-        image.save(buffered, format="PNG")  # Convert all formats to PNG for Gemini
-        img_base64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
-        
-        # Generate description with Gemini
-        response = model.generate_content(
-            contents=[
-                {"text": prompt},
-                {"inline_data": {
-                    "mime_type": "image/png",
-                    "data": img_base64
-                }}
-            ],
-            generation_config={
-                "temperature": 0.3,
-                "max_output_tokens": 1000
-            }
-        )
-        
-        # Return formatted response
-        if response.candidates:
-            return response.text.strip()
-        return "No description generated"
-        
-    except Exception as e:
-        print(f"Gemini Error: {str(e)} - Falling back to Vision API")
-        # Fallback to Vision API processing
-        try:
-            image = vision.Image(content=image_bytes)
-            text_response = vision_client.text_detection(image=image)
-            labels_response = vision_client.label_detection(image=image)
-            
-            text = text_response.text_annotations[0].description if text_response.text_annotations else ""
-            labels = [label.description for label in labels_response.label_annotations]
-            
-            return f"Vision API Analysis:\nText: {text}\nObjects: {', '.join(labels)}"
-            
-        except Exception as vision_error:
-            return f"Both Gemini and Vision API failed: {str(vision_error)}"
-        
-# Modified image processing function
-def process_img_file(content):
-    try:
-        description = describe_image_with_gemini(content)
-        return get_evaluate(description)
-    except Exception as e:
-        error_response = type('obj', (object,), {'text': f"Image Error: {str(e)}"})  # Mock response object
-        error_score = type('obj', (object,), {'text': "Score: 0"})  # Default error score
-        return error_response, error_score
+    # image = Image.open(BytesIO(image))
+    
+    # # Convert to RGB if needed (for JPEG compatibility)
+    # if image.mode in ('RGBA', 'P', 'LA'):
+    #     image = image.convert('RGB')
 
-# Helper function to extract text from PDF files
+    # Encode to base64
+    img_base64 = encode_image(image)
+
+    # Generate description with Gemini
+    response = client.models.generate_content(
+        model=FLASH_LITE,
+        contents=[
+            {"text": IMG_PROMPT},
+            {"inline_data": {
+                "mime_type": "image/png",
+                "data": img_base64
+            }}
+        ],
+        config=types.GenerateContentConfig(
+            temperature=0.3, 
+            max_output_tokens=1000 
+        )
+    )
+
+    # Return formatted response
+    if response.candidates:
+        return response.text.strip()
+    return "No description generated"
+
+        
+# Encoding image for PDF
 def encode_image(image):
     """Convert PIL Image to Base64 format for Gemini."""
     buffered = io.BytesIO()
     image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
+# Image Extraction for PDF
 def extract_images(pdf_file, page_index):
     """Extracts images from a PDF page with Gemini descriptions."""
     page = pdf_file.load_page(page_index)
@@ -201,8 +256,10 @@ def extract_images(pdf_file, page_index):
             image_ext = base_image["ext"]
             image_name = f"image_{page_index+1}_{img_index}.{image_ext}"
 
+            image = Image.open(io.BytesIO(image_bytes))
+
             # Generate description using Gemini with raw bytes
-            image_description = describe_image_with_gemini(image_bytes)
+            image_description = describe_image_with_gemini(image)
 
             images.append({
                 "name": image_name,
@@ -212,11 +269,13 @@ def extract_images(pdf_file, page_index):
             images.append(f"[Image extraction error: {str(e)}]")
     return images
 
+# Text Extraction for PDF
 def extract_text(pdf_file, page_index):
     """Extracts text from a given PDF page."""
     page = pdf_file.load_page(page_index)
     return page.get_text("text")
 
+# Tables Extraction for PDF
 def extract_tables(content, page_index):
     """Extracts tables using pdfplumber."""
     tables = []
@@ -234,9 +293,11 @@ def extract_tables(content, page_index):
         tables.append(f"[Table error: {str(e)}]")
     return tables
 
+# Process PDF for Page-Wise Extraction
 def extract_pdf_content(pdf_bytes):
     """Extracts text, images, and tables from PDF bytes and returns as a string."""
-    pdf_file = fitz.open(stream=pdf_bytes, filetype="pdf")  # Open from bytes
+    pdf_file = pymupdf.open(
+        stream=pdf_bytes, filetype="pdf")  # Open from bytes
     extracted_data = []
 
     for page_index in range(len(pdf_file)):
@@ -244,32 +305,32 @@ def extract_pdf_content(pdf_bytes):
             "page_number": page_index + 1,
             "text": extract_text(pdf_file, page_index),
             "images": extract_images(pdf_file, page_index),
-            "tables": extract_tables(pdf_bytes, page_index)  # Directly pass bytes
+            # Directly pass bytes
+            "tables": extract_tables(pdf_bytes, page_index)
         }
         extracted_data.append(page_content)
-        
-    # json_filename = "output.json"
-    # with open(json_filename, "w", encoding="utf-8") as json_file:
-    #     json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
 
-    # print(f"[+] Extraction complete. Data saved to {json_filename}")
+    json_filename = "output_pdf.json"
+    with open(json_filename, "w", encoding="utf-8") as json_file:
+        json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
 
+    print(f"[+] Extraction complete. Data saved to {json_filename}")
 
     # Convert the extracted_data list to a string
-    result = ""
+    result = "PDF CONTENT BELOW HERE\n"
     for page in extracted_data:
-        result += f"Page {page['page_number']}:\n"
-        result += f"Text:\n{page['text']}\n\n"
-        
-        result += "Images:\n"
+        result += f"PAGE {page['page_number']}:\n"
+        result += f"TEXT:\n{page['text']}\n"
+
+        result += "IMAGES:\n"
         for img in page['images']:
             if isinstance(img, dict):
-                result += f"- {img['name']}: {img['description']}\n"
+                result += f"--> {img['name']}: {img['description']}\n"
             else:
-                result += f"- {img}\n"  # Error message case
+                result += f"--> {img}\n"  # Error message case
         result += "\n"
-        
-        result += "Tables:\n"
+
+        result += "TABLES:\n"
         for table in page['tables']:
             if isinstance(table, dict):
                 result += f"Table {table['table_number']}:\n"
@@ -277,42 +338,38 @@ def extract_pdf_content(pdf_bytes):
                     result += f"{row}\n"
                 result += "\n"
             else:
-                result += f"- {table}\n"  # Error message case
-        result += "----------------------------------------\n"
-    
+                result += f"--> {table}\n"  # Error message case
+        result += "---------------------------------------------------\n"
+
+    with open("output_pdf.txt", "w+") as f:
+        f.write(result)
+
     return result
+# PDF FUNCTION ENDS HERE
 
 
-# Function to process .pdf files
-def process_pdf_file(content):
-    try:
-        # Use new extraction method
-        extracted_content = extract_pdf_content(content)
-        return get_evaluate(extracted_content)
-    except Exception as e:
-        return f"PDF Error: {str(e)}"
-
-# Function to read .docx files
+# Functions to read .docx files
 def read_docx_file(docx_content):
     """Read the content of a DOCX file and return it as a string, including tables."""
     doc = docx.Document(BytesIO(docx_content))
     full_text = []
-    
+
     for para in doc.paragraphs:
         full_text.append(para.text)
-    
+
     for table in doc.tables:
         for row in table.rows:
             row_data = [cell.text for cell in row.cells]
             full_text.append('\t'.join(row_data))
-    
+
     return '\n'.join(full_text)
 
-def process_docx_file(content):
+
+def extract_docx_content(content):
     try:
         # Extract regular text content
         text_content = read_docx_file(content)
-        
+
         # Extract and process images
         image_texts = []
         with zipfile.ZipFile(BytesIO(content)) as zip_file:
@@ -325,42 +382,87 @@ def process_docx_file(content):
                     except Exception as e:
                         # Handle image processing errors silently or log them
                         pass
-        
+
         # Combine all text elements
         combined_text = f"{text_content}\n{' '.join(image_texts)}"
-        return get_evaluate(combined_text)
-    
+        
+        with open("output_docx.txt", "w") as file:
+            file.write(combined_text)
+        
+        return combined_text
+
     except Exception as e:
         return f"DOCX Error: {str(e)}"
 
-
-# Function to process .odt files
-def process_odt_file(content):
-    odt_file = Document(content)
-    text_content = [para.text for para in odt_file.body.get_elements("//text:p")]
-
-    odt_text = '\n'.join(text_content)
-    return get_evaluate(odt_text)
 
 # Function to upload file to Google Cloud Storage
 def upload_files(file):
     session_id = session.get('session_id')
     unique_filename = f"{uuid.uuid4()}.{file.filename.split('.')[-1]}"
-    folder_name = f"sessions/{session_id}/"
-    blob = bucket.blob(f"{folder_name}{unique_filename}")
+    blob = bucket.blob(f"sessions/{session_id}/{unique_filename}")
     blob.upload_from_file(file)
+    blob.make_public()
+    url = f"gs://instant-theater-449913-h4.firebasestorage.app/sessions/{session_id}/{unique_filename}"
 
     print(session_id)
-    print("file uploaded to GCS")
+    print("file uploaded now updating db")
 
-    return f"https://storage.googleapis.com/{bucket.name}/{folder_name}{unique_filename}"
+    db.collection("user_files").document(unique_filename).set({
+        "session_id": session_id,
+        "filename": unique_filename,
+        "url": url,
+        "uploaded_at": datetime.now(timezone.utc)
+    })
 
 # Function to get file content from Google Cloud Storage
-def get_file_content_from_gcs(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    response.encoding = 'utf-8'
-    return response.content
+def get_user_files(session_id):
+    """Fetches gs:// URLs for a user from Firestore."""
+    print("Getting gs_urls")
+    docs = db.collection("user_files").where(
+        "session_id", "==", session_id).stream()
+    file_urls = []
+    for doc in docs:
+        file_url = doc.to_dict()["url"]
+        file_urls.append(file_url)
+
+    return file_urls
+
+
+def read_file_from_gcs(gs_url):
+    """Reads a file as bytes directly from Firebase Storage."""
+    print(type(gs_url))
+    file_path = '/'.join(gs_url.split('/')[3:])
+    # print(file_path)
+    blob = bucket.blob(file_path)
+    print("BLOB NAME - ", blob.name)
+    return blob.download_as_bytes(), blob.name
+
+
+def process_file(gs_url):
+    """Processes a file based on its type (Text, PDF, DOCX, Image)."""
+    file_bytes, filename = read_file_from_gcs(gs_url)
+    file_ext = filename.split(".")[-1].lower()
+
+    # Plain text files
+    if file_ext in ["txt", "csv", "json"]:
+        return file_bytes.decode("utf-8")
+
+    # PDF files (Text + Images)
+    elif file_ext == "pdf":
+        final_extracted_content = extract_pdf_content(file_bytes)
+        return final_extracted_content
+
+    # Image processing
+    elif file_ext in ["png", "jpg", "jpeg"]:
+        return describe_image_with_gemini(file_bytes, True)
+
+    # Docx Processing
+    elif file_ext == "docx":
+        return extract_docx_content(file_bytes)
+    else:
+        raise ValueError("Unsupported file type")
+# <---------- Summary Page Functions Ends Here ------------>
+
 
 # Set session before each request
 @app.before_request
@@ -369,26 +471,29 @@ def set_session():
         session['session_id'] = str(uuid.uuid4())
         print("Session ID - ", session['session_id'])
 
+
 # Route for home page to load index.html
 @app.route('/')
 def home():
     return render_template("index.html")
+
 
 # Route for roadmap page
 @app.route('/roadmap')
 def roadmap():
     return render_template("roadmap.html")
 
+
 # Route for summary page
 @app.route('/summary')
 def summary():
     return render_template("summary.html")
 
+
 # Route for input page
 @app.route('/input')
 def input():
     return render_template("input.html")
-
 
 
 # New route for generating roadmap
@@ -398,12 +503,13 @@ def get_roadmap():
     print(data)
     if not data:
         return "Please enter a valid topic", 400
-    
+
     try:
         full_prompt = ROADMAP_PROMPT.format(topic=data)
-        response = model.generate_content(
+        response = client.models.generate_content(
+            model=FLASH,
             contents=full_prompt,
-            generation_config=genai.GenerationConfig(
+            config=types.GenerateContentConfig(
                 max_output_tokens=8192,
                 temperature=0.5
             )
@@ -412,10 +518,11 @@ def get_roadmap():
         print(temp)
         print("HTML file created successfully!")
         return temp if response.candidates else "Failed to generate roadmap"
-    
+
     except Exception as e:
         return f"Error generating roadmap: {str(e)}", 500
 
+# Route for Summary output page
 @app.route('/summary_out', methods=['POST'])
 def summary_out():
     if request.method == 'POST':
@@ -428,9 +535,8 @@ def summary_out():
                 if f and allowed_file(f.filename):
                     # Upload to GCS first
                     filename = secure_filename(f.filename)
-                    public_url = upload_files(f)
-                    file_content = get_file_content_from_gcs(public_url)
-                    combined_text += process_file(file_content, filename) + "\n"
+                    upload_files(f)
+                    
                 else:
                     combined_text += f"Invalid or unsupported file: {f.filename}\n"
             # # Save combined text to a new file with a unique name
@@ -441,6 +547,17 @@ def summary_out():
             # with open(combined_text_path, 'w', encoding='utf-8') as file:
             #     file.write(combined_text)
             # Get evaluation for the combined text
+            session_id = session.get('session_id')
+            file_url = get_user_files(session_id)
+            print("URL LIST AT FIREBASE - ", file_url)
+            print("Now Printing URLs one by one\n")
+            for url in file_url:
+                print(url)
+                # file_content, name = read_file_from_gcs(url)
+                combined_text += process_file(url) + "\n"
+            
+            
+            
             combined_summary = get_evaluation(combined_text, is_file=True)
             output = f"<h3>Combined File Summary:</h3>{markdown.markdown(combined_summary)}"
             return render_template("summary_out.html", output=output)
@@ -452,35 +569,40 @@ def summary_out():
         else:
             return render_template("summary_out.html", output="<p>Invalid input received.</p>")
 
-def process_file(content, filename):
-    if filename.endswith('.txt'):
-        return content.decode('utf-8')
-    elif filename.endswith('.pdf'):
-        return extract_pdf_content(content)
-    elif filename.endswith('.png') or filename.endswith('.jpg') or filename.endswith('.jpeg'):
-        return describe_image_with_gemini(content) 
-    elif filename.endswith('.odt'):
-        odt_file = Document(content)
-        text_content = [para.text for para in odt_file.body.get_elements("//text:p")]
-        return '\n'.join(text_content)
-    elif filename.endswith('.docx'):
-        text_content = read_docx_file(content)
-        image_texts = []
-        with zipfile.ZipFile(BytesIO(content)) as zip_file:
-            for file_info in zip_file.infolist():
-                if file_info.filename.startswith('word/media/'):
-                    image_data = zip_file.read(file_info)
-                    try:
-                        img_text = describe_image_with_gemini(image_data)
-                        image_texts.append(img_text)
-                    except Exception as e:
-                        pass
-        return f"{text_content}\n{' '.join(image_texts)}"
-    else:
-        raise ValueError("Unsupported file type")
-    
+# Route for deleting user files from firebase bucket
+@app.route('/delete-user-files', methods=['GET'])
+def accountcleanup():
+    print("Function is called.")
+    expiration_time = datetime.now(timezone.utc) - timedelta(minutes=2)
 
+    docs = db.collection("user_files").where(
+        "uploaded_at", "<", expiration_time).stream()
 
+    deleted_files = []
+
+    for doc in docs:
+        data = doc.to_dict()
+        session_id = data.get("session_id")
+        filename = data.get("filename")
+
+        if session_id and filename:
+            file_path = f"sessions/{session_id}/{filename}"
+            blob = bucket.blob(file_path)
+
+            try:
+                blob.delete()
+                db.collection("user_files").document(doc.id).delete()
+                print(f"Deleted: {file_path}")
+                deleted_files.append(filename)
+            except Exception as e:
+                print(f"Failed to delete {file_path}: {e}")
+
+    if not deleted_files:
+        return "No Files at Firebase\n", 200
+
+    return jsonify({"deleted_files": deleted_files}), 200
+
+# Route for evalation page
 @app.route('/evaluate', methods=['GET', 'POST'])
 def evaluate():
     try:
@@ -489,27 +611,32 @@ def evaluate():
                 file = request.files['file']
                 if file.filename == '':
                     return "No file selected.", 400
-                
+
                 if file and allowed_file(file.filename):
                     filename = secure_filename(file.filename)
-                    public_url = upload_files(file)
-                    file_content = get_file_content_from_gcs(public_url)
-                    file_extension = filename.rsplit('.', 1)[1].lower()
-                    
+                    upload_files(file)
+                    session_id = session.get('session_id')
+                    print(session_id)
+                    file_url = get_user_files(session_id)
+                    print("URL - ", file_url)
+                    file_content, name = read_file_from_gcs(file_url[0])
+                    file_extension = name.split(".")[-1].lower()
+
                     if file_extension == 'txt':
-                        response, score_response = process_txt_file(file_content.decode('utf-8'))
+                        response, score_response = process_txt_file(
+                            file_content.decode('utf-8'))
                     elif file_extension == 'pdf':
-                        response, score_response = process_pdf_file(file_content)
+                        response, score_response = process_pdf_file(
+                            file_content)
                     elif file_extension in {'png', 'jpg', 'jpeg'}:
-                        response, score_response = process_img_file(file_content)
+                        response, score_response = process_img_file(
+                            file_content)
                     elif file_extension == 'docx':
-                        response, score_response = process_docx_file(file_content)
+                        response, score_response = process_docx_file(
+                            file_content)
                     elif file_extension == 'odt':
-                        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                            temp_file.write(file_content)
-                            temp_file_path = temp_file.name
-                        response, score_response = process_odt_file(temp_file_path)
-                        os.remove(temp_file_path)
+                        response, score_response = process_odt_file(
+                            file_content)
                     else:
                         return "File type not allowed", 400
 
@@ -519,7 +646,7 @@ def evaluate():
                         if not score.isdigit():
                             score = "Error: Invalid score format"
                     else:
-                        score = "Error: Try again"
+                        score = "-/"
 
                     evaluation_md = response.text
                     evaluation_html = markdown.markdown(evaluation_md)
