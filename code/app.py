@@ -22,6 +22,9 @@ from google.oauth2 import service_account  # Added import
 from dotenv import load_dotenv  # Added import
 import io
 import base64
+from odf.opendocument import load
+from odf.text import P
+
 
 # Load environment variables from .env file
 load_dotenv()
@@ -115,11 +118,14 @@ def get_evaluation(text, is_file=False):
 def get_evaluate(text):
     response = client.models.generate_content(
         model=FLASH,
-        contents=[text, EVALUATION_PROMPT], generation_config=genai.GenerationConfig(
+        contents=[text, EVALUATION_PROMPT], 
+        config=types.GenerateContentConfig(
             max_output_tokens=1000,
             temperature=0.5))
     score = client.models.generate_content(
-        [text, SCORE_PROMPT], generation_config=genai.GenerationConfig(
+        model=FLASH,
+        contents=[text, SCORE_PROMPT], 
+        config=types.GenerateContentConfig(
             max_output_tokens=1000,
             temperature=0.5))
     return response, score
@@ -132,23 +138,29 @@ def process_txt_file(content):
 
 # PDF File
 def process_pdf_file(pdf_bytes):
-    doc_data = base64.standard_b64encode(pdf_bytes).decode("utf-8")
-    print("hello")
-
     response = client.models.generate_content(
         model=FLASH,
-        contents=[{'mime_type': 'application/pdf', 'data': doc_data}, EVALUATION_PROMPT], generation_config=genai.GenerationConfig(
+        contents=[types.Part.from_bytes(
+            data=pdf_bytes,
+            mime_type='application/pdf'),
+            EVALUATION_PROMPT], 
+        config=types.GenerateContentConfig(
             max_output_tokens=200,
-            temperature=0.5,))
+            temperature=0.5,
+        )
+    )
     score = client.models.generate_content(
         model=FLASH,
-        contents=[{'mime_type': 'application/pdf', 'data': doc_data}, SCORE_PROMPT], generation_config=genai.GenerationConfig(
+        contents=[types.Part.from_bytes(
+            data=pdf_bytes,
+            mime_type='application/pdf'),
+            SCORE_PROMPT], 
+        config=types.GenerateContentConfig(
             max_output_tokens=200,
-            temperature=0.5,))
-    print("hello")
-
+            temperature=0.5,
+        )
+    )
     return response, score
-
 
 # Image File
 def process_img_file(image_content):
@@ -156,23 +168,28 @@ def process_img_file(image_content):
     image = vision.Image(content=image_content)
     text_response = vision_client.text_detection(image=image)
     text = text_response.text_annotations[0].description if text_response.text_annotations else ""
-
+ 
     return get_evaluate(text)
     
     
 # Docx File
-def process_docx_file(path):
-    doc = docx.Document(path)
+def process_docx_file(doc_bytes):
+    doc = docx.Document(BytesIO(doc_bytes)) 
     full_text = [paragraph.text for paragraph in doc.paragraphs]
     docx_text = '\n'.join(full_text)
 
     return get_evaluate(docx_text) 
         
 # ODT File
-def process_odt_file(content):
-    odt_file = Document(content)
-    text_content = [
-        para.text for para in odt_file.body.get_elements("//text:p")]
+def process_odt_file(odt_bytes):
+    """Reads an ODT file from bytes and extracts text."""
+    odt_file = load(BytesIO(odt_bytes))  # Wrap bytes in BytesIO
+    text_content = []
+
+    for element in odt_file.getElementsByType(P):
+        # Handle missing firstChild safely
+        text = element.firstChild.data if element.firstChild and hasattr(element.firstChild, "data") else ""
+        text_content.append(text)
 
     odt_text = '\n'.join(text_content)
     return get_evaluate(odt_text)
@@ -186,9 +203,11 @@ def describe_image_with_gemini(image, flag=False):
     Process image using Gemini with proper encoding and fallback
     Returns: Gemini description (preferred) or Vision API analysis (fallback)
     """
-    # Convert to RGB if needed (for JPEG compatibility)
-    if image.mode in ('RGBA', 'P', 'LA'):
-        image = image.convert('RGB')
+    # image = Image.open(BytesIO(image))
+    
+    # # Convert to RGB if needed (for JPEG compatibility)
+    # if image.mode in ('RGBA', 'P', 'LA'):
+    #     image = image.convert('RGB')
 
     # Encode to base64
     img_base64 = encode_image(image)
@@ -306,9 +325,9 @@ def extract_pdf_content(pdf_bytes):
         result += "IMAGES:\n"
         for img in page['images']:
             if isinstance(img, dict):
-                result += f"- {img['name']}: {img['description']}\n"
+                result += f"--> {img['name']}: {img['description']}\n"
             else:
-                result += f"- {img}\n"  # Error message case
+                result += f"--> {img}\n"  # Error message case
         result += "\n"
 
         result += "TABLES:\n"
@@ -319,8 +338,8 @@ def extract_pdf_content(pdf_bytes):
                     result += f"{row}\n"
                 result += "\n"
             else:
-                result += f"- {table}\n"  # Error message case
-        result += "----------------------------------------\n"
+                result += f"--> {table}\n"  # Error message case
+        result += "---------------------------------------------------\n"
 
     with open("output_pdf.txt", "w+") as f:
         f.write(result)
@@ -411,9 +430,11 @@ def get_user_files(session_id):
 
 def read_file_from_gcs(gs_url):
     """Reads a file as bytes directly from Firebase Storage."""
+    print(type(gs_url))
     file_path = '/'.join(gs_url.split('/')[3:])
-    print(file_path)
+    # print(file_path)
     blob = bucket.blob(file_path)
+    print("BLOB NAME - ", blob.name)
     return blob.download_as_bytes(), blob.name
 
 
@@ -532,8 +553,8 @@ def summary_out():
             print("Now Printing URLs one by one\n")
             for url in file_url:
                 print(url)
-                file_content, name = read_file_from_gcs(url)
-                combined_text += process_file(file_content) + "\n"
+                # file_content, name = read_file_from_gcs(url)
+                combined_text += process_file(url) + "\n"
             
             
             
@@ -598,8 +619,8 @@ def evaluate():
                     print(session_id)
                     file_url = get_user_files(session_id)
                     print("URL - ", file_url)
-                    file_content = read_file_from_gcs(file_url)
-                    file_extension = filename.rsplit('.', 1)[1].lower()
+                    file_content, name = read_file_from_gcs(file_url[0])
+                    file_extension = name.split(".")[-1].lower()
 
                     if file_extension == 'txt':
                         response, score_response = process_txt_file(
@@ -625,7 +646,7 @@ def evaluate():
                         if not score.isdigit():
                             score = "Error: Invalid score format"
                     else:
-                        score = "Error: Try again"
+                        score = "-/"
 
                     evaluation_md = response.text
                     evaluation_html = markdown.markdown(evaluation_md)

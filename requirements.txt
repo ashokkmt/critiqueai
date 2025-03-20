@@ -13,3 +13,4 @@ gunicorn
 google-cloud-secret-manager
 pdfplumber
 pymupdf
+odfpy
