@@ -7,7 +7,6 @@ werkzeug
 google-generativeai
 google-cloud-storage
 google-cloud-vision
-google-cloud-documentai
 google-auth
 dotenv
 gunicorn
