@@ -511,7 +511,7 @@ def input():
 def content():
     return render_template("get_content.html")
 
-@app.route('/generate-notes', methods=['POST'])
+@app.route('/content_out', methods=['POST'])
 def generate_content():
     try:
         print("Back is called")
