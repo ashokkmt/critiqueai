@@ -10,6 +10,8 @@ google-auth
 dotenv
 gunicorn
 google-cloud-secret-manager
+google-genai
+firebase-admin
 pdfplumber
 pymupdf
 odfpy
