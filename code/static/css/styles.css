@@ -369,7 +369,7 @@ body {
 }
 
 .about-item:hover {
-    transform: translateY(-10px);
+    transform: translateY(-3px);
     border-color: #3fe493;
     box-shadow: 0 10px 25px rgba(63, 228, 147, 0.1);
 }

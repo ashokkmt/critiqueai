@@ -65,6 +65,8 @@ Exam-focused: '{exam_focus}'.
 If the topic is technical, include code snippets: '{technical_content}'. 
 Urgency level: '{urgency_level}'. 
 Adjust content depth, complexity, and length based on these inputs.
+
+Don't any greeting and thank you note.
 """
 
 
