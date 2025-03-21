@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% block body %}
+<link rel="stylesheet" href="../static/css/style_content.css">
+<div id="particles-js"></div>
+<div class="container">
+    <h2>Generate Study Notes</h2>
+    <form id="notesForm">
+        <label>📌 Topic:</label>
+        <input type="text" id="topic" required>
+
+        <label>🏫 Academic Level:</label>
+        <select id="academic_level">
+            <option value="School">School (Class 1-12)</option>
+            <option value="College">College</option>
+        </select>
+
+        <div id="college_course" style="display:none;">
+            <label>🎓 College Course:</label>
+            <input type="text" id="course">
+        </div>
+
+        <label>📖 Notes Detail Level:</label>
+        <select id="note_level">
+            <option value="Concise">Concise</option>
+            <option value="Detailed">Detailed</option>
+            <option value="Summary">Summary</option>
+            <option value="Exam-Oriented">Exam-Oriented</option>
+        </select>
+
+        <label>📝 Format:</label>
+        <select id="format_preference">
+            <option value="Bullet Points">Bullet Points</option>
+            <option value="Paragraphs">Paragraphs</option>
+            <option value="Mind Map Style">Mind Map Style</option>
+            <option value="Q&A Format">Q&A Format</option>
+        </select>
+
+        <label>💻 Include Code (for coding topics)?</label>
+        <select id="technical_content">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+
+        <label>⏳ Urgency Level:</label>
+        <select id="urgency_level">
+            <option value="Quick Summary">Quick Summary</option>
+            <option value="Full Explanation">Full Explanation</option>
+        </select>
+
+        <label>🎯 Exam-Focused?</label>
+        <select id="exam_focus">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
+
+        <button type="submit">Generate Notes</button>
+    </form>
+
+    <div id="result" style="display:none;">
+        <h3>📄 Generated Notes:</h3>
+        <p id="notesOutput"></p>
+    </div>
+</div>
+<script>
+    document.getElementById('notesForm').addEventListener('submit', async function (e) {
+        e.preventDefault();  // Prevent form refresh
+
+        const data = {
+            topic: document.getElementById('topic').value,
+            academic_level: document.getElementById('academic_level').value,
+            course: document.getElementById('course').value || '',
+            note_level: document.getElementById('note_level').value,
+            format_preference: document.getElementById('format_preference').value,
+            technical_content: document.getElementById('technical_content').value,
+            urgency_level: document.getElementById('urgency_level').value,
+            exam_focus: document.getElementById('exam_focus').value
+        };
+
+        // 🔹 Send JSON data to Flask backend
+        try {
+            const response = await fetch('/generate-notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                window.location.href = "/generate-notes";
+                console.log("✅ Data sent successfully");
+            } else {
+                console.error("❌ Failed to send data");
+            }
+        } catch (error) {
+            console.error("⚠️ Error sending data:", error);
+        }
+    });
+</script>
+{% endblock %}

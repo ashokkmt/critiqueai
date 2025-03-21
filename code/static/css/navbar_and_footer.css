@@ -113,12 +113,13 @@ button {
     margin: 8px;
 }
 
-button:hover{
+/* button:hover{
     background-color: #2dad6f;
-}
+} */
 
 .navbar a {
     text-decoration: none;
+    padding: 1rem ;
 }
 
 .nav-link {
@@ -184,7 +185,7 @@ button:hover{
 }
 
 .nav-dropdown-btn:hover {
-    color: #3fe493;
+    transform: translateY(-2px);
 }
 
 .nav-dropdown-content {
@@ -201,8 +202,10 @@ button:hover{
     z-index: 1000;
 }
 
+
 .nav-dropdown:hover .nav-dropdown-content {
-    display: block;
+    display: flex;
+    flex-direction: column;
     animation: fadeInDown 0.3s ease;
 }
 

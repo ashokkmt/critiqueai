@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+
+    <link rel="stylesheet" href="../static/css/style_content_out.css">
+    <div id="particles-js"></div>
+    <div class="container">
+        <div class="result-box">
+            <h2>Study Material for:</h2>
+            <p>{{ output }}</p> <!-- Display generated content -->
+            <a href="/">Go Back</a> <!-- Button to go back to input page -->
+        </div>
+    </div>
+
+{% endblock %}

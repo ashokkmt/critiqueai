@@ -1,10 +1,9 @@
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, redirect, url_for
 import pymupdf
 import pdfplumber
 import os
 import json
 import docx
-from odfdo import Document
 import markdown
 from werkzeug.utils import secure_filename
 from google import genai
@@ -57,6 +56,17 @@ Books – Include relevant books with their titles and authors for in-depth lear
 The output should be formatted in Markdown for easy readability.(Dont add any markdown word)'''
 
 IMG_PROMPT = "Describe the content of the image extracted from the PDF."
+
+CONTENT_PROMPT = """
+You are a professional educator. Generate well-structured study notes for the topic: '{topic}'. 
+The student is in '{academic_level}' {course} and prefers '{note_level}' notes. 
+Format the notes in '{format_preference}' style. 
+Exam-focused: '{exam_focus}'. 
+If the topic is technical, include code snippets: '{technical_content}'. 
+Urgency level: '{urgency_level}'. 
+Adjust content depth, complexity, and length based on these inputs.
+"""
+
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -497,6 +507,69 @@ def summary():
 def input():
     return render_template("input.html")
 
+@app.route('/get-content')
+def content():
+    return render_template("get_content.html")
+
+@app.route('/generate-notes', methods=['POST'])
+def generate_content():
+    try:
+        print("Back is called")
+        data = request.get_json()
+        print("data is read")
+        topic = data.get('topic')
+        academic_level = data.get('academic_level')
+        course = f"({data.get('course')})" if academic_level == "College" else ""
+        note_level = data.get('note_level')
+        format_preference = data.get('format_preference')
+        technical_content = data.get('technical_content')
+        urgency_level = data.get('urgency_level')
+        exam_focus = data.get('exam_focus')
+
+        print('\n')
+        print(topic)
+        print('\n')
+        # Format the prompt
+        full_prompt = CONTENT_PROMPT.format(
+            topic=topic,
+            academic_level=academic_level,
+            course=course,
+            note_level=note_level,
+            format_preference=format_preference,
+            technical_content=technical_content,
+            urgency_level=urgency_level,
+            exam_focus=exam_focus
+        )
+        
+        print(data)
+        if not data:
+            return "Please enter a valid topic", 400
+        
+        try:
+            print("Gemini is called")
+            # full_prompt = CONTENT_PROMPT.format(topic=data)
+            print(full_prompt)
+            response = client.models.generate_content(
+                model=FLASH,
+                contents=full_prompt,
+                config=types.GenerateContentConfig(
+                    max_output_tokens=8192,
+                    temperature=0.5
+                )
+            )
+            temp = markdown.markdown(response.text)
+            print(temp)
+            print("HTML file created successfully!")
+            # return temp if response.candidates else "Failed to generate roadmap"
+            return render_template("content_out.html", output=temp)
+
+        except Exception as e:
+            return f"Error generating roadmap: {str(e)}", 500
+    except Exception as e:
+        print("🔥 ERROR:", str(e))
+        # traceback.print_exc()  # Print full error details
+        return jsonify({"error": str(e)}), 500
+    
 
 # New route for generating roadmap
 @app.route('/get_roadmap', methods=['POST'])
