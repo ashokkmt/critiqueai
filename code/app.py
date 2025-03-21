@@ -30,7 +30,7 @@ from odf.text import P
 load_dotenv()
 
 # Updated prompts for AI evaluation
-EVALUATION_PROMPT = "Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text."
+EVALUATION_PROMPT = "Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. If there are no qustion and answer then ask them to provide that nicely (in one line)."
 SCORE_PROMPT = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score: 7'. (Always give 0 if the answer is absolutely wrong)"
 
 # Enhanced prompts for AI evaluation
@@ -237,6 +237,8 @@ def describe_image_with_gemini(image, flag=False):
 # Encoding image for PDF
 def encode_image(image):
     """Convert PIL Image to Base64 format for Gemini."""
+    if isinstance(image, bytes):
+        image = Image.open(io.BytesIO(image))
     buffered = io.BytesIO()
     image.save(buffered, format="PNG")
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
@@ -554,9 +556,11 @@ def summary_out():
             for url in file_url:
                 print(url)
                 # file_content, name = read_file_from_gcs(url)
-                combined_text += process_file(url) + "\n"
+                combined_text += process_file(url) + "\n\n***************************************************\n\n"
             
             
+            with open("output_final.txt", "w") as final:
+                final.write(combined_text)
             
             combined_summary = get_evaluation(combined_text, is_file=True)
             output = f"<h3>Combined File Summary:</h3>{markdown.markdown(combined_summary)}"
@@ -663,7 +667,7 @@ def evaluate():
                     if not score.isdigit():
                         score = "Error: Invalid score format"
                 else:
-                    score = "Error: Try again"
+                    score = "-/"
 
                 evaluation_md = response.text
                 evaluation_html = markdown.markdown(evaluation_md)
