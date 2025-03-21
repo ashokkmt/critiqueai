@@ -1,14 +1,79 @@
 {% extends "layout.html" %}
 {% block body %}
-
-    <link rel="stylesheet" href="../static/css/style_content_out.css">
+    <link rel="stylesheet" href="../static/css/style_content.css">
     <div id="particles-js"></div>
     <div class="container">
-        <div class="result-box">
-            <h2>Study Material for:</h2>
-            <p>{{ output }}</p> <!-- Display generated content -->
-            <a href="/">Go Back</a> <!-- Button to go back to input page -->
+        <h2>Generated Study Notes</h2>
+        <div class="result-container">
+            <div class="notes-content">
+                {{ output | safe }}
+            </div>
+        </div>
+        <div class="action-buttons">
+            <a href="/get-content" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Generate New Notes
+            </a>
+            <button id="copy-btn" class="action-button">
+                <i class="fas fa-copy"></i>
+                Copy Notes
+            </button>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Initialize copy button functionality
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const content = document.querySelector('.notes-content').innerText;
+            navigator.clipboard.writeText(content).then(() => {
+                this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-copy"></i> Copy Notes';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+
+        // Initialize particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: { 
+                    value: 80 
+                },
+                color: { 
+                    value: '#3fe493' 
+                },
+                opacity: { 
+                    value: 0.5 
+                },
+                size: { 
+                    value: 3 
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#3fe493',
+                    opacity: 0.2,
+                    width: 1
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'grab'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
+    </script>
 {% endblock %}
