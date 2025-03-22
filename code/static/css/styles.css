@@ -384,7 +384,11 @@ body {
 }
 
 .about-item:hover {
+<<<<<<< HEAD
     transform: translateY(-5px);
+=======
+    transform: translateY(-3px);
+>>>>>>> b24bad8b743cec7a3084e52f404a37336a63a885
     border-color: #3fe493;
     box-shadow: 0 10px 25px rgba(63, 228, 147, 0.1);
 }

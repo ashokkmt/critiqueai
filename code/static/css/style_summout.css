@@ -8,7 +8,7 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    /* font-family: 'Roboto', sans-serif; */
     margin: 0;
     padding-top: 60px; /* Add padding for navbar */
     background-color: #0d1117;
@@ -137,8 +137,10 @@ body {
 
 /* Remove all tab-related styles and keep only summary content styles */
 .tab-content {
-    position: relative;
-    min-height: 300px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 30px 0;
 }
 
 #summary {
@@ -147,9 +149,8 @@ body {
 
 /* Styled content */
 .styled-content {
-    color: #fff;
-    line-height: 1.6;
-    font-size: 1rem;
+    color: #c3d0e5;
+    line-height: 1.8;
 }
 
 .styled-content h2 {
@@ -168,6 +169,8 @@ body {
 
 .styled-content p {
     margin-bottom: 15px;
+    line-height: 1.8;
+    white-space: pre-wrap;
 }
 
 .styled-content ul, .styled-content ol {
@@ -177,6 +180,8 @@ body {
 
 .styled-content li {
     margin-bottom: 8px;
+    color: #c3d0e5;
+    line-height: 1.8;
 }
 
 .styled-content a {

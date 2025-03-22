@@ -1,0 +1,218 @@
+{% extends "layout.html" %}
+{% block body %}
+<link rel="stylesheet" href="../static/css/style_content.css">
+<div id="particles-js"></div>
+<div class="container">
+    <h2>✨ Generate Study Notes</h2>
+    <form id="notesForm" action="/content_out" method="POST">
+        <div class="form-group">
+            <label>📌 Topic:</label>
+            <input type="text" id="topic" name="topic" required placeholder="Enter your topic...">
+        </div>
+
+        <div class="form-group">
+            <label>🏫 Academic Level:</label>
+            <select id="academic_level" name="academic_level" required>
+                <option value="" disabled selected hidden>-- Select Level --</option>
+                <option value="School">School (Class 1-12)</option>
+                <option value="College">College</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="college_course" style="display:none;">
+            <label>🎓 College Course:</label>
+            <input type="text" id="course" name="course" placeholder="Enter your course name...">
+        </div>
+
+        <div class="form-group">
+            <label>📖 Notes Detail Level:</label>
+            <select id="note_level" name="note_level" required>
+                <option value="" disabled selected hidden>-- Select Level --</option>
+                <option value="Concise">Concise</option>
+                <option value="Detailed">Detailed</option>
+                <option value="Summary">Summary</option>
+                <option value="Exam-Oriented">Exam-Oriented</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>📝 Format:</label>
+            <select id="format_preference" name="format_preference" required>
+                <option value="" disabled selected hidden>-- Select Format --</option>
+                <option value="Bullet Points">Bullet Points</option>
+                <option value="Paragraphs">Paragraphs</option>
+                <option value="Mind Map Style">Mind Map Style</option>
+                <option value="Q&A Format">Q&A Format</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>💻 Include Code Examples:</label>
+            <select id="technical_content" name="technical_content" required>
+                <option value="" disabled selected hidden>-- Select Option --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>⏳ Urgency Level:</label>
+            <select id="urgency_level" name="urgency_level" required>
+                <option value="" disabled selected hidden>-- Select Urgency --</option>
+                <option value="Quick Summary">Quick Summary</option>
+                <option value="Full Explanation">Full Explanation</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>🎯 Exam-Focused:</label>
+            <select id="exam_focus" name="exam_focus" required>
+                <option value="" disabled selected hidden>-- Select Option --</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </div>
+
+        <button type="submit">Generate Notes ✨</button>
+    </form>
+
+    <div id="result">
+        <h3>📄 Generated Notes:</h3>
+        <div id="notesOutput"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+    particlesJS('particles-js', {
+            particles: {
+                number: {
+                    value: 80,
+                    density: {
+                        enable: true,
+                        value_area: 800
+                    }
+                },
+                color: {
+                    value: '#4CAF50'
+                },
+                shape: {
+                    type: 'circle',
+                    stroke: {
+                        width: 0,
+                        color: '#000000'
+                    }
+                },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 1,
+                        opacity_min: 0.1,
+                        sync: false
+                    }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    anim: {
+                        enable: true,
+                        speed: 2,
+                        size_min: 0.1,
+                        sync: false
+                    }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: '#4CAF50',
+                    opacity: 0.4,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: 'none',
+                    random: true,
+                    straight: false,
+                    out_mode: 'out',
+                    bounce: false,
+                    attract: {
+                        enable: false,
+                        rotateX: 600,
+                        rotateY: 1200
+                    }
+                }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: {
+                        enable: true,
+                        mode: 'grab'
+                    },
+                    onclick: {
+                        enable: true,
+                        mode: 'push'
+                    },
+                    resize: true
+                },
+                modes: {
+                    grab: {
+                        distance: 140,
+                        line_linked: {
+                            opacity: 1
+                        }
+                    },
+                    push: {
+                        particles_nb: 4
+                    }
+                }
+            },
+            retina_detect: true
+        });
+
+    document.getElementById('notesForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const button = this.querySelector('button[type="submit"]');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="loading"></span> Generating...';
+        button.disabled = true;
+
+        const data = {
+            topic: document.getElementById('topic').value,
+            academic_level: document.getElementById('academic_level').value,
+            course: document.getElementById('course').value || '',
+            note_level: document.getElementById('note_level').value,
+            format_preference: document.getElementById('format_preference').value,
+            technical_content: document.getElementById('technical_content').value,
+            urgency_level: document.getElementById('urgency_level').value,
+            exam_focus: document.getElementById('exam_focus').value
+        };
+
+        try {
+            const response = await fetch('/content_out', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const html = await response.text();
+                document.open();
+                document.write(html);
+                document.close();
+            } else {
+                throw new Error('Failed to generate notes');
+            }
+        } catch (error) {
+            console.error("⚠️ Error:", error);
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

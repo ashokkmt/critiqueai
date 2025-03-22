@@ -11,7 +11,7 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    /* font-family: 'Roboto', sans-serif; */
     margin: 0;
     padding-top: 60px; /* Add padding for navbar */
     background-color: #0d1117;
@@ -118,6 +118,12 @@ body {
     align-items: center;
     gap: 10px;
     margin-bottom: 20px;
+}
+
+.evaluation-section p {
+    color: #c3d0e5;
+    line-height: 1.8;
+    white-space: pre-wrap;
 }
 
 .evaluation-content {

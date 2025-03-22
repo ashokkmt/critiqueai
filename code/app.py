@@ -65,6 +65,8 @@ Exam-focused: '{exam_focus}'.
 If the topic is technical, include code snippets: '{technical_content}'. 
 Urgency level: '{urgency_level}'. 
 Adjust content depth, complexity, and length based on these inputs.
+
+Don't any greeting and thank you note.
 """
 
 
@@ -509,7 +511,7 @@ def input():
 
 @app.route('/get-content')
 def content():
-    return render_template("get_content.html")
+    return render_template("content.html")
 
 @app.route('/content_out', methods=['POST'])
 def generate_content():
