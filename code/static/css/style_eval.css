@@ -120,6 +120,12 @@ body {
     margin-bottom: 20px;
 }
 
+.evaluation-section p {
+    color: #c3d0e5;
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
 .evaluation-content {
     line-height: 1.6;
 }

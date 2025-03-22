@@ -511,7 +511,7 @@ def input():
 
 @app.route('/get-content')
 def content():
-    return render_template("get_content.html")
+    return render_template("content.html")
 
 @app.route('/content_out', methods=['POST'])
 def generate_content():
