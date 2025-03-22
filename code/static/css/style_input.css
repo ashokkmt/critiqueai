@@ -308,6 +308,9 @@ input[type="file"] {
     align-items: center;
     gap: 8px;
     transition: all 0.3s ease;
+    margin: 8px auto;  /* Center the button horizontally */
+    min-width: 200px;  /* Give button a consistent width */
+    justify-content: center;  /* Center the button content */
 }
 
 .action-button.primary-button {
@@ -380,6 +383,9 @@ input[type="file"] {
 
 .input-form {
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .textarea-container {

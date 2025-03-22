@@ -3,100 +3,113 @@
 <link rel="stylesheet" href="../static/css/style_content.css">
 <div id="particles-js"></div>
 <div class="container">
-    <h2>✨ Generate Study Notes</h2>
+    <h2>✨ Study Notes Generator ✨</h2>
     <form id="notesForm" action="/content_out" method="POST">
-        <div class="form-group">
-            <label>📌 Topic:</label>
-            <input type="text" id="topic" required placeholder="Enter your topic...">
+        <div class="form-group" style="--item-index: 0;">
+            <label>📚 Topic</label>
+            <input type="text" id="topic" required placeholder="What would you like to learn about today?">
         </div>
 
-        <div class="form-group">
-            <label>🏫 Academic Level:</label>
+        <div class="form-group" style="--item-index: 1;">
+            <label>🏫 Academic Level</label>
             <select id="academic_level">
                 <option value="School">School (Class 1-12)</option>
-                <option value="College">College</option>
+                <option value="College">College/University</option>
+                <option value="Professional">Professional/Career</option>
             </select>
         </div>
 
-        <div class="form-group" id="college_course" style="display:none;">
-            <label>🎓 College Course:</label>
-            <input type="text" id="course" placeholder="Enter your course name...">
+        <div class="form-group" id="college_course" style="display:none; --item-index: 2;">
+            <label>🎓 Course Name</label>
+            <input type="text" id="course" placeholder="Enter specific course or subject...">
         </div>
 
-        <div class="form-group">
-            <label>📖 Notes Detail Level:</label>
+        <div class="form-group" style="--item-index: 3;">
+            <label>📖 Detail Level</label>
             <select id="note_level">
-                <option value="Concise">Concise</option>
-                <option value="Detailed">Detailed</option>
-                <option value="Summary">Summary</option>
-                <option value="Exam-Oriented">Exam-Oriented</option>
+                <option value="Concise">Concise & Clear</option>
+                <option value="Detailed">Deep & Detailed</option>
+                <option value="Summary">Quick Summary</option>
+                <option value="Exam-Oriented">Exam Prep Focus</option>
+                <option value="Comprehensive">Comprehensive Study</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <label>📝 Format:</label>
+        <div class="form-group" style="--item-index: 4;">
+            <label>📝 Preferred Format</label>
             <select id="format_preference">
                 <option value="Bullet Points">Bullet Points</option>
-                <option value="Paragraphs">Paragraphs</option>
-                <option value="Mind Map Style">Mind Map Style</option>
-                <option value="Q&A Format">Q&A Format</option>
+                <option value="Paragraphs">Detailed Paragraphs</option>
+                <option value="Mind Map Style">Mind Map Structure</option>
+                <option value="Q&A Format">Question & Answer</option>
+                <option value="Flashcards">Flashcard Style</option>
+                <option value="Cornell Notes">Cornell Notes System</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <label>💻 Include Code Examples:</label>
+        <div class="form-group" style="--item-index: 5;">
+            <label>💻 Technical Examples</label>
             <select id="technical_content">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
+                <option value="Yes">Include Code/Technical Examples</option>
+                <option value="No">No Technical Examples</option>
+                <option value="Basic">Basic Examples Only</option>
+                <option value="Advanced">Advanced Examples</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <label>⏳ Urgency Level:</label>
+        <div class="form-group" style="--item-index: 6;">
+            <label>⏳ Study Time Available</label>
             <select id="urgency_level">
-                <option value="Quick Summary">Quick Summary</option>
-                <option value="Full Explanation">Full Explanation</option>
+                <option value="Quick Summary">5-10 Minutes</option>
+                <option value="Brief Review">15-30 Minutes</option>
+                <option value="Standard Study">30-60 Minutes</option>
+                <option value="Full Explanation">1+ Hours Deep Study</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <label>🎯 Exam-Focused:</label>
+        <div class="form-group" style="--item-index: 7;">
+            <label>🎯 Exam Preparation</label>
             <select id="exam_focus">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
+                <option value="Yes">Focus on Exam Preparation</option>
+                <option value="No">General Learning</option>
+                <option value="Quiz Ready">Quick Quiz Preparation</option>
+                <option value="Advanced Test">Advanced Test Prep</option>
             </select>
         </div>
 
-        <button type="submit">Generate Notes ✨</button>
+        <button type="submit" style="--item-index: 8;">✨ Generate Brilliant Notes ✨</button>
     </form>
-
-    <div id="result">
-        <h3>📄 Generated Notes:</h3>
-        <div id="notesOutput"></div>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 <script>
+// Enhanced particles configuration for a more striking visual effect
 particlesJS('particles-js', {
     particles: {
         number: {
-            value: 80,
+            value: 100,
             density: {
                 enable: true,
-                value_area: 800
+                value_area: 1000
             }
         },
         color: {
-            value: '#3fe493'
+            value: ['#3fe493', '#0ea5e9', '#ffffff']
         },
         shape: {
-            type: 'circle'
+            type: ['circle', 'triangle', 'star'],
+            stroke: {
+                width: 0,
+                color: '#000000'
+            },
+            polygon: {
+                nb_sides: 5
+            }
         },
         opacity: {
-            value: 0.5,
+            value: 0.6,
             random: true,
-            animation: {
+            anim: {
                 enable: true,
                 speed: 1,
                 opacity_min: 0.1,
@@ -105,7 +118,13 @@ particlesJS('particles-js', {
         },
         size: {
             value: 3,
-            random: true
+            random: true,
+            anim: {
+                enable: true,
+                speed: 2,
+                size_min: 0.1,
+                sync: false
+            }
         },
         line_linked: {
             enable: true,
@@ -121,7 +140,12 @@ particlesJS('particles-js', {
             random: true,
             straight: false,
             out_mode: 'out',
-            bounce: false
+            bounce: false,
+            attract: {
+                enable: true,
+                rotateX: 600,
+                rotateY: 1200
+            }
         }
     },
     interactivity: {
@@ -139,59 +163,181 @@ particlesJS('particles-js', {
         },
         modes: {
             grab: {
-                distance: 140,
+                distance: 180,
                 line_linked: {
-                    opacity: 0.8
+                    opacity: 0.6
                 }
             },
             push: {
                 particles_nb: 4
+            },
+            remove: {
+                particles_nb: 2
             }
         }
     },
     retina_detect: true
 });
 
-document.getElementById('notesForm').addEventListener('submit', async function (e) {
-    e.preventDefault();
+// Enhanced interactive form handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Show/hide college course field based on academic level
+    const academicLevel = document.getElementById('academic_level');
+    const collegeField = document.getElementById('college_course');
     
-    const button = this.querySelector('button[type="submit"]');
-    const originalText = button.innerHTML;
-    button.innerHTML = '<span class="loading"></span> Generating...';
-    button.disabled = true;
-
-    const data = {
-        topic: document.getElementById('topic').value,
-        academic_level: document.getElementById('academic_level').value,
-        course: document.getElementById('course').value || '',
-        note_level: document.getElementById('note_level').value,
-        format_preference: document.getElementById('format_preference').value,
-        technical_content: document.getElementById('technical_content').value,
-        urgency_level: document.getElementById('urgency_level').value,
-        exam_focus: document.getElementById('exam_focus').value
-    };
-
-    try {
-        const response = await fetch('/content_out', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-            const html = await response.text();
-            document.open();
-            document.write(html);
-            document.close();
-        } else {
-            throw new Error('Failed to generate notes');
+    academicLevel.addEventListener('change', function() {
+        collegeField.style.display = this.value === 'College' ? 'block' : 'none';
+        if (this.value === 'College') {
+            collegeField.style.animation = 'fadeIn 0.5s forwards';
         }
-    } catch (error) {
-        console.error("⚠️ Error:", error);
-    } finally {
-        button.innerHTML = originalText;
-        button.disabled = false;
-    }
+    });
+    
+    // Add ripple effect to submit button
+    const button = document.querySelector('button[type="submit"]');
+    button.addEventListener('click', function(e) {
+        let x = e.clientX - e.target.getBoundingClientRect().left;
+        let y = e.clientY - e.target.getBoundingClientRect().top;
+        
+        let ripple = document.createElement('span');
+        ripple.style.left = x + 'px';
+        ripple.style.top = y + 'px';
+        ripple.classList.add('ripple');
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
+    
+    // Enhanced form submission with loading indicator
+    document.getElementById('notesForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        
+        const button = this.querySelector('button[type="submit"]');
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="loading"></span> Creating Brilliance...';
+        button.disabled = true;
+        
+        // Add a subtle loading overlay to the form
+        const overlay = document.createElement('div');
+        overlay.classList.add('form-overlay');
+        document.querySelector('.container').appendChild(overlay);
+
+        // Prepare the data for submission
+        const data = {
+            topic: document.getElementById('topic').value,
+            academic_level: document.getElementById('academic_level').value,
+            course: document.getElementById('course')?.value || '',
+            note_level: document.getElementById('note_level').value,
+            format_preference: document.getElementById('format_preference').value,
+            technical_content: document.getElementById('technical_content').value,
+            urgency_level: document.getElementById('urgency_level').value,
+            exam_focus: document.getElementById('exam_focus').value
+        };
+
+        try {
+            const response = await fetch('/content_out', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                const html = await response.text();
+                
+                // Create a smooth transition effect
+                document.body.style.opacity = '0';
+                setTimeout(() => {
+                    document.open();
+                    document.write(html);
+                    document.close();
+                }, 300);
+            } else {
+                throw new Error('Failed to generate notes');
+            }
+        } catch (error) {
+            console.error("⚠️ Error:", error);
+            // Show error message
+            const errorMsg = document.createElement('div');
+            errorMsg.classList.add('error-message');
+            errorMsg.textContent = 'Something went wrong. Please try again.';
+            this.appendChild(errorMsg);
+            
+            setTimeout(() => {
+                errorMsg.remove();
+            }, 3000);
+        } finally {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            if (document.querySelector('.form-overlay')) {
+                document.querySelector('.form-overlay').remove();
+            }
+        }
+    });
+    
+    // Add animation classes to form elements
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach((group, index) => {
+        group.style.setProperty('--item-index', index);
+    });
 });
 </script>
+
+<style>
+/* Additional dynamic styles for the enhanced form */
+.ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+.form-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(13, 17, 23, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 24px;
+    animation: fadeIn 0.3s ease forwards;
+}
+
+.error-message {
+    background: rgba(255, 59, 48, 0.2);
+    color: #ff3b30;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+    text-align: center;
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+    transform: translate3d(0, 0, 0);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+}
+
+@keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+    40%, 60% { transform: translate3d(4px, 0, 0); }
+}
+
+body {
+    transition: opacity 0.3s ease;
+}
+</style>
 {% endblock %}
