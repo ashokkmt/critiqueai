@@ -28,6 +28,7 @@ from odf.text import P
 # Load environment variables from .env file
 load_dotenv()
 
+
 # Updated prompts for AI evaluation
 EVALUATION_PROMPT = "Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. If there are no qustion and answer then ask them to provide that nicely (in one line)."
 SCORE_PROMPT = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score: 7'. (Always give 0 if the answer is absolutely wrong)"
