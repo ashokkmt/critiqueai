@@ -228,10 +228,20 @@ body {
 
 .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(2, 1fr); /* Changed to always show 2 columns */
     gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .tools-grid {
+        grid-template-columns: 1fr; /* Stack cards on mobile */
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
 }
 
 .tool-card {
@@ -313,11 +323,16 @@ body {
     background: rgba(22, 27, 34, 0.8);
     border-radius: 16px;
     border: 1px solid rgba(63, 228, 147, 0.1);
-    transition: all 0.3s ease;
+    transform: translateY(0); /* Reset default position */
+    transition-property: transform, border-color, box-shadow;
+    transition-duration: 0.3s;
+    transition-timing-function: ease;
+    position: relative;
+    z-index: 1;
 }
 
 .feature-item:hover {
-    transform: translateY(-10px);
+    transform: translateY(-8px) !important; /* Force the transform */
     border-color: #3fe493;
     box-shadow: 0 10px 25px rgba(63, 228, 147, 0.1);
 }
@@ -369,7 +384,11 @@ body {
 }
 
 .about-item:hover {
+<<<<<<< HEAD
+    transform: translateY(-5px);
+=======
     transform: translateY(-3px);
+>>>>>>> b24bad8b743cec7a3084e52f404a37336a63a885
     border-color: #3fe493;
     box-shadow: 0 10px 25px rgba(63, 228, 147, 0.1);
 }
