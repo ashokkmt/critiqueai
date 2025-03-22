@@ -40,6 +40,24 @@
     <div id="notification-container"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            let reloading = false; // Track reload attempts
+    
+            window.onbeforeunload = function () {
+                return "Your processed data will be lost. You will need to upload the files again.";
+            };
+    
+            window.addEventListener("unload", function () {
+                if (!reloading) {
+                    reloading = true;
+                    window.location.href = "/input";  // Redirect to the upload page on refresh
+                }
+            });
+        });
+    </script>
+    
+    
+    <script>
         // Initialize copy button
         document.getElementById('copy-btn').addEventListener('click', function() {
             const content = document.querySelector('.evaluation-content').innerText;

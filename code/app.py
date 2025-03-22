@@ -30,7 +30,8 @@ load_dotenv()
 
 
 # Updated prompts for AI evaluation
-EVALUATION_PROMPT = "Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. If there are no qustion and answer then ask them to provide that nicely (in one line)."
+EVALUATION_PROMPT = "Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. If there are no qustion and answer then ask them to provide that nicely (in one line). There is no cumplusory that question and answer word is mentioned explicitly try to understand by yourself."
+
 SCORE_PROMPT = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score: 7'. (Always give 0 if the answer is absolutely wrong)"
 
 # Enhanced prompts for AI evaluation
@@ -40,9 +41,9 @@ NOTES_PROMPT = '''Provide detailed notes on the following topic:
 - List the most effective books, courses, websites, and tools to master the topic. Each resource should be a clickable working link with a brief description (1-2 lines).
 - Format the output in Markdown for easy readability. (Do not add any markdown word), max output is just 1000 so answer should be according to that limit.'''
 
-SUMMARY_PROMPT = '''"Provide a concise summary of the given file, organized in bullet points and grouped by key topics. 
-Focus solely on the summary, excluding any additional commentary or analysis. Use as many words as needed to accurately capture the content.
-max token is 1000 so summarize the content accoridng to that ,(Do not add any markdown word)'''
+SUMMARY_PROMPT = '''Provide a concise summary of the given file, organized in bullet points and grouped by key topics. 
+    Focus only on the essential points, avoiding unnecessary details or lengthy explanations. 
+    The summary should be within 1000 tokens. Do not include any markdown formatting.'''
 
 # New prompt for roadmap generation
 ROADMAP_PROMPT = '''Generate a structured and detailed roadmap for learning {topic}. The roadmap should be divided into logical sections covering in phase-wise manner and also weeks to cover all this in best way:
@@ -105,25 +106,23 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'txt', 'pdf', 'docx', 'odt'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Function to evaluate text content
-def get_evaluation(text, is_file=False):
-    if is_file:
-        response = client.models.generate_content(
-            model=FLASH,
-            contents=[text, SUMMARY_PROMPT],
-            config= types.GenerateContentConfig(
-                max_output_tokens=1000,  # Set the token limit back to 1500
-                temperature=0.5))
-        content = response.candidates[0].content.parts[0].text if response.candidates else "No summary generated"
+# Function for summary page
+def get_evaluation(text, isInstruction=None):
+    if isInstruction:  # If an instruction is provided, append it
+        full_prompt = f"{SUMMARY_PROMPT}\n\nAdditional Instructions: {isInstruction}"
+        print(full_prompt)
     else:
-        response = client.models.generate_content(
-            model=FLASH,
-            contents=[text, NOTES_PROMPT], 
-            config=types.GenerateContentConfig(
-                max_output_tokens=1000,  # Set the token limit back to 1500
-                temperature=0.5))
-        content = response.candidates[0].content.parts[0].text if response.candidates else "No response generated"
-
+        full_prompt = SUMMARY_PROMPT
+        
+    response = client.models.generate_content(
+        model=FLASH,
+        contents=[text, full_prompt],
+        config= types.GenerateContentConfig(
+            max_output_tokens=1000,  # Set the token limit back to 1500
+            temperature=0.5)
+    )
+    
+    content = response.text if response.candidates else "No summary generated"
     return content
 
 # <----------------- Evaluation Page Here Starts From Here ------------------->
@@ -216,11 +215,6 @@ def describe_image_with_gemini(image, flag=False):
     Process image using Gemini with proper encoding and fallback
     Returns: Gemini description (preferred) or Vision API analysis (fallback)
     """
-    # image = Image.open(BytesIO(image))
-    
-    # # Convert to RGB if needed (for JPEG compatibility)
-    # if image.mode in ('RGBA', 'P', 'LA'):
-    #     image = image.convert('RGB')
 
     # Encode to base64
     img_base64 = encode_image(image)
@@ -606,25 +600,16 @@ def summary_out():
     if request.method == 'POST':
         check_file = 'file' in request.files and request.files.getlist('file')
         check_fname = 'fname' in request.form and request.form['fname']
+        combined_text = ""
         if check_file:
             files = request.files.getlist('file')
-            combined_text = ""
             for f in files:
                 if f and allowed_file(f.filename):
                     # Upload to GCS first
-                    filename = secure_filename(f.filename)
                     upload_files(f)
-                    
                 else:
                     combined_text += f"Invalid or unsupported file: {f.filename}\n"
-            # # Save combined text to a new file with a unique name
-            # test_folder = os.path.join('code', 'test')
-            # os.makedirs(test_folder, exist_ok=True)
-            # unique_filename = f"combined_text_{uuid.uuid4()}.txt"
-            # combined_text_path = os.path.join(test_folder, unique_filename)
-            # with open(combined_text_path, 'w', encoding='utf-8') as file:
-            #     file.write(combined_text)
-            # Get evaluation for the combined text
+                    
             session_id = session.get('session_id')
             file_url = get_user_files(session_id)
             print("URL LIST AT FIREBASE - ", file_url)
@@ -634,17 +619,36 @@ def summary_out():
                 # file_content, name = read_file_from_gcs(url)
                 combined_text += process_file(url) + "\n\n***************************************************\n\n"
             
-            
             with open("output_final.txt", "w") as final:
                 final.write(combined_text)
             
-            combined_summary = get_evaluation(combined_text, is_file=True)
+            combined_summary = get_evaluation(combined_text)
             output = f"<h3>Combined File Summary:</h3>{markdown.markdown(combined_summary)}"
             return render_template("summary_out.html", output=output)
-        elif check_fname:
-            data = request.form['fname']
-            text_notes = get_evaluation(data)
-            output = f"<h3>Text Notes:</h3><div class='styled-content'>{markdown.markdown(text_notes)}</div>"
+        elif check_file and check_fname:
+            instruction = request.form['fname']
+            # full_prompt = SUMMARY_PROMPT.format(instruction=instruction)  
+            for f in files:
+                if f and allowed_file(f.filename):
+                    # Upload to GCS first
+                    upload_files(f)
+                else:
+                    combined_text += f"Invalid or unsupported file: {f.filename}\n"
+            
+            session_id = session.get('session_id')
+            file_url = get_user_files(session_id)
+            print("URL LIST AT FIREBASE - ", file_url)
+            print("Now Printing URLs one by one\n")
+            for url in file_url:
+                print(url)
+                # file_content, name = read_file_from_gcs(url)
+                combined_text += process_file(url) + "\n\n***************************************************\n\n"       
+                
+            with open("output_final.txt", "w") as final:
+                final.write(combined_text)    
+
+            combined_summary = get_evaluation(combined_text, isInstruction=instruction)
+            output = f"<h2>Combined File Summary:</h2>{markdown.markdown(combined_summary)}"
             return render_template("summary_out.html", output=output)
         else:
             return render_template("summary_out.html", output="<p>Invalid input received.</p>")
@@ -735,7 +739,8 @@ def evaluate():
 
             elif 'fname' in request.form:
                 text = request.form['fname']
-                print(f"Text content: {text[:100]}")
+                # print(f"Text content: {text[:100]}")
+                print(text)
                 response, score_response = get_evaluate(text)
                 score_list = score_response.text.split(":")
                 if len(score_list) > 1:
