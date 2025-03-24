@@ -126,6 +126,12 @@ body {
     white-space: pre-wrap;
 }
 
+.evaluation-section li {
+    color: #c3d0e5;
+    line-height: 1.8;
+    white-space: pre-wrap;
+}
+
 .evaluation-content {
     line-height: 1.6;
 }
