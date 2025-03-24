@@ -29,7 +29,6 @@ body {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background-color: #000;
 }
 
 .particles-container {
@@ -224,44 +223,36 @@ body {
 /* Action buttons */
 .action-buttons {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
     gap: 15px;
-    margin-top: 30px;
+    justify-content: center;
+    margin-top: 2rem;
 }
 
 .action-button {
     background: rgba(22, 27, 34, 0.8);
-    border: 1px solid rgba(63, 228, 147, 0.1);
-    border-radius: 8px;
     color: #fff;
-    padding: 12px 20px;
-    font-size: 0.9rem;
+    border: 1px solid rgba(63, 228, 147, 0.1);
+    padding: 12px 25px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-size: 1rem;
     display: flex;
     align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    min-width: 180px;
+    justify-content: center;
 }
 
-.action-button i {
-    margin-right: 8px;
-}
-
-.action-button:hover {
-    background: rgba(63, 228, 147, 0.1);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
-}
-
-.primary-button {
+.action-button.primary-button {
     background: linear-gradient(135deg, #3fe493, #0ea5e9);
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(14, 165, 233, 0.2);
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.2);
 }
 
-.primary-button:hover {
+.action-button.primary-button:hover {
     background: linear-gradient(135deg, #2dad6f, #0c89c4);
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
 }
 
 /* Notification */

@@ -52,16 +52,12 @@ SUMMARY_PROMPT = '''Provide a concise summary of the given file, organized in bu
     The summary should be within 1000 tokens. Do not include any markdown formatting.'''
 
 # New prompt for roadmap generation
-ROADMAP_PROMPT = '''Generate a structured and detailed roadmap for learning {topic}. The roadmap should be divided into logical sections covering in phase-wise manner and also weeks to cover all this in best way:
-(Do not add any greetings like okay, sure, here it is. JUST PROVIDE ROADMAP)
+ROADMAP_PROMPT = '''Generate a concise roadmap for learning {topic} over 4-6 weeks. The roadmap should be divided into logical sections and include:
 
-Key Concepts – Explain foundational theories, principles, and subtopics in {topic} with at least 25-35 words per subtopic.
-Practice Tasks – Provide hands-on exercises, projects, and challenges that reinforce the concepts learned. Each task should include clear instructions and expected outcomes.
-
-(ADD RESOURCES AND BOOK AT THE END)
-Best Resources – List the most effective books, courses, websites, and tools to master {topic}. Each resource should be a clickable working link. (ADD SOME DETAIL OF BEST RESOURCES IN 1-2 LINE ONLY)
-Books – Include relevant books with their titles and authors for in-depth learning.
-The output should be formatted in Markdown for easy readability.(Dont add any markdown word)'''
+Key Concepts – Outline 3-5 foundational concepts or principles in {topic}, each explained in 15-20 words.
+Practice Tasks – Provide 2-3 hands-on exercises or projects that reinforce the concepts. Each task should have clear instructions and expected outcomes.
+Best Resources – List 3-5 effective resources (books, courses, websites, tools) with clickable links and a one-line description for each.
+Format the output for easy readability.'''
 
 IMG_PROMPT = "Describe the content of the image extracted from the PDF."
 
@@ -612,7 +608,7 @@ def get_roadmap():
                 model=FLASH,
                 contents=full_prompt,
                 config=types.GenerateContentConfig(
-                    max_output_tokens=8192,
+                    max_output_tokens=2500,
                     temperature=0.5
                 )
             )

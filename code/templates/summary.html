@@ -5,29 +5,28 @@
     <div class="particles-container" id="particles-js"></div>
     
     <div class="container">
-        <div class="card">
-            <div class="card-header">
-                <div class="logo">
-                    <i class="fas fa-layer-group"></i>
-                </div>
-                <h1>Content Notes</h1>
-                <p class="tagline">Upload files or add detailed notes on your topic</p>
-            </div>
+        <div class="main-content">
+            <h1>Content <span class="highlight">Summarizer</span></h1>
+            <p class="tagline">Upload your files or enter text to get started</p>
             
-            <form action="/summary_out" method="post" enctype="multipart/form-data" id="upload-form">
-                <div class="drag-area">
-                    <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                    <h3>Drag & Drop Files</h3>
-                    <span>OR</span>
-                    <button type="button" class="browse-btn">Add Files</button>
+            <form id="upload-form" action="/summary" method="post" enctype="multipart/form-data">
+                <div class="drag-upload-container">
+                    <div class="drag-area" id="drop-zone">
+                        <div class="upload-content">
+                            <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <h3>Drag & Drop Files</h3>
+                            <span>OR</span>
+                            <button type="button" class="browse-btn">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                        </div>
+                    </div>
                     <input type="file" id="fileInput" name="file" multiple hidden>
-                    <div class="selected-files" id="selected-files-container"></div>
                 </div>
                 
                 <div class="text-input-container">
                     <div class="input-wrapper">
-                        <i class="fas fa-align-left icon-left"></i>
-                        <textarea id="textInput" placeholder="Enter detailed notes on your topic..." name="fname"></textarea>
+                        <textarea id="textInput" rows="6" placeholder="Enter prompt to modify summary " name="fname"></textarea>
                     </div>
                 </div>
                 
@@ -35,7 +34,7 @@
                     <i class="fas fa-paper-plane"></i> Submit Content
                 </button>
             </form>
-            
+
             <div class="features">
                 <div class="feature">
                     <i class="fas fa-file-alt"></i>
@@ -49,6 +48,16 @@
                     <i class="fas fa-brain"></i>
                     <span>AI-Powered</span>
                 </div>
+            </div>
+        </div>
+        
+        <div class="files-sidebar" id="files-preview">
+            <div class="list-header">
+                <i class="fas fa-file-alt"></i>
+                <h3>Selected Files</h3>
+            </div>
+            <div class="files-list" id="selected-files-container">
+                <!-- Files will be listed here -->
             </div>
         </div>
     </div>

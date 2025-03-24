@@ -1,6 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-dark: #0d1117;
+    --secondary-dark: #161b22;
+    --accent-green: #3fe493;
+    --accent-blue: #0ea5e9;
+    --text-light: #e6edf3;
+    --text-muted: #aaa;
+}
+
 * {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;     /* Firefox */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 *::-webkit-scrollbar {
@@ -8,215 +22,157 @@
 }
 
 body {
-    /* font-family: 'Roboto', sans-serif; */
-    margin: 0;
-    padding: 60px 0 0 0; /* Added padding-top to account for navbar */
-    background-color: #0d1117;
-    color: #fff;
-    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;  /* Changed from Roboto to match input.html */
+    background-color: var(--primary-dark);
+    color: var(--text-light);
+    line-height: 1.6;
+    overflow: hidden;
+}
+
+.roadmap-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: radial-gradient(circle at 50% 50%, #161b22 0%, #0d1117 100%);
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
-.page-wrapper {
+/* Input Section Styling */
+.input-wrapper {
     width: 100%;
-    max-width: 1200px;
-    padding: 20px;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-h1, h2, h3, h4 {
-    font-family: 'Montserrat', sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #fff;
-}
-
-h1 {
-    font-size: 2.5rem;
-    text-shadow: 0 0 10px rgba(63, 228, 147, 0.3);
-    margin-bottom: 10px;
-    color: #e6edf3;
-}
-
-.tagline {
-    color: #aaa;
-    margin-bottom: 30px;
-    font-weight: 300;
-}
-
-.header-section {
+    max-width: 800px;
+    padding: 40px;
     text-align: center;
-    margin-bottom: 40px;
+    transition: all 0.5s ease;
 }
 
-form {
-    margin-bottom: 30px;
-}
-
-.form-group {
+.header-section h1 {
+    font-size: 2.5rem;
+    color: var(--text-light);
+    text-shadow: 0 0 10px rgba(63, 228, 147, 0.3);
     margin-bottom: 20px;
 }
 
-label {
-    display: block;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
-    text-align: center;
+.tagline {
+    color: var(--text-muted);
+    margin-bottom: 30px;
 }
 
-.input-group {
+.input-container {
     display: flex;
     max-width: 700px;
     margin: 0 auto;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 3px;
+    overflow: hidden;
 }
 
-input, button {
-    padding: 15px;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-input {
+.input-container input {
     flex-grow: 1;
-    border: none;
+    padding: 15px;
     background: rgba(22, 27, 34, 0.8);
-    color: #333;
-    padding: 15px 20px;
-    font-size: 1rem;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
     border: 1px solid rgba(63, 228, 147, 0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    min-height: 50px;
+    line-height: 1.5;
 }
 
-input:focus {
-    outline: none;
-    box-shadow: none;
+.input-container input:hover {
     border-color: #3fe493;
 }
 
-button {
-    background: linear-gradient(135deg, #3fe493, #0ea5e9);
+.input-container input:focus {
+    outline: none;
+    border-color: #3fe493;
+    box-shadow: 0 0 15px rgba(63, 228, 147, 0.15);
+}
+
+.input-container input::placeholder {
+    color: rgba(153, 153, 153, 0.455);
+    font-size: 14px;
+}
+
+.input-container button {
+    padding: 15px 25px;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
     color: white;
     border: none;
     cursor: pointer;
-    font-weight: bold;
-    padding: 12px 25px;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 10px;
-    margin: 0;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    box-shadow: none; /* Remove box shadow */
+    transition: all 0.3s ease;
 }
 
-button:hover {
-    background: linear-gradient(135deg, #2dad6f, #0c89c4);
-    transform: translateY(-2px);
-    box-shadow: none; /* Remove hover box shadow */
-}
-
-#roadmap-box {
-    background: rgba(22, 27, 34, 0.85);
-    padding: 40px;
-    border-radius: 15px;
-    width: 100%;
-    max-width: 1000px;
-    transition: all 0.5s ease;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(63, 228, 147, 0.1);
+.container {
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 2rem;
     position: relative;
     z-index: 1;
 }
 
-#roadmap-box.fullscreen {
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
-    margin: 0;
-    overflow-y: auto;
+.input-box {
+    background: rgba(17, 25, 40, 0.75);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(63, 228, 147, 0.1);
+    padding: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    margin-top: 2rem;
 }
 
-#roadmap-result {
-    display: none;
-    text-align: left;
-    overflow-y: auto;
-    max-height: 70vh;
-}
-
-#roadmap-result.shown {
-    display: block;
-    animation: fadeIn 0.5s ease;
-}
-
-.result-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid rgba(76, 175, 80, 0.3);
-    position: sticky;
-    top: 0;
-    background: #1a1a1a;
-    padding: 15px 30px;
-    z-index: 997; /* Adjusted z-index */
-    border-bottom: 1px solid rgba(76, 175, 80, 0.2);
-    width: 100%;
-    max-width: 1200px;
+.input-wrapper {
+    max-width: 800px;
     margin: 0 auto;
 }
 
-.action-button {
-    background: linear-gradient(135deg, #3fe493, #0ea5e9);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease;
+.header-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Loading Screen Styling */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(13, 17, 23, 0.95);
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
+    z-index: 1000;
+    transition: opacity 0.5s ease;
 }
 
-.action-button:hover {
-    background: linear-gradient(135deg, #2dad6f, #0c89c4);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(63, 228, 147, 0.5);
+.loading-content {
+    text-align: center;
 }
 
-/* Spinner CSS */
 .spinner {
     border: 4px solid rgba(63, 228, 147, 0.1);
-    border-top: 4px solid #3fe493;
+    border-top: 4px solid var(--accent-green);
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     animation: spin 1s linear infinite;
-    margin: 20px auto;
-}
-
-.loading-text {
-    text-align: center;
-    color: #aaa;
-    margin-top: 15px;
-    font-style: italic;
+    margin: 0 auto 20px;
 }
 
 @keyframes spin {
@@ -224,196 +180,106 @@ button:hover {
     100% { transform: rotate(360deg); }
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.loading-text {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    font-style: italic;
 }
 
-.hidden {
-    display: none;
-}
-
-.styled-content {
-    font-family: 'Roboto', sans-serif;
-    color: #fff;
-    background-color: #333;
-    padding: 30px;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-}
-
-.styled-content h2 {
-    color: #3fe493;
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(63, 228, 147, 0.2);
-    padding-bottom: 10px;
-}
-
-.styled-content h3, .styled-content h4 {
-    color: #3fe493;
-    margin-top: 30px;
-    margin-bottom: 15px;
-}
-
-.styled-content p {
-    line-height: 1.8;
-    margin-bottom: 20px;
-}
-
-.styled-content a {
-    color: #3fe493;
-    text-decoration: none;
-    border-bottom: 1px dashed #66BB6A;
-    transition: all 0.3s ease;
-}
-
-.styled-content a:hover {
-    color: #A5D6A7;
-    border-bottom: 1px solid #A5D6A7;
-}
-
-.styled-content ul, .styled-content ol {
-    margin-left: 20px;
-    margin-bottom: 20px;
-}
-
-.styled-content li {
-    margin-bottom: 15px;
-    position: relative;
-    padding-left: 5px;
-}
-
-.styled-content ul li::before {
-    content: "•";
-    color: #3fe493;
-    font-weight: bold;
-    display: inline-block;
-    width: 1em;
-    margin-left: -1em;
-}
-
-.footer {
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    font-size: 0.9rem;
-    color: #777;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .input-group {
-        flex-direction: row; /* Keep items in row */
-        background: rgba(255, 255, 255, 0.9);
-        padding: 3px;
-    }
-    
-    input, button {
-        width: auto; /* Remove full width */
-        border-radius: 0;
-    }
-    
-    input {
-        margin-bottom: 0; /* Remove margin */
-        flex-grow: 1;
-    }
-    
-    button {
-        white-space: nowrap;
-        border-top-right-radius: 6px;
-        border-bottom-right-radius: 6px;
-    }
-    
-    #roadmap-box {
-        padding: 20px;
-    }
-    
-    .result-header {
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    h1 {
-        font-size: 2rem;
-    }
-}
-
-/* Hide initial content when roadmap is shown */
-.initial-content.hide {
-    display: none;
-}
-
-.fullscreen-result {
-    display: none;
+/* Roadmap Result Styling */
+.roadmap-result {
     position: fixed;
-    top: 60px; /* Changed from 0 to 60px to account for navbar */
+    top: 0;
     left: 0;
     width: 100%;
-    height: calc(100vh - 60px); /* Adjusted height to account for navbar */
-    background: #1a1a1a;
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    z-index: 998; /* Reduced z-index to be below navbar */
-}
-
-.fullscreen-result.shown {
-    display: flex;
-    flex-direction: column;
-}
-
-#roadmap-box {
-    transition: all 0.3s ease;
-}
-
-#roadmap-box.fullscreen {
-    position: fixed;
-    top: 60px; /* Changed from 0 to 60px */
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 60px); /* Adjusted height */
-    max-width: 100%;
-    margin: 0;
-    padding: 20px;
-    background: #1a1a1a;
-    box-shadow: none;
-    border-radius: 0;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-}
-
-.roadmap-container {
-    flex: 1;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    overflow-y: auto;
-}
-
-#roadmap-result {
-    display: none;
-    text-align: left;
-    overflow-y: auto;
-    max-height: none;
-    width: 100%;
-}
-
-#roadmap-result.shown {
-    display: block;
     height: 100%;
+    background-color: var(--primary-dark);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.result-container {
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    overflow: hidden;
 }
 
-.styled-content {
-    max-width: 1200px;
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(63, 228, 147, 0.2);
+}
+
+.roadmap-title {
+    font-size: 2rem;
+    color: var(--accent-green);
+    text-shadow: 0 0 5px rgba(63, 228, 147, 0.3);
+}
+
+.result-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.action-btn {
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.roadmap-content-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 20px;
+}
+
+.roadmap-content {
+    color: var(--text-light);
+    max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
 }
 
+.roadmap-content h2 {
+    color: var(--accent-green);
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.roadmap-content p {
+    margin-bottom: 15px;
+}
+
+.roadmap-content ul, 
+.roadmap-content ol {
+    margin-left: 25px;
+    margin-bottom: 20px;
+}
+
+.roadmap-content li {
+    margin-bottom: 10px;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Particle Background */
 #particles-js {
     position: fixed;
     top: 0;
@@ -421,5 +287,19 @@ button:hover {
     width: 100%;
     height: 100%;
     z-index: -1;
-    background-color: transparent;
+}
+
+textarea:hover {
+    border-color: #3fe493;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: #3fe493;
+    box-shadow: 0 0 15px rgba(63, 228, 147, 0.15);
+}
+
+textarea::placeholder {
+    color: rgba(153, 153, 153, 0.455);
+    font-size: 14px;
 }
