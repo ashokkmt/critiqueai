@@ -511,41 +511,74 @@ def content():
 @app.route('/content_out', methods=['POST'])
 def generate_content():
     try:
-        print("Back is called")
-        data = request.get_json()
-        print("data is read")
-        topic = data.get('topic')
-        academic_level = data.get('academic_level')
-        course = f"({data.get('course')})" if academic_level == "College" else ""
-        note_level = data.get('note_level')
-        format_preference = data.get('format_preference')
-        technical_content = data.get('technical_content')
-        urgency_level = data.get('urgency_level')
-        exam_focus = data.get('exam_focus')
+        if request.method == 'POST':
+            print("Back is called")
+            data = request.get_json()
+            print("data is read")
+            topic = data.get('topic')
+            academic_level = data.get('academic_level')
+            course = f"({data.get('course')})" if academic_level == "College" else ""
+            note_level = data.get('note_level')
+            format_preference = data.get('format_preference')
+            technical_content = data.get('technical_content')
+            urgency_level = data.get('urgency_level')
+            exam_focus = data.get('exam_focus')
 
-        print('\n')
-        print(topic)
-        print('\n')
-        # Format the prompt
-        full_prompt = CONTENT_PROMPT.format(
-            topic=topic,
-            academic_level=academic_level,
-            course=course,
-            note_level=note_level,
-            format_preference=format_preference,
-            technical_content=technical_content,
-            urgency_level=urgency_level,
-            exam_focus=exam_focus
-        )
-        
+            print('\n')
+            print(topic)
+            print('\n')
+            # Format the prompt
+            full_prompt = CONTENT_PROMPT.format(
+                topic=topic,
+                academic_level=academic_level,
+                course=course,
+                note_level=note_level,
+                format_preference=format_preference,
+                technical_content=technical_content,
+                urgency_level=urgency_level,
+                exam_focus=exam_focus
+            )
+            
+            print(data)
+            if not data:
+                return "Please enter a valid topic", 400
+            
+            try:
+                print("Gemini is called")
+                # full_prompt = CONTENT_PROMPT.format(topic=data)
+                print(full_prompt)
+                response = client.models.generate_content(
+                    model=FLASH,
+                    contents=full_prompt,
+                    config=types.GenerateContentConfig(
+                        max_output_tokens=8192,
+                        temperature=0.5
+                    )
+                )
+                temp = markdown.markdown(response.text)
+                print(temp)
+                print("HTML file created successfully!")
+                # return temp if response.candidates else "Failed to generate roadmap"
+                return render_template("content_out.html", output=temp)
+
+            except Exception as e:
+                return f"Error generating roadmap: {str(e)}", 500
+    except Exception as e:
+        print("🔥 ERROR:", str(e))
+        return jsonify({"error": str(e)}), 500
+    
+
+# New route for generating roadmap
+@app.route('/get_roadmap', methods=['POST'])
+def get_roadmap():
+    if request.method == 'POST':
+        data = request.form['topic']
         print(data)
         if not data:
             return "Please enter a valid topic", 400
-        
+
         try:
-            print("Gemini is called")
-            # full_prompt = CONTENT_PROMPT.format(topic=data)
-            print(full_prompt)
+            full_prompt = ROADMAP_PROMPT.format(topic=data)
             response = client.models.generate_content(
                 model=FLASH,
                 contents=full_prompt,
@@ -557,42 +590,10 @@ def generate_content():
             temp = markdown.markdown(response.text)
             print(temp)
             print("HTML file created successfully!")
-            # return temp if response.candidates else "Failed to generate roadmap"
-            return render_template("content_out.html", output=temp)
+            return temp if response.candidates else "Failed to generate roadmap"
 
         except Exception as e:
             return f"Error generating roadmap: {str(e)}", 500
-    except Exception as e:
-        print("🔥 ERROR:", str(e))
-        # traceback.print_exc()  # Print full error details
-        return jsonify({"error": str(e)}), 500
-    
-
-# New route for generating roadmap
-@app.route('/get_roadmap', methods=['POST'])
-def get_roadmap():
-    data = request.form['topic']
-    print(data)
-    if not data:
-        return "Please enter a valid topic", 400
-
-    try:
-        full_prompt = ROADMAP_PROMPT.format(topic=data)
-        response = client.models.generate_content(
-            model=FLASH,
-            contents=full_prompt,
-            config=types.GenerateContentConfig(
-                max_output_tokens=8192,
-                temperature=0.5
-            )
-        )
-        temp = markdown.markdown(response.text)
-        print(temp)
-        print("HTML file created successfully!")
-        return temp if response.candidates else "Failed to generate roadmap"
-
-    except Exception as e:
-        return f"Error generating roadmap: {str(e)}", 500
 
 # Route for Summary output page
 @app.route('/summary_out', methods=['POST'])
