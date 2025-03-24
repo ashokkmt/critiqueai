@@ -30,7 +30,7 @@ load_dotenv()
 
 
 # Updated prompts for AI evaluation
-EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. Do not write question and answer in output.
+EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. Do not mention the question and answer JUST GIVE EVALUATION AS YOU TOLD.
 eg-   Q:
       A:
        
@@ -116,10 +116,10 @@ def allowed_file(filename):
 def get_evaluation(text, isInstruction=None):
     if isInstruction:  # If an instruction is provided, append it
         full_prompt = f"{SUMMARY_PROMPT}\n\nAdditional Instructions: {isInstruction}"
-        print(full_prompt)
     else:
         full_prompt = SUMMARY_PROMPT
         
+    print(full_prompt)
     response = client.models.generate_content(
         model=FLASH,
         contents=[text, full_prompt],
@@ -580,7 +580,7 @@ def generate_content():
                     )
                 )
                 temp = markdown.markdown(response.text)
-                print(temp)
+                # print(temp)
                 print("HTML file created successfully!")
                 # return temp if response.candidates else "Failed to generate roadmap"
                 session["result_generated"] = True 
@@ -629,14 +629,47 @@ def get_roadmap():
 # Route for Summary output page
 @app.route('/summary_out', methods=['POST'])
 def summary_out():
+    print("Entered /summary_out route")
     if request.method == 'POST':
+        print("Received POST request")
         if session.get("result_generated"):
-            print("Rechecked result generation reload")
+            print("Session key 'result_generated' found. Redirecting to /summary...")
             return redirect(url_for("summary"))
+        else:
+            print("Session key 'result_generated' NOT found. Returning 400 error.")
+            # return "Something went wrong", 400
         check_file = 'file' in request.files and request.files.getlist('file')
         check_fname = 'fname' in request.form and request.form['fname']
         combined_text = ""
-        if check_file:
+        if check_file and check_fname:
+            instruction = request.form['fname']
+            files = request.files.getlist('file')
+            for f in files:
+                if f and allowed_file(f.filename):
+                    # Upload to GCS first
+                    upload_files(f)
+                else:
+                    combined_text += f"Invalid or unsupported file: {f.filename}\n"
+            
+            session_id = session.get('session_id')
+            file_url = get_user_files(session_id)
+            print("URL LIST AT FIREBASE - ", file_url)
+            print("Now Printing URLs one by one\n")
+            for url in file_url:
+                print(url)
+                # file_content, name = read_file_from_gcs(url)
+                combined_text += process_file(url) + "\n\n***************************************************\n\n"       
+                
+            with open("output_final.txt", "w") as final:
+                final.write(combined_text)    
+            
+            print("Instructions - ",instruction)
+            combined_summary = get_evaluation(combined_text, isInstruction=instruction)
+            output = f"<h2>Combined File Summary:</h2>{markdown.markdown(combined_summary)}"
+            session["result_generated"] = True 
+            print("result marked true")
+            return render_template("summary_out.html", output=output)
+        elif check_file:
             files = request.files.getlist('file')
             for f in files:
                 if f and allowed_file(f.filename):
@@ -659,33 +692,6 @@ def summary_out():
             
             combined_summary = get_evaluation(combined_text)
             output = f"<h3>Combined File Summary:</h3>{markdown.markdown(combined_summary)}"
-            session["result_generated"] = True 
-            print("result marked true")
-            return render_template("summary_out.html", output=output)
-        elif check_file and check_fname:
-            instruction = request.form['fname']
-            # full_prompt = SUMMARY_PROMPT.format(instruction=instruction)  
-            for f in files:
-                if f and allowed_file(f.filename):
-                    # Upload to GCS first
-                    upload_files(f)
-                else:
-                    combined_text += f"Invalid or unsupported file: {f.filename}\n"
-            
-            session_id = session.get('session_id')
-            file_url = get_user_files(session_id)
-            print("URL LIST AT FIREBASE - ", file_url)
-            print("Now Printing URLs one by one\n")
-            for url in file_url:
-                print(url)
-                # file_content, name = read_file_from_gcs(url)
-                combined_text += process_file(url) + "\n\n***************************************************\n\n"       
-                
-            with open("output_final.txt", "w") as final:
-                final.write(combined_text)    
-
-            combined_summary = get_evaluation(combined_text, isInstruction=instruction)
-            output = f"<h2>Combined File Summary:</h2>{markdown.markdown(combined_summary)}"
             session["result_generated"] = True 
             print("result marked true")
             return render_template("summary_out.html", output=output)
