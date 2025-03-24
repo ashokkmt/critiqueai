@@ -502,6 +502,7 @@ def summary():
 # Route for input page
 @app.route('/input')
 def input():
+    session.pop("result_generated", None)
     return render_template("input.html")
 
 @app.route('/get-content')
@@ -691,6 +692,9 @@ def accountcleanup():
 def evaluate():
     try:
         if request.method == 'POST':
+            if session.get("result_generated"):
+                print("Rechecked result generation reload")
+                return redirect(url_for("input"))
             if 'file' in request.files and request.files['file'].filename:
                 file = request.files['file']
                 if file.filename == '':
@@ -752,7 +756,8 @@ def evaluate():
 
                 evaluation_md = response.text
                 evaluation_html = markdown.markdown(evaluation_md)
-
+                session["result_generated"] = True 
+                print("result marked true")
                 return render_template('evaluate.html', evaluation=evaluation_html, score=score)
             else:
                 return "No input provided.", 400
