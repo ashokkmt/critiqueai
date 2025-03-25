@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="action-buttons">
-            <a href="/get-content" class="back-button">
+            <a href="/get-content" class="action-button secondary-button">
                 <i class="fas fa-arrow-left"></i>
                 Generate New Notes
             </a>
@@ -20,6 +20,9 @@
             </button>
         </div>
     </div>
+
+    <!-- Add notification container -->
+    <div id="notification-container"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script>
@@ -31,10 +34,39 @@
                 setTimeout(() => {
                     this.innerHTML = '<i class="fas fa-copy"></i> Copy Notes';
                 }, 2000);
+                // Add notification
+                showNotification('Notes copied to clipboard!', 'success');
             }).catch(err => {
                 console.error('Failed to copy: ', err);
+                showNotification('Failed to copy. Please try again.', 'error');
             });
         });
+
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-icon">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+                </div>
+                <div class="notification-message">${message}</div>
+            `;
+            
+            const container = document.getElementById('notification-container');
+            container.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => {
+                    container.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
 
         // Initialize particles.js
         particlesJS('particles-js', {

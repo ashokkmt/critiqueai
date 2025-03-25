@@ -54,9 +54,26 @@
     function showNotification(message, type = 'success') {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check' : 'fa-times'}"></i> ${message}`;
-        document.getElementById('notification-container').appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
+        notification.innerHTML = `
+            <div class="notification-icon">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
+            </div>
+            <div class="notification-message">${message}</div>
+        `;
+        
+        const container = document.getElementById('notification-container');
+        container.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                container.removeChild(notification);
+            }, 500);
+        }, 3000);
     }
 
     // Initialize particles.js with proper configuration

@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById("roadmap-form");
     const topicInput = document.getElementById("topic");
     const roadmapContent = document.getElementById("roadmap-content");
-    const downloadBtn = document.getElementById("download-btn");
+    const copyBtn = document.getElementById("copy-btn");
     const backBtn = document.getElementById("back-btn");
 
     // Form Submission Handler
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Update result content
             document.getElementById("roadmap-title").textContent = `${topic} Learning Roadmap`;
             roadmapContent.innerHTML = text;
-            downloadBtn.style.display = 'flex';
+            copyBtn.style.display = 'flex';
             
             showNotification(`Roadmap for "${topic}" created successfully!`, "success");
         } catch (error) {
@@ -61,101 +61,58 @@ document.addEventListener('DOMContentLoaded', function() {
         roadmapResult.classList.add("hidden");
         inputSection.classList.remove("hidden");
         topicInput.value = "";
-        downloadBtn.style.display = 'none';
+        copyBtn.style.display = 'none';
     });
 
-    // Download Button Handler (similar to previous implementation)
-    downloadBtn.addEventListener("click", async () => {
-        showNotification("Preparing your PDF...", "info");
+    // Copy Button Handler
+    copyBtn.addEventListener("click", function() {
+        const content = roadmapContent.innerText;
         
-        try {
-            const topic = topicInput.value;
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({
-                orientation: "portrait",
-                unit: "mm",
-                format: "a4"
-            });
-            
-            // PDF generation logic (same as before)
-            doc.setFontSize(24);
-            doc.setTextColor(63, 228, 147);
-            doc.text(`${topic} Learning Roadmap`, 105, 20, { align: "center" });
-            
-            const today = new Date().toLocaleDateString();
-            doc.setFontSize(10);
-            doc.setTextColor(100, 100, 100);
-            doc.text(`Generated on: ${today}`, 105, 30, { align: "center" });
-            
-            const scale = 2;
-            const canvas = await html2canvas(roadmapContent, {
-                scale: scale,
-                backgroundColor: "#0d1117",
-                logging: false,
-                useCORS: true
-            });
-            
-            const imgData = canvas.toDataURL('image/png');
-            const imgProps = doc.getImageProperties(imgData);
-            
-            const pdfWidth = doc.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
-            doc.addImage(imgData, 'PNG', 10, 40, pdfWidth - 20, pdfHeight);
-            
-            doc.setFontSize(8);
-            doc.setTextColor(150, 150, 150);
-            doc.text("Created with Skill Roadmap Generator", 105, 285, { align: "center" });
-            
-            const filename = `${topic.toLowerCase().replace(/\s+/g, '-')}-roadmap.pdf`;
-            doc.save(filename);
-            
-            showNotification("PDF downloaded successfully!", "success");
-        } catch (error) {
-            console.error("PDF generation error:", error);
-            showNotification("Failed to generate PDF", "error");
-        }
+        navigator.clipboard.writeText(content).then(() => {
+            showNotification("Roadmap copied to clipboard!", "success");
+        }).catch(err => {
+            showNotification("Failed to copy. Please try again.", "error");
+            console.error('Could not copy text: ', err);
+        });
     });
 
-    // Notification Function (similar to previous implementation)
-    function showNotification(message, type = "info") {
-        const notificationContainer = document.createElement('div');
-        notificationContainer.className = `notification ${type}`;
-        notificationContainer.innerHTML = `
+    // Notification Function
+    function showNotification(message, type = "success") {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
             <div class="notification-icon">
-                ${getNotificationIcon(type)}
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
             </div>
             <div class="notification-message">${message}</div>
         `;
-
-        const existingContainer = document.querySelector('.notification-wrapper');
-        const container = existingContainer || createNotificationContainer();
-        container.appendChild(notificationContainer);
-
+        
+        // Get or create the notification container
+        let container = document.getElementById('notification-container');
+        if (!container) {
+            container = createNotificationContainer();
+        }
+        
+        container.appendChild(notification);
+        
+        // Show with slight delay for animation
         setTimeout(() => {
-            notificationContainer.classList.add('fade-out');
+            notification.classList.add('show');
+        }, 10);
+        
+        // Auto-remove after delay
+        setTimeout(() => {
+            notification.classList.add('fade-out');
             setTimeout(() => {
-                notificationContainer.remove();
-                if (container.children.length === 0) {
-                    container.remove();
-                }
+                container.removeChild(notification);
             }, 500);
         }, 3000);
     }
 
     function createNotificationContainer() {
         const container = document.createElement('div');
-        container.className = 'notification-wrapper';
+        container.id = 'notification-container';
         document.body.appendChild(container);
         return container;
-    }
-
-    function getNotificationIcon(type) {
-        switch(type) {
-            case 'success': return '<i class="fas fa-check-circle"></i>';
-            case 'error': return '<i class="fas fa-exclamation-circle"></i>';
-            case 'info': return '<i class="fas fa-info-circle"></i>';
-            default: return '<i class="fas fa-bell"></i>';
-        }
     }
 });

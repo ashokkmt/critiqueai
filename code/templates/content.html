@@ -83,10 +83,8 @@
         </div>
 
         <button type="submit" class="submit-button">
-            <span class="button-content">
                 <i class="fas fa-magic"></i>
                 Generate Notes
-            </span>
         </button>
     </form>
 
@@ -188,7 +186,7 @@
 
         const button = this.querySelector('button[type="submit"]');
         const originalText = button.innerHTML;
-        button.innerHTML = '<span class="loading"></span> Generating...';
+        button.innerHTML = ' Generating...';
         button.disabled = true;
 
         const data = {

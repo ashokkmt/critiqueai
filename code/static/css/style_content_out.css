@@ -54,6 +54,7 @@ body {
 .back-button {
     display: inline-flex;
     align-items: center;
+    justify-content: center; /* Added to match action-button */
     gap: 0.5rem;
     background: linear-gradient(135deg, #3fe493, #0ea5e9);
     color: white;
@@ -62,6 +63,8 @@ body {
     text-decoration: none;
     font-weight: 500;
     transition: all 0.3s ease;
+    min-width: 160px; /* Added to match action-button */
+    font-size: 1rem; /* Added to match action-button */
 }
 
 .back-button:hover {
@@ -443,4 +446,63 @@ form > * {
         width: 100%;
         justify-content: center;
     }
+}
+
+/* Add these styles for notifications */
+#notification-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.notification {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    color: #333;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 10px;
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    max-width: 300px;
+}
+
+.notification.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.notification.fade-out {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.notification.success {
+    border-left: 4px solid #4CAF50;
+}
+
+.notification.error {
+    border-left: 4px solid #f44336;
+}
+
+.notification-icon {
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.notification.success .notification-icon {
+    color: #4CAF50;
+}
+
+.notification.error .notification-icon {
+    color: #f44336;
+}
+
+.notification-message {
+    flex-grow: 1;
+    font-size: 14px;
 }

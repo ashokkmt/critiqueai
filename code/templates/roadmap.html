@@ -23,7 +23,7 @@
                         <div class="form-group">
                             <label for="topic">What would you like to learn?</label>
                             <div class="input-container">
-                                <input type="text" id="topic" name="topic" placeholder="e.g., Python, Web Development, Machine Learning" required>
+                                <textarea id="topic" name="topic" placeholder="e.g., Python, Web Development, Machine Learning" required></textarea>
                                 <button type="submit">
                                     <i class="fas fa-route"></i> Generate Roadmap
                                 </button>
@@ -51,8 +51,8 @@
                         <button id="back-btn" class="action-btn back-btn">
                             <i class="fas fa-arrow-left"></i> Back
                         </button>
-                        <button id="download-btn" class="action-btn download-btn" style="display: none;">
-                            <i class="fas fa-download"></i> Download PDF
+                        <button id="copy-btn" class="action-btn copy-btn" style="display: none;">
+                            <i class="fas fa-copy"></i> Copy Roadmap
                         </button>
                     </div>
                 </div>
@@ -63,6 +63,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Add notification container -->
+    <div id="notification-container"></div>
 
     <!-- JavaScript Files -->
     <script src="../static/script/scriptroad.js"></script>
