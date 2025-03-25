@@ -33,6 +33,24 @@ body {
     position: relative;
     width: 100vw;
     height: 100vh;
+    /* font-family: 'Roboto', sans-serif; */
+    margin: 0;
+    padding: 60px 0 0 0; /* Added padding-top to account for navbar */
+    background-color: #0d1117;
+    color: #fff;
+    min-height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: radial-gradient(circle at 50% 50%, #161b22 0%, #0d1117 100%);
+    overflow-x: hidden;
+}
+
+.page-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    min-height: 85vh;
     display: flex;
     justify-content: center;
     align-items: center;
