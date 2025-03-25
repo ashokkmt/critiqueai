@@ -26,6 +26,19 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script>
+        // Add page reload protection
+        window.addEventListener('beforeunload', function(e) {
+            // Cancel the event
+            e.preventDefault();
+            // Chrome requires returnValue to be set
+            e.returnValue = 'You may lose your generated content. Are you sure you want to leave?';
+        });
+
+        // If the page was reloaded (not directly navigated to), redirect back to content input
+        if (performance.navigation.type === 1) { // 1 is reload
+            window.location.href = '/get-content';
+        }
+
         // Initialize copy button functionality
         document.getElementById('copy-btn').addEventListener('click', function() {
             const content = document.querySelector('.notes-content').innerText;

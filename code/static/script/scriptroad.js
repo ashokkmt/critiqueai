@@ -58,10 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Back Button Handler
     backBtn.addEventListener("click", () => {
-        roadmapResult.classList.add("hidden");
-        inputSection.classList.remove("hidden");
-        topicInput.value = "";
-        copyBtn.style.display = 'none';
+        window.location.href = "/roadmap";
     });
 
     // Copy Button Handler

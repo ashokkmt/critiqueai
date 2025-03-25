@@ -102,7 +102,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewContainer = document.getElementById('files-preview');
     
     // When browse button is clicked
-    browseBtn.addEventListener('click', () => {
+    browseBtn.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the event from bubbling up to the parent
+        fileInput.click();
+    });
+    
+    // Make the entire drag area clickable
+    dragArea.addEventListener('click', () => {
         fileInput.click();
     });
     
