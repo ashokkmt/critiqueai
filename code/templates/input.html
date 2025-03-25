@@ -33,13 +33,16 @@
                     <form action="/evaluate" method="post" enctype="multipart/form-data">
                         <div class="drag-area" id="drop-zone">
                             <div class="icon"><i class="fas fa-cloud-upload-alt"></i></div>
-                            <h3>Drag & Drop Files</h3>
+                            <h3>Drag & Drop File</h3>
                             <span>OR</span>
-                            <button type="button" class="browse-btn">Browse Files</button>
+                            <button type="button" class="browse-btn">Add file</button>
                         </div>
                         <input type="file" id="eval_file" name="file" hidden>
                         <div class="file-info">
                             Supported formats: PDF, DOCX, TXT, PNG, JPEG
+                        </div>
+                        <div class="file-info">
+                            Note: For now only support single file at a time.
                         </div>
                     </form>
                 </div>

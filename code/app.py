@@ -23,10 +23,33 @@ import io
 import base64
 from odf.opendocument import load
 from odf.text import P
+from google.cloud import secretmanager
 
 
 # Load environment variables from .env file
 load_dotenv()
+
+sec_client = secretmanager.SecretManagerServiceClient()
+
+# Firebase Certificate
+secret_name = "projects/952301619936/secrets/firebase-config/versions/latest"
+response = sec_client.access_secret_version(request={"name": secret_name})
+firebase_json = json.loads(response.payload.data.decode("UTF-8"))
+
+# Gemini API key 1
+gen_secret = "projects/952301619936/secrets/gemini-api/versions/latest"
+get_key = sec_client.access_secret_version(request={"name": gen_secret})
+gen_key = get_key.payload.data.decode("UTF-8")
+
+# Gemini API key 2
+gen_secret2 = "projects/952301619936/secrets/critiqueai_gen_key/versions/latest"
+get_key2 = sec_client.access_secret_version(request={"name": gen_secret2})
+gen_key2 = get_key2.payload.data.decode("UTF-8")
+
+# GCS Service Account Vision Certificate
+serve_account = "projects/952301619936/secrets/service_account/versions/latest"
+get_serve_account = sec_client.access_secret_version(request={"name": serve_account})
+service_account_json = json.loads(get_serve_account.payload.data.decode("UTF-8"))
 
 
 # Updated prompts for AI evaluation
@@ -78,14 +101,14 @@ Don't any greeting and thank you note.
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-cred = credentials.Certificate("code/firebase.json")
+cred = credentials.Certificate(firebase_json)
 firebase_admin.initialize_app(cred, {
     "storageBucket": "instant-theater-449913-h4.firebasestorage.app"
 })
 
 
 # Configure the Google Generative AI API
-client = genai.Client(api_key=os.getenv('GEN_API'))
+client = genai.Client(api_key=gen_key2)
 FLASH = 'gemini-2.0-flash'
 FLASH_LITE = 'gemini-2.0-flash-lite'
 
@@ -93,11 +116,11 @@ bucket = storage.bucket()
 db = firestore.client()
 
 # Initialize GCS client
-credentials = service_account.Credentials.from_service_account_file(
-    'code/service-account.json')
+# credentials = service_account.Credentials.from_service_account_file(
+    # service_account_json)
 
 # Initialize all Google Cloud clients with the same credentials
-vision_client = vision.ImageAnnotatorClient(credentials=credentials)
+vision_client = vision.ImageAnnotatorClient(credentials=service_account_json)
 
 
 # Define allowed file extensions
