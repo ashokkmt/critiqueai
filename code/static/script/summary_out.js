@@ -17,72 +17,29 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Download summary functionality
-    const downloadBtn = document.getElementById('download-btn');
-    downloadBtn.addEventListener('click', async function() {
-        const summaryContent = document.getElementById('outputContainer');
-        const { jsPDF } = window.jspdf;
+    // Notification function
+    function showNotification(message, iconClass) {
+        const notification = document.createElement('div');
+        notification.className = 'notification success';
+        notification.innerHTML = `
+            <div class="notification-icon">
+                <i class="fas ${iconClass}"></i>
+            </div>
+            <div class="notification-message">${message}</div>
+        `;
         
-        try {
-            // Create PDF document
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            // Add title
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(20);
-            doc.setTextColor(76, 175, 80); // Green color
-            doc.text("Document Summary", 105, 20, { align: "center" });
-
-            // Add date
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(12);
-            doc.setTextColor(100);
-            const today = new Date().toLocaleDateString();
-            doc.text(`Generated on: ${today}`, 105, 30, { align: "center" });
-
-            // Convert content to image
-            const canvas = await html2canvas(summaryContent, {
-                scale: 2,
-                backgroundColor: '#161a20',
-                logging: false
-            });
-
-            // Add content
-            const imgData = canvas.toDataURL('image/png');
-            const imgWidth = 190;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            doc.addImage(imgData, 'PNG', 10, 40, imgWidth, imgHeight);
-
-            // Save PDF
-            const fileName = 'summary-' + new Date().toISOString().slice(0, 10) + '.pdf';
-            doc.save(fileName);
-            showNotification('PDF downloaded successfully!', 'fa-check-circle');
-        } catch (error) {
-            console.error('PDF generation failed:', error);
-            showNotification('Failed to generate PDF', 'fa-exclamation-circle');
-        }
-    });
-});
-
-// Function to show notifications
-function showNotification(message, iconClass) {
-    const container = document.getElementById('notification-container');
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.innerHTML = `<i class="fas ${iconClass}"></i> ${message}`;
-    
-    container.appendChild(notification);
-    
-    // Remove notification after 3 seconds
-    setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(100%)';
+        const container = document.getElementById('notification-container');
+        container.appendChild(notification);
+        
         setTimeout(() => {
-            container.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
+            notification.classList.add('show');
+        }, 10);
+        
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => {
+                container.removeChild(notification);
+            }, 500);
+        }, 3000);
+    }
+});
