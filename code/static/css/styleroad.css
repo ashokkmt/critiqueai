@@ -36,13 +36,11 @@ body {
     /* font-family: 'Roboto', sans-serif; */
     margin: 0;
     padding: 60px 0 0 0; /* Added padding-top to account for navbar */
-    background-color: #0d1117;
     color: #fff;
     min-height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: radial-gradient(circle at 50% 50%, #161b22 0%, #0d1117 100%);
     overflow-x: hidden;
 }
 
@@ -70,7 +68,10 @@ body {
     font-size: 2.5rem;
     color: var(--text-light);
     text-shadow: 0 0 10px rgba(63, 228, 147, 0.3);
-    margin-bottom: 20px;
+    margin-bottom: 1vh;
+    background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .tagline {
@@ -81,8 +82,9 @@ body {
 .input-container {
     display: flex;
     max-width: 700px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.1);
+    margin: 2vh auto;
+    gap: 1vh;
+    /* background: rgba(255, 255, 255, 0.1); */
     border-radius: 8px;
     overflow: hidden;
 }
@@ -137,13 +139,13 @@ body {
 }
 
 .input-box {
-    background: rgba(17, 25, 40, 0.75);
-    border-radius: 16px;
-    backdrop-filter: blur(12px);
+    background: rgba(22, 27, 34, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
     border: 1px solid rgba(63, 228, 147, 0.1);
-    padding: 2rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    margin-top: 2rem;
+    padding: 40px;
 }
 
 .input-wrapper {
@@ -153,16 +155,16 @@ body {
 
 .header-section {
     text-align: center;
-    margin-bottom: 2rem;
+    /* margin-bottom: 5vh; */
 }
 
-.header-section h1 {
+/* .header-section h1 {
     font-size: 2.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1vh;
     background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
+} */
 
 /* Loading Screen Styling */
 .loading-screen {

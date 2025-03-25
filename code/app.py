@@ -101,7 +101,7 @@ vision_client = vision.ImageAnnotatorClient(credentials=credentials)
 
 
 # Define allowed file extensions
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'txt', 'pdf', 'docx', 'odt'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'txt', 'pdf', 'docx'}
 
 
 # Function to check allowed file extensions
@@ -195,18 +195,18 @@ def process_docx_file(doc_bytes):
     return get_evaluate(docx_text) 
         
 # ODT File
-def process_odt_file(odt_bytes):
-    """Reads an ODT file from bytes and extracts text."""
-    odt_file = load(BytesIO(odt_bytes))  # Wrap bytes in BytesIO
-    text_content = []
+# def process_odt_file(odt_bytes):
+#     """Reads an ODT file from bytes and extracts text."""
+#     odt_file = load(BytesIO(odt_bytes))  # Wrap bytes in BytesIO
+#     text_content = []
 
-    for element in odt_file.getElementsByType(P):
-        # Handle missing firstChild safely
-        text = element.firstChild.data if element.firstChild and hasattr(element.firstChild, "data") else ""
-        text_content.append(text)
+#     for element in odt_file.getElementsByType(P):
+#         # Handle missing firstChild safely
+#         text = element.firstChild.data if element.firstChild and hasattr(element.firstChild, "data") else ""
+#         text_content.append(text)
 
-    odt_text = '\n'.join(text_content)
-    return get_evaluate(odt_text)
+#     odt_text = '\n'.join(text_content)
+#     return get_evaluate(odt_text)
 # <----------------- Evaluate Page Functions Ends Here ------------------>
 
 
@@ -762,9 +762,9 @@ def evaluate():
                     elif file_extension == 'docx':
                         response, score_response = process_docx_file(
                             file_content)
-                    elif file_extension == 'odt':
-                        response, score_response = process_odt_file(
-                            file_content)
+                    # elif file_extension == 'odt':
+                    #     response, score_response = process_odt_file(
+                    #         file_content)
                     else:
                         return "File type not allowed", 400
 
@@ -783,6 +783,11 @@ def evaluate():
                     print("result marked true")
                     return render_template('evaluate.html', evaluation=evaluation_html, score=score)
 
+                else:
+                    print("File not supported.")
+                    session["result_generated"] = True 
+                    print("result marked true")
+                    return render_template('evaluate.html', evaluation="File format is not supported.", score="-/")
             elif 'fname' in request.form:
                 text = request.form['fname']
                 # print(f"Text content: {text[:100]}")
