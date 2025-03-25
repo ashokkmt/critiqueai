@@ -14,11 +14,25 @@ body {
     background-color: #0d1117;
     background-image: radial-gradient(circle at 50% 50%, #161b22 0%, #0d1117 100%);
     color: #fff;
-    min-height: 115vh;
+    min-height: 90vh;
     display: flex;
     justify-content: center;
     align-items: center;
     overflow-x: hidden;
+}
+
+.content-title {
+    display: flex;
+    flex-direction: column; /* Keeps content stacked */
+    align-items: center; /* Centers horizontally */
+    justify-content: center; /* Centers vertically */
+    text-align: center; /* Ensures text alignment */
+    min-height: 10vh; /* Adjust height dynamically */
+    /* padding: 2rem; Adds spacing */
+}
+
+.content-title h2 {
+    font-size: 2rem;
 }
 
 /* Particles background */
@@ -130,9 +144,9 @@ body {
     margin-top: 30px; /* Increased from 20px */
     gap: 60px; /* Increased from 40px */
     padding: 25px; /* Increased from 20px */
-    background: rgba(22, 27, 34, 0.8);
+    /* background: rgba(22, 27, 34, 0.8); */
     border-radius: 20px;
-    border: 1px solid rgba(63, 228, 147, 0.15);
+    /* border: 1px solid rgba(63, 228, 147, 0.15); */
 }
 
 .feature {
@@ -292,6 +306,7 @@ h1 {
     font-size: 35px; /* Reduced icon size */
     color: #3fe493;
     margin-bottom: 5px;
+    padding-top: 2vh;
 }
 
 .drag-area h3 {
@@ -504,7 +519,7 @@ textarea::placeholder {
 .submit-btn {
     width: 50%; /* Reduced from 100% */
     max-width: 300px; /* Added max-width */
-    margin: 0 auto; /* Center the button */
+    margin: 25px auto; /* Center the button */
     padding: 10px; /* Reduced from 12px */
     font-size: 14px; /* Reduced from 16px */
     border: none;
