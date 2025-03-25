@@ -3,83 +3,93 @@
 <link rel="stylesheet" href="../static/css/style_content.css">
 <div id="particles-js"></div>
 <div class="container">
-    <h2>✨ Generate Study Notes</h2>
+    <div class="content-header">
+        <h2>✨ Generate Study Notes</h2>
+        <p class="subtitle">Create comprehensive study materials tailored to your needs</p>
+    </div>
+
     <form id="notesForm" action="/content_out" method="POST">
-        <div class="form-group">
+        <!-- Centered Topic Input -->
+        <div class="form-group topic-input">
             <label>📌 Topic:</label>
-            <input type="text" id="topic" name="topic" required placeholder="Enter your topic...">
+            <textarea id="topic" name="topic" required placeholder="Enter your topic in detail..." rows="3"></textarea>
         </div>
 
-        <div class="form-group">
-            <label>🏫 Academic Level:</label>
-            <select id="academic_level" name="academic_level" required>
-                <option value="" disabled selected hidden>-- Select Level --</option>
-                <option value="School">School (Class 1-12)</option>
-                <option value="College">College</option>
-            </select>
+        <!-- Main Options Grid -->
+        <div class="options-grid">
+            <div class="form-group">
+                <label>🏫 Academic Level:</label>
+                <select id="academic_level" name="academic_level" required>
+                    <option value="" disabled selected hidden>-- Select Level --</option>
+                    <option value="School">School (Class 1-12)</option>
+                    <option value="College">College</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>📖 Notes Detail Level:</label>
+                <select id="note_level" name="note_level" required>
+                    <option value="" disabled selected hidden>-- Select Level --</option>
+                    <option value="Concise">Concise</option>
+                    <option value="Detailed">Detailed</option>
+                    <option value="Summary">Summary</option>
+                    <option value="Exam-Oriented">Exam-Oriented</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>📝 Format:</label>
+                <select id="format_preference" name="format_preference" required>
+                    <option value="" disabled selected hidden>-- Select Format --</option>
+                    <option value="Bullet Points">Bullet Points</option>
+                    <option value="Paragraphs">Paragraphs</option>
+                    <option value="Mind Map Style">Mind Map Style</option>
+                    <option value="Q&A Format">Q&A Format</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>💻 Include Code Examples:</label>
+                <select id="technical_content" name="technical_content" required>
+                    <option value="" disabled selected hidden>-- Select Option --</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>⏳ Urgency Level:</label>
+                <select id="urgency_level" name="urgency_level" required>
+                    <option value="" disabled selected hidden>-- Select Urgency --</option>
+                    <option value="Quick Summary">Quick Summary</option>
+                    <option value="Full Explanation">Full Explanation</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>🎯 Exam-Focused:</label>
+                <select id="exam_focus" name="exam_focus" required>
+                    <option value="" disabled selected hidden>-- Select Option --</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
         </div>
 
-        <div class="form-group" id="college_course" style="display:none;">
+        <!-- College Course Input -->
+        <div class="form-group college-course" id="college_course">
             <label>🎓 College Course:</label>
             <input type="text" id="course" name="course" placeholder="Enter your course name...">
         </div>
 
-        <div class="form-group">
-            <label>📖 Notes Detail Level:</label>
-            <select id="note_level" name="note_level" required>
-                <option value="" disabled selected hidden>-- Select Level --</option>
-                <option value="Concise">Concise</option>
-                <option value="Detailed">Detailed</option>
-                <option value="Summary">Summary</option>
-                <option value="Exam-Oriented">Exam-Oriented</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>📝 Format:</label>
-            <select id="format_preference" name="format_preference" required>
-                <option value="" disabled selected hidden>-- Select Format --</option>
-                <option value="Bullet Points">Bullet Points</option>
-                <option value="Paragraphs">Paragraphs</option>
-                <option value="Mind Map Style">Mind Map Style</option>
-                <option value="Q&A Format">Q&A Format</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>💻 Include Code Examples:</label>
-            <select id="technical_content" name="technical_content" required>
-                <option value="" disabled selected hidden>-- Select Option --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>⏳ Urgency Level:</label>
-            <select id="urgency_level" name="urgency_level" required>
-                <option value="" disabled selected hidden>-- Select Urgency --</option>
-                <option value="Quick Summary">Quick Summary</option>
-                <option value="Full Explanation">Full Explanation</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>🎯 Exam-Focused:</label>
-            <select id="exam_focus" name="exam_focus" required>
-                <option value="" disabled selected hidden>-- Select Option --</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-        </div>
-
-        <button type="submit">Generate Notes ✨</button>
+        <button type="submit" class="submit-button">
+            <span class="button-content">
+                <i class="fas fa-magic"></i>
+                Generate Notes
+            </span>
+        </button>
     </form>
 
-    <div id="result">
-        <h3>📄 Generated Notes:</h3>
-        <div id="notesOutput"></div>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>

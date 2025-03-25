@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('upload-form');
     const textInput = document.getElementById('textInput');
     const submitBtn = document.querySelector('.submit-btn');
+    const previewContainer = document.getElementById('files-preview');
     
     // When browse button is clicked
     browseBtn.addEventListener('click', () => {
@@ -130,34 +131,42 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to display selected files
     function showFiles(files) {
-        fileContainer.innerHTML = '';
-        
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const fileSize = (file.size / 1024).toFixed(2);
+        if (files.length > 0) {
+            previewContainer.classList.add('active');
+            fileContainer.innerHTML = '';
             
-            // Create a file chip element
-            const fileChip = document.createElement('div');
-            fileChip.className = 'file-chip';
-            
-            // Set the icon based on file type
-            let iconClass = 'fa-file';
-            if (file.type.includes('pdf')) {
-                iconClass = 'fa-file-pdf';
-            } else if (file.type.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
-                iconClass = 'fa-file-word';
-            } else if (file.type.includes('text') || file.name.endsWith('.txt')) {
-                iconClass = 'fa-file-alt';
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileSize = (file.size / 1024).toFixed(2);
+                
+                const fileChip = document.createElement('div');
+                fileChip.className = 'file-chip';
+                
+                let iconClass = 'fa-file';
+                if (file.type.includes('pdf')) {
+                    iconClass = 'fa-file-pdf';
+                } else if (file.type.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
+                    iconClass = 'fa-file-word';
+                } else if (file.type.includes('text') || file.name.endsWith('.txt')) {
+                    iconClass = 'fa-file-alt';
+                }
+                
+                fileChip.innerHTML = `
+                    <i class="fas ${iconClass}"></i>
+                    <div class="file-info">
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-size">${fileSize} KB</span>
+                    </div>
+                    <span class="remove-file" data-index="${i}">
+                        <i class="fas fa-times"></i>
+                    </span>
+                `;
+                
+                fileContainer.appendChild(fileChip);
             }
-            
-            // Set the HTML content of the file chip
-            fileChip.innerHTML = `
-                <i class="fas ${iconClass}"></i>
-                ${file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name}
-                <span class="remove-file" data-index="${i}"><i class="fas fa-times"></i></span>
-            `;
-            
-            fileContainer.appendChild(fileChip);
+        } else {
+            previewContainer.classList.remove('active');
+            fileContainer.innerHTML = '';
         }
         
         // Add remove button functionality
