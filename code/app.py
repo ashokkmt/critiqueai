@@ -664,12 +664,12 @@ def summary_out():
             with open("output_final.txt", "w") as final:
                 final.write(combined_text)    
             
-            print("Instructions - ",instruction)
+            print("Instructions - ", instruction)
             combined_summary = get_evaluation(combined_text, isInstruction=instruction)
-            output = f"<h2>Combined File Summary:</h2>{markdown.markdown(combined_summary)}"
+            temp = markdown.markdown(combined_summary)
             session["result_generated"] = True 
             print("result marked true")
-            return render_template("summary_out.html", output=output)
+            return render_template("summary_out.html", output=temp)
         elif check_file:
             files = request.files.getlist('file')
             for f in files:
@@ -685,17 +685,16 @@ def summary_out():
             print("Now Printing URLs one by one\n")
             for url in file_url:
                 print(url)
-                # file_content, name = read_file_from_gcs(url)
                 combined_text += process_file(url) + "\n\n***************************************************\n\n"
             
             with open("output_final.txt", "w") as final:
                 final.write(combined_text)
             
             combined_summary = get_evaluation(combined_text)
-            output = f"<h3>Combined File Summary:</h3>{markdown.markdown(combined_summary)}"
+            temp = markdown.markdown(combined_summary)
             session["result_generated"] = True 
             print("result marked true")
-            return render_template("summary_out.html", output=output)
+            return render_template("summary_out.html", output=temp)
         else:
             return render_template("summary_out.html", output="<p>Invalid input received.</p>")
 
