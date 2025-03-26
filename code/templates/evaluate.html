@@ -76,6 +76,20 @@
         }, 3000);
     }
 
+    // Handle page reload protection
+    window.addEventListener('beforeunload', function(e) {
+        // Cancel the event
+        e.preventDefault();
+        // Chrome requires returnValue to be set
+        e.returnValue = 'You may lose your evaluation results. Are you sure you want to leave?';
+        // This message may not be shown in modern browsers, as they use their own standard message
+    });
+
+    // If the page was reloaded (not directly navigated to), redirect back to input
+    if (performance.navigation.type === 1) { // 1 is reload
+        window.location.href = '/input';
+    }
+
     // Initialize particles.js with proper configuration
     particlesJS('particles-js', {
         particles: {
