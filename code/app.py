@@ -426,15 +426,18 @@ def upload_files(file):
     })
 
 # Function to get file content from Google Cloud Storage
-def get_user_files(session_id):
+def get_user_files(session_id, time):
     """Fetches gs:// URLs for a user from Firestore."""
     print("Getting gs_urls")
+    
     docs = db.collection("user_files").where(
         "session_id", "==", session_id).stream()
     file_urls = []
     for doc in docs:
-        file_url = doc.to_dict()["url"]
-        file_urls.append(file_url)
+        file_data = doc.to_dict()
+        if file_data["uploaded_at"] >= time:
+            file_url = file_data["url"]
+            file_urls.append(file_url)
 
     return file_urls
 
@@ -637,9 +640,11 @@ def summary_out():
         check_file = 'file' in request.files and request.files.getlist('file')
         check_fname = 'fname' in request.form and request.form['fname']
         combined_text = ""
+        time = datetime.now(timezone.utc)
         if check_file and check_fname:
             instruction = request.form['fname']
             files = request.files.getlist('file')
+
             for f in files:
                 if f and allowed_file(f.filename):
                     # Upload to GCS first
@@ -648,7 +653,7 @@ def summary_out():
                     combined_text += f"Invalid or unsupported file: {f.filename}\n"
             
             session_id = session.get('session_id')
-            file_url = get_user_files(session_id)
+            file_url = get_user_files(session_id, time)
             print("URL LIST AT FIREBASE - ", file_url)
             print("Now Printing URLs one by one\n")
             for url in file_url:
@@ -675,7 +680,7 @@ def summary_out():
                     combined_text += f"Invalid or unsupported file: {f.filename}\n"
                     
             session_id = session.get('session_id')
-            file_url = get_user_files(session_id)
+            file_url = get_user_files(session_id, time)
             print("URL LIST AT FIREBASE - ", file_url)
             print("Now Printing URLs one by one\n")
             for url in file_url:
@@ -742,10 +747,11 @@ def evaluate():
 
                 if file and allowed_file(file.filename):
                     # filename = secure_filename(file.filename)
+                    time = datetime.now(timezone.utc)
                     upload_files(file)
                     session_id = session.get('session_id')
                     print(session_id)
-                    file_url = get_user_files(session_id)
+                    file_url = get_user_files(session_id, time)
                     print("URL - ", file_url)
                     file_content, name = read_file_from_gcs(file_url[0])
                     file_extension = name.split(".")[-1].lower()
