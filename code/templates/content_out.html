@@ -10,10 +10,10 @@
             </div>
         </div>
         <div class="action-buttons">
-            <a href="/get-content" class="action-button secondary-button" id="back-btn">
+            <button class="action-button secondary-button" id="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 Generate New Notes
-            </a>
+            </button>
             <button id="copy-btn" class="action-button">
                 <i class="fas fa-copy"></i>
                 Copy Notes
@@ -73,12 +73,11 @@
             }, 3000);
         }
 
-        // Add confirmation dialog to back button
+        // Update back button event handler
         document.addEventListener('DOMContentLoaded', function() {
             const backBtn = document.getElementById('back-btn');
             if (backBtn) {
-                backBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
+                backBtn.addEventListener('click', function() {
                     if (!confirm('You may lose your generated content. Are you sure you want to leave?')) {
                         return;
                     }
