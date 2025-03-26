@@ -329,6 +329,28 @@ body {
     margin-bottom: 10px;
 }
 
+/* Link Styling Enhancement for Roadmap Content */
+.roadmap-content a {
+    color: #00ffcc; /* Bright teal color that stands out on dark backgrounds */
+    text-decoration: underline;
+    transition: color 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+.roadmap-content a:hover {
+    color: #50ffdb; /* Lighter shade for hover state */
+    text-decoration: underline;
+}
+
+.roadmap-content a:visited {
+    color: #c4a8ff; /* Light purple for visited links */
+}
+
+.roadmap-content a:focus {
+    outline: 2px solid #3fe493;
+    outline-offset: 2px;
+}
+
 /* Utility Classes */
 .hidden {
     display: none !important;
