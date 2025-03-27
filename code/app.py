@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from google import genai
 from google.genai import types
 from datetime import datetime, timezone, timedelta
-from google.cloud import storage, vision
+from google.cloud import storage, vision, secretmanager
 import PIL.Image
 from PIL import Image
 from io import BytesIO
@@ -17,17 +17,16 @@ import zipfile
 import firebase_admin
 from firebase_admin import credentials, storage, firestore
 import uuid
-from google.oauth2 import service_account  # Added import
-from dotenv import load_dotenv  # Added import
+from google.oauth2 import service_account
+# from dotenv import load_dotenv
 import io
 import base64
 from odf.opendocument import load
 from odf.text import P
-from google.cloud import secretmanager
 
 
 # Load environment variables from .env file
-load_dotenv()
+# load_dotenv()
 
 sec_client = secretmanager.SecretManagerServiceClient()
 
@@ -116,11 +115,10 @@ bucket = storage.bucket()
 db = firestore.client()
 
 # Initialize GCS client
-# credentials = service_account.Credentials.from_service_account_file(
-    # service_account_json)
+credentials = service_account.Credentials.from_service_account_info(service_account_json)
 
 # Initialize all Google Cloud clients with the same credentials
-vision_client = vision.ImageAnnotatorClient(credentials=service_account_json)
+vision_client = vision.ImageAnnotatorClient(credentials=credentials)
 
 
 # Define allowed file extensions
@@ -562,7 +560,7 @@ def generate_content():
             
             try:
                 # full_prompt = CONTENT_PROMPT.format(topic=data)
-                print(full_prompt)
+                # print(full_prompt)
                 response = client.models.generate_content(
                     model=FLASH,
                     contents=full_prompt,
