@@ -2,8 +2,10 @@
 FROM python:3.12
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /app/code
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y poppler-utils
 
 # 3️⃣ Copy the requirements file into the container
 COPY requirements.txt .
@@ -12,7 +14,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # 5️⃣ Copy the rest of your application code
-COPY . .
+COPY . /app
 
 # 6️⃣ Set the environment variable for Cloud Run
 ENV PORT=8080
