@@ -27,7 +27,7 @@
         </div>
 
         <div class="action-buttons">
-            <button onclick="window.location.href='/input'" class="action-button primary-button">
+            <button id="new-eval-btn" class="action-button primary-button">
                 <i class="fas fa-redo"></i> New Evaluation
             </button>
             <button id="copy-btn" class="action-button primary-button">
@@ -40,7 +40,6 @@
 <div id="notification-container"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
 
-
 <script>
     // Initialize copy button
     document.getElementById('copy-btn').addEventListener('click', function () {
@@ -48,6 +47,13 @@
         navigator.clipboard.writeText(content)
             .then(() => showNotification('Feedback copied to clipboard!'))
             .catch(() => showNotification('Failed to copy', 'error'));
+    });
+
+    // Add confirmation dialog to new evaluation button
+    document.getElementById('new-eval-btn').addEventListener('click', function() {
+        if (confirm('You may lose your evaluation results. Are you sure you want to leave?')) {
+            window.location.href = '/input';
+        }
     });
 
     // Notification function
@@ -74,20 +80,6 @@
                 container.removeChild(notification);
             }, 500);
         }, 3000);
-    }
-
-    // Handle page reload protection
-    window.addEventListener('beforeunload', function(e) {
-        // Cancel the event
-        e.preventDefault();
-        // Chrome requires returnValue to be set
-        e.returnValue = 'You may lose your evaluation results. Are you sure you want to leave?';
-        // This message may not be shown in modern browsers, as they use their own standard message
-    });
-
-    // If the page was reloaded (not directly navigated to), redirect back to input
-    if (performance.navigation.type === 1) { // 1 is reload
-        window.location.href = '/input';
     }
 
     // Initialize particles.js with proper configuration

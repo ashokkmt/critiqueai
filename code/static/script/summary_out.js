@@ -2,8 +2,14 @@ document.addEventListener('DOMContentLoaded', function() {
     // Flag to prevent multiple alerts
     let navigationConfirmed = false;
     
+    // Check if this is a reload first, before any alerts can trigger
+    if (performance.navigation.type === 1) { // 1 is reload
+        navigationConfirmed = true; // Prevent alert on redirect
+        window.location.href = '/summary';
+        return; // Exit early to prevent event listeners from being added
+    }
+    
     // Remove any existing beforeunload listeners that might be added by other scripts
-    const origBeforeUnload = window.onbeforeunload;
     window.onbeforeunload = null;
     
     // Single unified beforeunload handler
@@ -14,12 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return e.returnValue;
         }
     });
-    
-    // Redirect on reload
-    if (performance.navigation.type === 1) { // 1 is reload
-        navigationConfirmed = true; // Prevent alert on redirect
-        window.location.href = '/summary';
-    }
     
     // Set the current date
     const currentDate = new Date();

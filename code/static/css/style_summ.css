@@ -87,6 +87,7 @@ body {
     top: 100px;
     max-height: calc(100vh - 140px);
     overflow-y: auto;
+    z-index: 100; /* Ensure sidebar appears above other content */
 }
 
 .files-sidebar.active {
@@ -123,20 +124,67 @@ body {
     overflow-y: auto;
 }
 
-.file-chip {
+/* File item styling - renamed to match what's used in JavaScript */
+.file-item {
     background: rgba(63, 228, 147, 0.1);
-    padding: 8px 12px;
+    padding: 12px 15px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 10px;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(63, 228, 147, 0.2);
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.file-item:hover {
+    background: rgba(63, 228, 147, 0.15);
+    transform: translateX(3px);
+}
+
+.file-item i {
+    color: #3fe493;
+    font-size: 1.2rem;
+    min-width: 24px;
+}
+
+.file-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 14px;
+}
+
+.file-size {
+    color: #8b949e;
+    font-size: 12px;
+    margin-left: auto;
+    padding: 0 5px;
+}
+
+.remove-file {
+    background: none;
+    border: none;
+    color: #f44336;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0;
+    font-size: 14px;
     transition: all 0.2s ease;
 }
 
-.file-chip:hover {
-    background: rgba(63, 228, 147, 0.15);
-    transform: translateX(3px);
+.remove-file:hover {
+    transform: scale(1.2);
+}
+
+.no-files {
+    color: #8b949e;
+    text-align: center;
+    font-style: italic;
+    padding: 20px 0;
 }
 
 .features {
