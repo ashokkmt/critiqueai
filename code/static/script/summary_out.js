@@ -1,25 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Flag to prevent multiple alerts
-    let navigationConfirmed = false;
-    
     // Check if this is a reload first, before any alerts can trigger
     if (performance.navigation.type === 1) { // 1 is reload
-        navigationConfirmed = true; // Prevent alert on redirect
+        // On reload, just redirect without confirmation
         window.location.href = '/summary';
         return; // Exit early to prevent event listeners from being added
     }
-    
-    // Remove any existing beforeunload listeners that might be added by other scripts
-    window.onbeforeunload = null;
-    
-    // Single unified beforeunload handler
-    window.addEventListener('beforeunload', function(e) {
-        if (!navigationConfirmed) {
-            e.preventDefault();
-            e.returnValue = 'You may lose your summary results. Are you sure you want to leave?';
-            return e.returnValue;
-        }
-    });
     
     // Set the current date
     const currentDate = new Date();
@@ -39,13 +24,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Add confirmation dialog to new analysis button
+    // Add confirmation dialog to new analysis button only
     const newAnalysisBtn = document.getElementById('new-analysis-btn');
     if (newAnalysisBtn) {
         newAnalysisBtn.addEventListener('click', function(e) {
             e.preventDefault();
             if (confirm('You may lose your summary results. Are you sure you want to leave?')) {
-                navigationConfirmed = true; // Prevent beforeunload dialog
                 window.location.href = "/summary";
             }
         });
