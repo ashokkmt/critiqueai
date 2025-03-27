@@ -57,12 +57,15 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Back Button Handler
-    backBtn.addEventListener("click", () => {
-        roadmapResult.classList.add("hidden");
-        inputSection.classList.remove("hidden");
-        topicInput.value = "";
-        copyBtn.style.display = 'none';
-    });
+    if (backBtn) {
+        backBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            if (!confirm('You may lose your roadmap results. Are you sure you want to leave?')) {
+                return; // Stay on current page if user cancels
+            }
+            window.location.href = "/roadmap";
+        });
+    }
 
     // Copy Button Handler
     copyBtn.addEventListener("click", function() {

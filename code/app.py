@@ -138,7 +138,6 @@ def get_evaluation(text, isInstruction=None):
     else:
         full_prompt = SUMMARY_PROMPT
         
-    print(full_prompt)
     response = client.models.generate_content(
         model=FLASH,
         contents=[text, full_prompt],
@@ -217,19 +216,6 @@ def process_docx_file(doc_bytes):
 
     return get_evaluate(docx_text) 
         
-# ODT File
-# def process_odt_file(odt_bytes):
-#     """Reads an ODT file from bytes and extracts text."""
-#     odt_file = load(BytesIO(odt_bytes))  # Wrap bytes in BytesIO
-#     text_content = []
-
-#     for element in odt_file.getElementsByType(P):
-#         # Handle missing firstChild safely
-#         text = element.firstChild.data if element.firstChild and hasattr(element.firstChild, "data") else ""
-#         text_content.append(text)
-
-#     odt_text = '\n'.join(text_content)
-#     return get_evaluate(odt_text)
 # <----------------- Evaluate Page Functions Ends Here ------------------>
 
 
@@ -344,11 +330,11 @@ def extract_pdf_content(pdf_bytes):
         }
         extracted_data.append(page_content)
 
-    json_filename = "output_pdf.json"
-    with open(json_filename, "w", encoding="utf-8") as json_file:
-        json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
+    # json_filename = "output_pdf.json"
+    # with open(json_filename, "w", encoding="utf-8") as json_file:
+    #     json.dump(extracted_data, json_file, indent=4, ensure_ascii=False)
 
-    print(f"[+] Extraction complete. Data saved to {json_filename}")
+    # print(f"[+] Extraction complete. Data saved to {json_filename}")
 
     # Convert the extracted_data list to a string
     result = "PDF CONTENT BELOW HERE\n"
@@ -374,9 +360,6 @@ def extract_pdf_content(pdf_bytes):
             else:
                 result += f"--> {table}\n"  # Error message case
         result += "---------------------------------------------------\n"
-
-    with open("output_pdf.txt", "w+") as f:
-        f.write(result)
 
     return result
 # PDF FUNCTION ENDS HERE
@@ -420,9 +403,6 @@ def extract_docx_content(content):
         # Combine all text elements
         combined_text = f"{text_content}\n{' '.join(image_texts)}"
         
-        with open("output_docx.txt", "w") as file:
-            file.write(combined_text)
-        
         return combined_text
 
     except Exception as e:
@@ -449,24 +429,24 @@ def upload_files(file):
     })
 
 # Function to get file content from Google Cloud Storage
-def get_user_files(session_id):
+def get_user_files(session_id, time):
     """Fetches gs:// URLs for a user from Firestore."""
-    print("Getting gs_urls")
+    
     docs = db.collection("user_files").where(
         "session_id", "==", session_id).stream()
     file_urls = []
     for doc in docs:
-        file_url = doc.to_dict()["url"]
-        file_urls.append(file_url)
+        file_data = doc.to_dict()
+        if file_data["uploaded_at"] >= time:
+            file_url = file_data["url"]
+            file_urls.append(file_url)
 
     return file_urls
 
 
 def read_file_from_gcs(gs_url):
     """Reads a file as bytes directly from Firebase Storage."""
-    print(type(gs_url))
     file_path = '/'.join(gs_url.split('/')[3:])
-    # print(file_path)
     blob = bucket.blob(file_path)
     print("BLOB NAME - ", blob.name)
     return blob.download_as_bytes(), blob.name
@@ -555,9 +535,7 @@ def generate_content():
             if session.get("result_generated"):
                 print("Rechecked result generation reload")
                 return redirect(url_for("get-content"))
-            print("Back is called")
             data = request.get_json()
-            print("data is read")
             topic = data.get('topic')
             academic_level = data.get('academic_level')
             course = f"({data.get('course')})" if academic_level == "College" else ""
@@ -567,9 +545,6 @@ def generate_content():
             urgency_level = data.get('urgency_level')
             exam_focus = data.get('exam_focus')
 
-            print('\n')
-            print(topic)
-            print('\n')
             # Format the prompt
             full_prompt = CONTENT_PROMPT.format(
                 topic=topic,
@@ -582,12 +557,10 @@ def generate_content():
                 exam_focus=exam_focus
             )
             
-            print(data)
             if not data:
                 return "Please enter a valid topic", 400
             
             try:
-                print("Gemini is called")
                 # full_prompt = CONTENT_PROMPT.format(topic=data)
                 print(full_prompt)
                 response = client.models.generate_content(
@@ -599,9 +572,6 @@ def generate_content():
                     )
                 )
                 temp = markdown.markdown(response.text)
-                # print(temp)
-                print("HTML file created successfully!")
-                # return temp if response.candidates else "Failed to generate roadmap"
                 session["result_generated"] = True 
                 print("result marked true")
                 return render_template("content_out.html", output=temp)
@@ -621,7 +591,7 @@ def get_roadmap():
             print("Rechecked result generation reload")
             return redirect(url_for("roadmap"))
         data = request.form['topic']
-        print(data)
+
         if not data:
             return "Please enter a valid topic", 400
 
@@ -636,8 +606,6 @@ def get_roadmap():
                 )
             )
             temp = markdown.markdown(response.text)
-            print(temp)
-            print("HTML file created successfully!")
             session["result_generated"] = True 
             print("result marked true")
             return temp if response.candidates else "Failed to generate roadmap"
@@ -648,79 +616,65 @@ def get_roadmap():
 # Route for Summary output page
 @app.route('/summary_out', methods=['POST'])
 def summary_out():
-    print("Entered /summary_out route")
     if request.method == 'POST':
-        print("Received POST request")
         if session.get("result_generated"):
             print("Session key 'result_generated' found. Redirecting to /summary...")
             return redirect(url_for("summary"))
-        else:
-            print("Session key 'result_generated' NOT found. Returning 400 error.")
-            # return "Something went wrong", 400
         check_file = 'file' in request.files and request.files.getlist('file')
         check_fname = 'fname' in request.form and request.form['fname']
         combined_text = ""
+        time = datetime.now(timezone.utc)
         if check_file and check_fname:
             instruction = request.form['fname']
             files = request.files.getlist('file')
+
             for f in files:
                 if f and allowed_file(f.filename):
-                    # Upload to GCS first
                     upload_files(f)
                 else:
                     combined_text += f"Invalid or unsupported file: {f.filename}\n"
             
             session_id = session.get('session_id')
-            file_url = get_user_files(session_id)
-            print("URL LIST AT FIREBASE - ", file_url)
-            print("Now Printing URLs one by one\n")
+            file_url = get_user_files(session_id, time)
+            # print("URL LIST AT FIREBASE - ", file_url)
             for url in file_url:
-                print(url)
-                # file_content, name = read_file_from_gcs(url)
                 combined_text += process_file(url) + "\n\n***************************************************\n\n"       
                 
             with open("output_final.txt", "w") as final:
                 final.write(combined_text)    
             
-            print("Instructions - ",instruction)
+            print("Instructions - ", instruction)
             combined_summary = get_evaluation(combined_text, isInstruction=instruction)
-            output = f"<h2>Combined File Summary:</h2>{markdown.markdown(combined_summary)}"
+            temp = markdown.markdown(combined_summary)
             session["result_generated"] = True 
             print("result marked true")
-            return render_template("summary_out.html", output=output)
+            return render_template("summary_out.html", output=temp)
         elif check_file:
             files = request.files.getlist('file')
             for f in files:
                 if f and allowed_file(f.filename):
-                    # Upload to GCS first
                     upload_files(f)
                 else:
                     combined_text += f"Invalid or unsupported file: {f.filename}\n"
                     
             session_id = session.get('session_id')
-            file_url = get_user_files(session_id)
-            print("URL LIST AT FIREBASE - ", file_url)
-            print("Now Printing URLs one by one\n")
+            file_url = get_user_files(session_id, time)
+            # print("URL LIST AT FIREBASE - ", file_url)
             for url in file_url:
-                print(url)
-                # file_content, name = read_file_from_gcs(url)
                 combined_text += process_file(url) + "\n\n***************************************************\n\n"
             
-            with open("output_final.txt", "w") as final:
-                final.write(combined_text)
-            
             combined_summary = get_evaluation(combined_text)
-            output = f"<h3>Combined File Summary:</h3>{markdown.markdown(combined_summary)}"
+            temp = markdown.markdown(combined_summary)
             session["result_generated"] = True 
             print("result marked true")
-            return render_template("summary_out.html", output=output)
+            return render_template("summary_out.html", output=temp)
         else:
             return render_template("summary_out.html", output="<p>Invalid input received.</p>")
 
 # Route for deleting user files from firebase bucket
 @app.route('/delete-user-files', methods=['GET'])
 def accountcleanup():
-    print("Function is called.")
+    print("Delete Function is called.")
     expiration_time = datetime.now(timezone.utc) - timedelta(minutes=2)
 
     docs = db.collection("user_files").where(
@@ -765,11 +719,10 @@ def evaluate():
 
                 if file and allowed_file(file.filename):
                     # filename = secure_filename(file.filename)
+                    time = datetime.now(timezone.utc)
                     upload_files(file)
                     session_id = session.get('session_id')
-                    print(session_id)
-                    file_url = get_user_files(session_id)
-                    print("URL - ", file_url)
+                    file_url = get_user_files(session_id, time)
                     file_content, name = read_file_from_gcs(file_url[0])
                     file_extension = name.split(".")[-1].lower()
 
@@ -785,9 +738,6 @@ def evaluate():
                     elif file_extension == 'docx':
                         response, score_response = process_docx_file(
                             file_content)
-                    # elif file_extension == 'odt':
-                    #     response, score_response = process_odt_file(
-                    #         file_content)
                     else:
                         return "File type not allowed", 400
 
@@ -813,8 +763,6 @@ def evaluate():
                     return render_template('evaluate.html', evaluation="File format is not supported.", score="-/")
             elif 'fname' in request.form:
                 text = request.form['fname']
-                # print(f"Text content: {text[:100]}")
-                print(text)
                 response, score_response = get_evaluate(text)
                 score_list = score_response.text.split(":")
                 if len(score_list) > 1:

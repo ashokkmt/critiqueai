@@ -10,10 +10,10 @@
             </div>
         </div>
         <div class="action-buttons">
-            <a href="/get-content" class="action-button secondary-button">
+            <button class="action-button secondary-button" id="back-btn">
                 <i class="fas fa-arrow-left"></i>
                 Generate New Notes
-            </a>
+            </button>
             <button id="copy-btn" class="action-button">
                 <i class="fas fa-copy"></i>
                 Copy Notes
@@ -26,6 +26,11 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
     <script>
+        // If the page was reloaded (not directly navigated to), redirect back to content input
+        if (performance.navigation.type === 1) { // 1 is reload
+            window.location.href = '/get-content';
+        }
+
         // Initialize copy button functionality
         document.getElementById('copy-btn').addEventListener('click', function() {
             const content = document.querySelector('.notes-content').innerText;
@@ -67,6 +72,19 @@
                 }, 500);
             }, 3000);
         }
+
+        // Update back button event handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const backBtn = document.getElementById('back-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', function() {
+                    if (!confirm('You may lose your generated content. Are you sure you want to leave?')) {
+                        return;
+                    }
+                    window.location.href = "/get-content";
+                });
+            }
+        });
 
         // Initialize particles.js
         particlesJS('particles-js', {

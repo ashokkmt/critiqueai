@@ -59,8 +59,7 @@ function typeEffect() {
 document.addEventListener('DOMContentLoaded', () => {
     typeEffect();
     initSmoothScroll();
-    initParticles();
-    initAOS();
+    initParticlesJS();
 });
 
 // Smooth scroll function
@@ -94,109 +93,7 @@ window.addEventListener('scroll', () => {
 });
 
 // Initialize particles.js with optimized config
-particlesJS('particles-js',
-  {
-    "particles": {
-      "number": {
-        "value": 50,
-        "density": {
-          "enable": true,
-          "value_area": 800
-        }
-      },
-      "color": {
-        "value": "#3fe493"
-      },
-      "shape": {
-        "type": "circle"
-      },
-      "opacity": {
-        "value": 0.5,
-        "random": true
-      },
-      "size": {
-        "value": 3,
-        "random": true
-      },
-      "line_linked": {
-        "enable": true,
-        "distance": 150,
-        "color": "#3fe493",
-        "opacity": 0.2,
-        "width": 1
-      },
-      "move": {
-        "enable": true,
-        "speed": 2,
-        "direction": "none",
-        "random": true,
-        "straight": false,
-        "out_mode": "out",
-        "bounce": false,
-      }
-    },
-    "interactivity": {
-      "detect_on": "canvas",
-      "events": {
-        "onhover": {
-          "enable": true,
-          "mode": "grab"
-        },
-        "resize": true
-      }
-    },
-    "retina_detect": true
-  }
-);
-
-// Animate statistics numbers
-function animateStats() {
-    const stats = document.querySelectorAll('.stat-number');
-    stats.forEach(stat => {
-        const target = parseInt(stat.getAttribute('data-target'));
-        const duration = 2000;
-        const increment = target / (duration / 16);
-        let current = 0;
-
-        const updateCount = () => {
-            if (current < target) {
-                current += increment;
-                stat.textContent = Math.ceil(current);
-                requestAnimationFrame(updateCount);
-            } else {
-                stat.textContent = target;
-            }
-        };
-
-        updateCount();
-    });
-}
-
-// Initialize AOS with more options
-AOS.init({
-    duration: 1000,
-    easing: 'ease-out-cubic',
-    once: true,
-    offset: 50
-});
-
-// Add scroll-triggered animations
-document.addEventListener('scroll', () => {
-    const parallaxSections = document.querySelectorAll('.parallax-section');
-    window.requestAnimationFrame(() => {
-        const scrolled = window.pageYOffset;
-        parallaxSections.forEach(section => {
-            const rate = scrolled * -0.3;
-            if(section.getBoundingClientRect().top < window.innerHeight && 
-               section.getBoundingClientRect().bottom > 0) {
-                section.style.transform = `translate3d(0, ${rate}px, 0)`;
-            }
-        });
-    });
-}, { passive: true });
-
-// Initialize particles
-function initParticles() {
+function initParticlesJS() {
     particlesJS('particles-js', {
         "particles": {
             "number": {
@@ -248,15 +145,5 @@ function initParticles() {
             }
         },
         "retina_detect": true
-    });
-}
-
-// Initialize AOS
-function initAOS() {
-    AOS.init({
-        duration: 1000,
-        easing: 'ease-out-cubic',
-        once: true,
-        offset: 50
     });
 }
