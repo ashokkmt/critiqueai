@@ -5,7 +5,7 @@ FROM python:3.12
 WORKDIR /app/code
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y poppler-utils
+# RUN apt-get update && apt-get install -y poppler-utils
 
 # 3️⃣ Copy the requirements file into the container
 COPY requirements.txt .
