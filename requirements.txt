@@ -9,6 +9,7 @@ google-cloud-vision
 google-auth
 dotenv
 gunicorn
+gevent
 google-cloud-secret-manager
 google-genai
 firebase-admin

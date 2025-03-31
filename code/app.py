@@ -18,15 +18,11 @@ import firebase_admin
 from firebase_admin import credentials, storage, firestore
 import uuid
 from google.oauth2 import service_account
-# from dotenv import load_dotenv
 import io
 import base64
 from odf.opendocument import load
 from odf.text import P
 
-
-# Load environment variables from .env file
-# load_dotenv()
 
 sec_client = secretmanager.SecretManagerServiceClient()
 
@@ -67,11 +63,14 @@ NOTES_PROMPT = '''Provide detailed notes on the following topic:
 - Include key concepts, principles, and subtopics .
 - Provide hands-on exercises, projects, and challenges that reinforce the concepts learned.
 - List the most effective books, courses, websites, and tools to master the topic. Each resource should be a clickable working link with a brief description (1-2 lines).
-- Format the output in Markdown for easy readability. (Do not add any markdown word), max output is just 1000 so answer should be according to that limit.'''
+- Format the output in Markdown for easy readability. (Do not add any markdown word), max output is just 1000 so answer should be according to that limit.
+
+Don't any greeting and thank you note.'''
 
 SUMMARY_PROMPT = '''Provide a concise summary of the given file, organized in bullet points and grouped by key topics. 
     Focus only on the essential points, avoiding unnecessary details or lengthy explanations. 
-    The summary should be within 1000 tokens. Do not include any markdown formatting.'''
+    The summary should be within 1000 tokens. Format the output for easy readability.
+    Don't any greeting and thank you note.'''
 
 # New prompt for roadmap generation
 ROADMAP_PROMPT = '''Generate a concise roadmap for learning {topic} over 4-6 weeks. The roadmap should be divided into logical sections and include:
@@ -743,7 +742,7 @@ def evaluate():
                     if len(score_list) > 1:
                         score = score_list[1].strip()
                         if not score.isdigit():
-                            score = "Error: Invalid score format"
+                            score = "-/"
                     else:
                         score = "-/"
 
@@ -766,7 +765,7 @@ def evaluate():
                 if len(score_list) > 1:
                     score = score_list[1].strip()
                     if not score.isdigit():
-                        score = "Error: Invalid score format"
+                        score = "-/"
                 else:
                     score = "-/"
 
@@ -781,7 +780,7 @@ def evaluate():
     except Exception as e:
         return f"An error occurred: {str(e)}", 500
 
-    return render_template("evaluate.html", prompt="Submit a file or text.", score="")
+    return render_template("evaluate.html", prompt="Submit a file or text.", score="-/")
 
 
 # Run the app in debug mode for development

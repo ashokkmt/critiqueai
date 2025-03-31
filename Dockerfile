@@ -5,7 +5,7 @@ FROM python:3.12
 WORKDIR /app/code
 
 # Install system dependencies
-# RUN apt-get update && apt-get install -y poppler-utils
+RUN apt-get update && apt-get install -y poppler-utils
 
 # 3️⃣ Copy the requirements file into the container
 COPY requirements.txt .
@@ -23,4 +23,5 @@ ENV PORT=8080
 EXPOSE 8080
 
 # 8️⃣ Start the Flask app using Gunicorn (for production)
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+#CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+CMD ["gunicorn", "-w", "5", "--timeout", "120", "-b", "0.0.0.0:8080", "app:app"]
