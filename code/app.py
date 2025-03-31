@@ -65,12 +65,12 @@ NOTES_PROMPT = '''Provide detailed notes on the following topic:
 - List the most effective books, courses, websites, and tools to master the topic. Each resource should be a clickable working link with a brief description (1-2 lines).
 - Format the output in Markdown for easy readability. (Do not add any markdown word), max output is just 1000 so answer should be according to that limit.
 
-Don't any greeting and thank you note.'''
+Don't any greeting and thank you note at the start or the end.'''
 
 SUMMARY_PROMPT = '''Provide a concise summary of the given file, organized in bullet points and grouped by key topics. 
     Focus only on the essential points, avoiding unnecessary details or lengthy explanations. 
     The summary should be within 1000 tokens. Format the output for easy readability.
-    Don't any greeting and thank you note.'''
+    Don't any greeting and thank you note at the start or the end.'''
 
 # New prompt for roadmap generation
 ROADMAP_PROMPT = '''Generate a concise roadmap for learning {topic} over 4-6 weeks. The roadmap should be divided into logical sections and include:
@@ -91,7 +91,7 @@ If the topic is technical, include code snippets: '{technical_content}'.
 Urgency level: '{urgency_level}'. 
 Adjust content depth, complexity, and length based on these inputs.
 
-Don't any greeting and thank you note.
+Don't any greeting and thank you note at the start or the end.
 """
 
 
