@@ -160,6 +160,11 @@ body {
     line-height: 1.8;
 }
 
+.styled-content p strong {
+    color: #3fe493;
+    font-weight: 600;
+}
+
 .styled-content h2 {
     color: #3fe493;
     margin-top: 25px;
