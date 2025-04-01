@@ -67,10 +67,17 @@ NOTES_PROMPT = '''Provide detailed notes on the following topic:
 
 Don't any greeting and thank you note at the start or the end.'''
 
-SUMMARY_PROMPT = '''Provide a concise summary of the given file, organized in bullet points and grouped by key topics. 
-    Focus only on the essential points, avoiding unnecessary details or lengthy explanations. 
-    The summary should be within 1000 tokens. Format the output for easy readability.
-    Don't any greeting and thank you note at the start or the end.'''
+SUMMARY_PROMPT = '''Generate a structured summary of the provided data. The data consists of multiple files, each separated by a line of asterisks (*************************).
+DONT ADD ANY SUMMARY STARTING LINE. JUST START SUMMART DIRECTLY.
+
+For each file:
+Extract key points and organize them under a relevant heading based on the file's content.
+Maintain the summary length in proportion to the content’s significance; do not unnecessarily shorten it.
+Use bullet points for clarity and readability.
+Do not include any greetings or salutations.
+
+IMP: Format the output for easy readability.
+'''
 
 # New prompt for roadmap generation
 ROADMAP_PROMPT = '''Generate a concise roadmap for learning {topic} over 4-6 weeks. The roadmap should be divided into logical sections and include:
@@ -637,7 +644,7 @@ def summary_out():
             for url in file_url:
                 combined_text += process_file(url) + "\n\n***************************************************\n\n"       
                 
-            with open("output_final.txt", "w") as final:
+            with open("output_final.txt", "w", encoding="utf-8") as final:
                 final.write(combined_text)    
             
             print("Instructions - ", instruction)
@@ -659,6 +666,9 @@ def summary_out():
             # print("URL LIST AT FIREBASE - ", file_url)
             for url in file_url:
                 combined_text += process_file(url) + "\n\n***************************************************\n\n"
+                
+            with open("output_final.txt", "w", encoding="utf-8") as final:
+                final.write(combined_text)
             
             combined_summary = get_evaluation(combined_text)
             temp = markdown.markdown(combined_summary)
