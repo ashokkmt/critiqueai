@@ -1,6 +1,5 @@
 flask
 python-docx
-odfdo
 markdown
 requests
 werkzeug
@@ -9,10 +8,8 @@ google-cloud-vision
 google-auth
 dotenv
 gunicorn
-gevent
 google-cloud-secret-manager
 google-genai
 firebase-admin
 pdfplumber
 pymupdf
-odfpy
