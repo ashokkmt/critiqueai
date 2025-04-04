@@ -30,7 +30,7 @@ load_dotenv()
 
 
 # Updated prompts for AI evaluation
-EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. Do not mention the question and answer JUST GIVE EVALUATION AS YOU TOLD.
+EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. Do not mention the question and answer or any word like evaluation, JUST GIVE EVALUATION AS YOU TOLD.
 eg-   Q:
       A:
        
@@ -40,12 +40,6 @@ answer:
 
 SCORE_PROMPT = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score: 7'. (Always give 0 if the answer is absolutely wrong)"
 
-# Enhanced prompts for AI evaluation
-NOTES_PROMPT = '''Provide detailed notes on the following topic:
-- Include key concepts, principles, and subtopics .
-- Provide hands-on exercises, projects, and challenges that reinforce the concepts learned.
-- List the most effective books, courses, websites, and tools to master the topic. Each resource should be a clickable working link with a brief description (1-2 lines).
-- Format the output in Markdown for easy readability. (Do not add any markdown word), max output is just 1000 so answer should be according to that limit.'''
 
 SUMMARY_PROMPT = '''Generate a structured summary of the provided data. The data consists of multiple files, each separated by a line of asterisks (*************************).
 DONT ADD ANY SUMMARY STARTING LINE. JUST START SUMMART DIRECTLY.
