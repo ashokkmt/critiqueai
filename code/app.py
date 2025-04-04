@@ -45,7 +45,7 @@ service_account_json = json.loads(get_serve_account.payload.data.decode("UTF-8")
 
 
 # Updated prompts for AI evaluation
-EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. Do not mention the question and answer JUST GIVE EVALUATION AS YOU TOLD.
+EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. Do not mention the question and answer or any word like evaluation, JUST GIVE EVALUATION AS YOU TOLD.
 eg-   Q:
       A:
        
