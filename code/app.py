@@ -10,7 +10,6 @@ from google import genai
 from google.genai import types
 from datetime import datetime, timezone, timedelta
 from google.cloud import storage, vision, secretmanager
-import PIL.Image
 from PIL import Image
 from io import BytesIO
 import zipfile
@@ -20,8 +19,6 @@ import uuid
 from google.oauth2 import service_account
 import io
 import base64
-from odf.opendocument import load
-from odf.text import P
 
 
 sec_client = secretmanager.SecretManagerServiceClient()
@@ -58,14 +55,6 @@ answer:
 
 SCORE_PROMPT = "Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score like 'Score: 7'. (Always give 0 if the answer is absolutely wrong)"
 
-# Enhanced prompts for AI evaluation
-NOTES_PROMPT = '''Provide detailed notes on the following topic:
-- Include key concepts, principles, and subtopics .
-- Provide hands-on exercises, projects, and challenges that reinforce the concepts learned.
-- List the most effective books, courses, websites, and tools to master the topic. Each resource should be a clickable working link with a brief description (1-2 lines).
-- Format the output in Markdown for easy readability. (Do not add any markdown word), max output is just 1000 so answer should be according to that limit.
-
-Don't any greeting and thank you note at the start or the end.'''
 
 SUMMARY_PROMPT = '''Generate a structured summary of the provided data. The data consists of multiple files, each separated by a line of asterisks (*************************).
 DONT ADD ANY SUMMARY STARTING LINE. JUST START SUMMART DIRECTLY.
@@ -204,7 +193,6 @@ def process_pdf_file(pdf_bytes):
 
 # Image File
 def process_img_file(image_content):
-    # img_file = PIL.Image.open(path)
     image = vision.Image(content=image_content)
     text_response = vision_client.text_detection(image=image)
     text = text_response.text_annotations[0].description if text_response.text_annotations else ""
@@ -663,7 +651,6 @@ def summary_out():
                     
             session_id = session.get('session_id')
             file_url = get_user_files(session_id, time)
-            # print("URL LIST AT FIREBASE - ", file_url)
             for url in file_url:
                 combined_text += process_file(url) + "\n\n***************************************************\n\n"
                 
@@ -725,7 +712,6 @@ def evaluate():
                     return "No file selected.", 400
 
                 if file and allowed_file(file.filename):
-                    # filename = secure_filename(file.filename)
                     time = datetime.now(timezone.utc)
                     upload_files(file)
                     session_id = session.get('session_id')
