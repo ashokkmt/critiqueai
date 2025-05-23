@@ -1,17 +1,17 @@
 [
     {
-        "img" : "#",
-        "heading" : "Test1",
-        "Des" : "dekabdesad vbieabduead"
+        "icon" : "FaBullseye",
+        "heading" : "Our Mission",
+        "Des" : "To make quality education accessible through AI-powered tools and personalized feedback, aligning with Google's mission to organize information and make it universally accessible and useful"
     },
     {
-        "img" : "#",
-        "heading" : "Test1",
-        "Des" : "dekabdesa dvbieabduzd bfkdsjbchksD bfhlkdsbnf fsjhdbfh dsjvfshjdvf jhkdsead"
+        "icon" : "FaUsers",
+        "heading" : "Our Team",
+        "Des" : "Dedicated professionals combining expertise in AI, education, and Google technologies to create innovative solutions for the Google Solution Challenge 2025"
     },
     {
-        "img" : "#",
-        "heading" : "Test1",
-        "Des" : "dekabdesadvbi eabduead"
+        "icon" : "FaGoogle",
+        "heading" : "Technologies",
+        "Des" : "Built with various Google technologies including Google Cloud Platform, Firebase, and other Google APIs to deliver a seamless and powerful educational experience"
     }
 ]

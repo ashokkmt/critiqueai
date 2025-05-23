@@ -29,17 +29,18 @@ button {
     background: linear-gradient(135deg, #3fe493, #0ea5e9);
     color: white;
     border: none;
-    border-radius: 5px;
-    padding: 8px 12px;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 1.1rem;
     font-weight: 500;
     cursor: pointer;
-    margin: 8px;
+    margin: 12px;
     transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 button:hover {
-    /* background: linear-gradient(135deg, #2dad6f, #0c89c4); */
-    transform: translateY(-2px);
+    transform: translateY(-4px);
 }
 
 #particles-js {
@@ -54,28 +55,35 @@ button:hover {
 .main-wrapper {
     width: 100%;
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 93vh;
 }
 
 .page-wrapper {
     padding: 20px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    width: 100%;
-
+    gap: 2rem;
+    width: 75%;
+    height: 80%;
+    border: 1px solid rgba(63, 228, 147, 0.1);
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    background: rgb(22 27 34);
 }
 
 .evaluation-card {
-    background: rgba(22, 27, 34, 0.85);
-    backdrop-filter: blur(10px);
     border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
-    border: 1px solid rgba(63, 228, 147, 0.1);
-    padding: 1rem 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    padding: 2rem 0;
+    display: grid;
+    grid-template-columns: 1fr .0005fr 1fr;
+    justify-items: center;
     gap: 1rem;
+}
+
+.seprate {
+    border: 1px solid rgba(0, 251, 67, 0.123);
 }
 
 .card-header {
@@ -85,7 +93,6 @@ button:hover {
 .header-icon {
     font-size: 2.5rem;
     color: #3fe493;
-    margin-bottom: 15px;
     animation: pulse 2s infinite;
 }
 
@@ -103,42 +110,29 @@ button:hover {
     margin-top: 10px;
 }
 
-.input-sections {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-}
-
-.input-section {
-    background: rgba(22, 27, 34, 0.8);
-    border-radius: 15px;
-    padding: 25px;
-    width: 75%;
-    padding: 20px;
-    box-sizing: border-box;
-    border: 1px solid rgba(63, 228, 147, 0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
-.input-section1 {
-    width: 100%;
-    width: 75%;
-    align-self: center;
-    overflow: hidden;
-}
-
 .input-section h2 {
     font-size: 1.3rem;
     color: #3fe493;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
 }
+
+.input-section1 {
+    width: 100%;
+    width: 75%;
+    overflow: hidden;
+}
+
+.input-section2 {
+    width: 100%;
+    width: 75%;
+    align-self: center;
+    overflow: hidden;
+}
+
 
 /* Divider Line */
 .divider {
@@ -218,8 +212,8 @@ textarea::placeholder {
 /* Drag-and-Drop Area */
 #drop-zone {
     width: 90%;
-    height: 80%;
-    border: 2px dashed #3fe493;
+    height: 60%;
+    border: 2px dashed rgba(63, 228, 147, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -228,7 +222,7 @@ textarea::placeholder {
     background-color: #1a1f27;
     border-radius: 10px;
     transition: border-color 0.3s ease, background-color 0.3s ease;
-    margin: 20px 0;
+    /* margin: 20px 0; */
     cursor: pointer;
 }
 
@@ -240,7 +234,6 @@ textarea::placeholder {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 15px;
     transition: all 0.3s ease;
 }
 

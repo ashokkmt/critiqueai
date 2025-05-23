@@ -1,11 +1,15 @@
 import { useEffect } from 'react';
 import '../styles/HomePage.css';
 import 'aos/dist/aos.css';
-import Toolsdata from '../data/Tools-data.json'
+import Toolsdata from '../data/tools.json'
 import Featuredata from '../data/feature.json'
 import aboutdata from '../data/about.json'
 import AOS from 'aos';
 import { useNavigate } from 'react-router-dom';
+import { IoCheckmarkCircleSharp } from "react-icons/io5";
+import { FaBolt, FaBook, FaBrain, FaBullseye, FaChartLine, FaFileAlt, FaFileImport, FaGoogle, FaRoad, FaUsers } from 'react-icons/fa';
+
+
 const HomePage = () => {
 
   const navigate = useNavigate();
@@ -64,32 +68,6 @@ const HomePage = () => {
 
     typeEffect();
 
-    // Smooth Scroll
-    const handleSmoothScroll = (e) => {
-      if (e.target.tagName === 'A' && e.target.getAttribute('href')?.startsWith('#')) {
-        e.preventDefault();
-        const targetId = e.target.getAttribute('href');
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          const offset = 60;
-          const top = targetElement.getBoundingClientRect().top + window.scrollY - offset;
-          window.scrollTo({ top, behavior: 'smooth' });
-        }
-      }
-    };
-
-    document.addEventListener('click', handleSmoothScroll);
-
-    const handleScroll = () => {
-      const navbar = document.querySelector('.navbar');
-      if (window.scrollY > 50) {
-        navbar?.classList.add('scrolled');
-      } else {
-        navbar?.classList.remove('scrolled');
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
 
     // Load particles.js
     const script = document.createElement('script');
@@ -138,11 +116,31 @@ const HomePage = () => {
 
     document.body.appendChild(script);
 
-    return () => {
-      document.removeEventListener('click', handleSmoothScroll);
-      window.removeEventListener('scroll', handleScroll);
-    };
-   }, []);
+  }, []);
+
+  function scrollToLastAbout(e) {
+    e.preventDefault();
+    const aboutSections = document.querySelectorAll('.main-about-section');
+    const lastAbout = aboutSections[aboutSections.length - 1];
+    if (lastAbout) {
+      lastAbout.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+  const iconMap = {
+    IoCheckmarkCircleSharp: IoCheckmarkCircleSharp,
+    FaRoad: FaRoad,
+    FaFileAlt: FaFileAlt,
+    FaBook: FaBook,
+    FaBrain: FaBrain,
+    FaBolt: FaBolt,
+    FaChartLine: FaChartLine,
+    FaFileImport: FaFileImport,
+    FaBullseye: FaBullseye,
+    FaUsers: FaUsers,
+    FaGoogle: FaGoogle
+  };
+
 
   return (
     <>
@@ -162,7 +160,7 @@ const HomePage = () => {
                 Experience AI-powered answer evaluation, smart document summarization, and personalized learning roadmaps
               </p>
               <div className="hero-buttons">
-                <a href="#about" className="primary-btn">Learn More</a>
+                <a onClick={scrollToLastAbout} href="#about" className="primary-btn">Learn More</a>
               </div>
             </div>
             <div className="hero-illustration">
@@ -179,18 +177,19 @@ const HomePage = () => {
         {/* Tools */}
         <div className='main-tools-section'>
           <div className='sub-tools'>
-            <h2>Answer Evaluation</h2>
+            <h2>Our Tools</h2>
             <div className='tools-cards'>
 
               {
 
                 Toolsdata.map((tool) => {
+                  const Icon = iconMap[tool.icon];
                   return (
                     <div className='tool-card'>
-                      <img src={tool.img} alt="Img" />
+                      {Icon && <Icon size={18} style={{ marginBottom: '8px' }} />}
                       <h3>{tool.heading}</h3>
                       <p>{tool.Des}</p>
-                      <button onClick={() => navigate(tool.path)} >Try Now</button>
+                      <button className='newBtn' onClick={() => navigate(tool.path)} >Try Now</button>
                     </div>
                   )
                 })
@@ -204,14 +203,15 @@ const HomePage = () => {
         {/* Features */}
         <div className='main-feature-section'>
           <div className='sub-feature'>
-            <h2>heading</h2>
+            <h2>Why Choose CritiqueAI?</h2>
             <div className='features-cards'>
               {
-
                 Featuredata.map((item) => {
+                  const Icon = iconMap[item.icon];
+
                   return (
                     <div className='feature-card'>
-                      <img src={item.img} alt="Img" />
+                      {Icon && <Icon size={40} style={{ marginBottom: "16px", color: "rgb(63, 228, 147)" }} />}
                       <h3>{item.heading}</h3>
                       <p>{item.Des}</p>
                     </div>
@@ -228,17 +228,19 @@ const HomePage = () => {
         <div className='main-about-section'>
           <div className='sub-about'>
             <div className='sub-about-title'>
-              <h2>heading</h2>
-              <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Porro eius cum fuga, enim possimus quod consequuntur modi laborum repellat neque adipisci, cupiditate, eaque atque maiores! Eum sit qui pariatur repudiandae!</p>
+              <h2>About CritiqueAI</h2>
+              <p>CritiqueAI is an innovative project developed for the Google Solution Challenge 2025. Our AI-powered learning companion is designed to revolutionize education through advanced technology, leveraging multiple Google technologies to create an impactful solution. Our platform combines answer evaluation, roadmap generation, and document summarization to create a comprehensive learning experience that addresses real-world educational challenges.</p>
             </div>
             <div className='about-cards'>
               {
 
                 aboutdata.map((item) => {
+
+                  const Icon = iconMap[item.icon];
                   return (
                     <>
                       <div className='about-card'>
-                        <img src={item.img} alt="Img" />
+                        {Icon && <Icon size={18} />}
                         <h3>{item.heading}</h3>
                         <p>{item.Des}</p>
                       </div>

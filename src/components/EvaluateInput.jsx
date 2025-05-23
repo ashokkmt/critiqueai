@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import '../styles/EvaluateInput.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { useNavigate } from 'react-router-dom';
-import OutputBox from './OutputBox';
+import { FaCloudUploadAlt } from 'react-icons/fa';
 
 const EvaluateInput = () => {
   const fileInputRef = useRef(null);
@@ -83,20 +83,27 @@ const EvaluateInput = () => {
     <>
       <div id="particles-js"></div>
 
+      {/* <div className='popup -output'>
+        <div className='output-text'>
+          Text Output
+        </div>
+      </div> */}
+
       <div className="main-wrapper">
         <div className="page-wrapper">
-          <div className="evaluation-card">
-            <div className="card-header">
-              <div className="header-icon">
-                <i className="fas fa-check-circle"></i>
-              </div>
-              <h1>Answer Evaluation</h1>
-              <p className="tagline">Enter your answer or upload a file for AI-powered evaluation</p>
-            </div>
 
-            <div className="input-sections">
+          <div className="card-header">
+            <div className="header-icon">
+              <i className="fas fa-check-circle"></i>
+            </div>
+            <h1>Answer Evaluation</h1>
+            <p className="tagline">Enter your answer or upload a file for AI-powered evaluation</p>
+          </div>
+
+          <div className="evaluation-card">
+
               {/* Text Input */}
-              <div className="input-section">
+              <div className="input-section input-section1">
                 <h2><i className="fas fa-keyboard"></i> Text Input</h2>
                 <form onSubmit={handleTextSubmit} className="input-form">
                   <div className="textarea-container">
@@ -110,15 +117,18 @@ const EvaluateInput = () => {
                     <i className="fas fa-paper-plane"></i> Submit Text
                   </button>
                 </form>
-              </div>
             </div>
 
+            <div className='seprate'></div>
+
             {/* File Upload */}
-            <div className="input-section input-section1">
+            <div className="input-section input-section2">
               <h2><i className="fas fa-file-upload"></i> File Upload</h2>
               <form className='form-evaluate'>
                 <div className="drag-area" id="drop-zone" onClick={handleBrowseClick}>
-                  <div className="icon"><i className="fas fa-cloud-upload-alt"></i></div>
+                  <div className="icon">
+                    <FaCloudUploadAlt />
+                    </div>
                   <h3>Drag & Drop Files</h3>
                   <span>OR</span>
                   <button type="button" className="browse-btn" onClick={handleBrowseClick}>
@@ -136,12 +146,13 @@ const EvaluateInput = () => {
                 <div className="file-info">
                   Supported formats: PDF, DOCX, TXT, PNG, JPEG
                 </div>
+                <div className="file-info">
+                  Note: For now only support single file at a time.
+                </div>
               </form>
             </div>
 
           </div>
-
-          <OutputBox/>
 
         </div>
       </div>

@@ -1,24 +1,24 @@
 [
     {
-        "img": "#",
+        "icon": "IoCheckmarkCircleSharp" ,
         "heading": "Answer Evaluation",
         "Des": "Get instant AI feedback on your answers with detailed scoring and improvement suggestions",
         "path": "/input"
     },
     {
-        "img": "#",
+        "icon": "FaRoad" ,
         "heading": "Learning Roadmap",
         "Des": "Generate personalized learning paths for any skill or subject you want to master",
         "path": "/roadmap"
     },
     {
-        "img": "#",
+        "icon": "FaFileAlt",
         "heading": "Document Summary",
         "Des": "Turn lengthy documents into concise, meaningful summaries instantly",
         "path": "/summary"
     },
     {
-        "img": "#",
+        "icon": "FaBook",
         "heading": "Generate Notes",
         "Des": "Create comprehensive study notes tailored to your academic needs",
         "path": "/get-content"

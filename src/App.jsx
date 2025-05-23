@@ -22,7 +22,6 @@ function EvaluateInputFunc() {
     <>
       <NavbarFooter />
       <EvaluateInput />
-      <Footer />
     </>
   )
 }
@@ -32,7 +31,6 @@ function RoadMapFunc() {
     <>
       <NavbarFooter />
       <RoadMap />
-      <Footer />
     </>
   )
 }
@@ -42,7 +40,6 @@ function Summarypage() {
     <>
       <NavbarFooter />
       <Summary />
-      <Footer />
     </>
   )
 }
@@ -52,7 +49,6 @@ function Generatenote() {
     <>
       <NavbarFooter />
       <GenerateNote />
-      <Footer />
     </>
   )
 }

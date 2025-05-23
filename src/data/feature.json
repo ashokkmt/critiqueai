@@ -1,21 +1,21 @@
 [
     {
-        "img" : "#",
+        "icon" : "FaBrain",
         "heading" : "AI-Powered Analysis",
         "Des" : "Advanced algorithms provide comprehensive feedback and insights"
     },
     {
-        "img" : "#",
+        "icon" : "FaBolt",
         "heading" : "Real-Time Results",
         "Des" : "Get instant feedback to improve your learning experience"
     },
     {
-        "img" : "#",
+        "icon" : "FaFileImport",
         "heading" : "Multi-Format Support",
         "Des" : "Upload various file types including PDF, DOCX, and more"
     },
     {
-        "img" : "#",
+        "icon" : "FaChartLine",
         "heading" : "Track Progress",
         "Des" : "Monitor your improvement with detailed analytics"
     }

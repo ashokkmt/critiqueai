@@ -34,14 +34,11 @@ body {
 /* Hero Section */
 .hero-section {
     min-height: calc(100vh - 60px);
-    /* Adjust for navbar */
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    /* Changed to align content to left */
     padding: 4rem;
-    /* Increased right padding */
     background: radial-gradient(circle at 50% 50%, #161b22 0%, #0d1117 100%);
     position: relative;
     overflow: hidden;
@@ -512,6 +509,13 @@ h1 {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(63, 228, 147, 0.1);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    font-family: Poppins, sans-serif;
+    font-size: 15px;
+}
+
+
+.main-tools-section p {
+    color: rgb(195, 208, 229);
 }
 
 .main-tools-section h2 {
@@ -587,6 +591,7 @@ h1 {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(63, 228, 147, 0.1);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    font-size: 15px;
 }
 
 .main-feature-section h2 {
@@ -596,6 +601,10 @@ h1 {
     -webkit-text-fill-color: transparent;
 }
 
+
+.main-feature-section p {
+    color: rgb(195, 208, 229);
+}
 
 .sub-feature {
     width: 100%;
@@ -619,7 +628,7 @@ h1 {
 .feature-card {
     border: 1px solid white;
     width: 100%;
-    padding: 1rem;
+    padding: 2rem;
 
     >p {
         word-wrap: break-word;
@@ -661,6 +670,7 @@ h1 {
     backdrop-filter: blur(10px);
     border: 1px solid rgba(63, 228, 147, 0.1);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
 }
 
 .main-about-section h2 {
@@ -670,6 +680,9 @@ h1 {
     -webkit-text-fill-color: transparent;
 }
 
+.main-about-section p {
+    color: rgb(195, 208, 229);
+}
 
 .sub-about {
     width: 100%;
@@ -685,6 +698,10 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+
+    >p {
+        padding: 0 4rem;
+    }
 }
 
 
@@ -700,11 +717,12 @@ h1 {
 .about-card {
     border: 1px solid white;
     width: 100%;
-    padding: 1rem;
+    padding: 2rem;
 
     >p {
         word-wrap: break-word;
         text-wrap: wrap;
+        margin-bottom: 20px;
     }
 
     >img {
@@ -780,4 +798,3 @@ h1 {
     position: relative;
     z-index: 2;
 }
-

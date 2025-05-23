@@ -38,6 +38,16 @@ const Navbar = () => {
     };
   }, []);
 
+
+  function scrollToLastAbout(e) {
+    e.preventDefault();
+    const aboutSections = document.querySelectorAll('.main-about-section');
+    const lastAbout = aboutSections[aboutSections.length - 1];
+    if (lastAbout) {
+      lastAbout.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   return (
     <>
       <div id="particles-js"></div>
@@ -83,7 +93,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            <a href="/#about" className="nav-link">
+            <a href="/#about" onClick={scrollToLastAbout} className="nav-link">
               <i className="fas fa-info-circle"></i>
               <span>About</span>
             </a>
