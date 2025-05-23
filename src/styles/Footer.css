@@ -1,0 +1,19 @@
+/* Footer */
+.footer {
+    width: 100%;
+    background: rgba(22, 27, 34, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(63, 228, 147, 0.1);
+    padding: 1rem 0;
+    text-align: center;
+    /* margin-top: 4rem; */
+    height: 8vh;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
