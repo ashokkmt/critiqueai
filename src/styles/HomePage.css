@@ -602,7 +602,6 @@ h1 {
     height: 100%;
     padding: 1rem 1rem;
     text-align: center;
-    /* border: 1px solid white; */
     display: flex;
     flex-direction: column;
     gap: 3rem;
@@ -620,7 +619,7 @@ h1 {
 .feature-card {
     border: 1px solid white;
     width: 100%;
-    padding: 3rem 1rem;
+    padding: 1rem;
 
     >p {
         word-wrap: break-word;
@@ -628,7 +627,7 @@ h1 {
     }
 
     >img {
-        margin-bottom: 1rem;
+        margin-bottom: .5rem;
     }
 
     transition: all 0.4s ease-in-out;
@@ -648,72 +647,83 @@ h1 {
 
 
 /* About Section Styles */
-.about-section {
-    padding: 60px 0;
-    text-align: center;
-    width: 100%;
-    max-width: 1200px;
-}
-
-.about-section h2 {
-    font-size: 2.5em;
-    margin-bottom: 30px;
-    color: #3fe493;
-}
-
-.about-content {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.about-content p {
-    font-size: 1.1em;
-    line-height: 1.6;
-    margin-bottom: 20px;
-    color: #c3d0e5;
-}
-
-.about-features {
+.main-about-section {
+    height: auto;
+    width: 73%;
+    border: 1px solid white;
     display: flex;
     justify-content: center;
-    gap: 40px;
-    margin-top: 40px;
-    flex-wrap: wrap;
+    align-items: center;
+    padding: 3rem 1rem 6rem 1rem;
+    margin: 4rem 0;
+    background: rgba(22, 27, 34, 0.5);
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(63, 228, 147, 0.1);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
-.about-feature {
-    flex: 1;
-    min-width: 250px;
-    max-width: 350px;
-    padding: 25px;
-    background-color: #161a20;
-    border: 2px solid #202630;
+.main-about-section h2 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, #3fe493, #0ea5e9);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+.sub-about {
+    width: 100%;
+    height: 100%;
+    padding: 1rem 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.sub-about-title {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+
+.about-cards {
+    width: 90%;
+    /* border: 1px solid white; */
+    height: 100%;
+    display: flex;
+    gap: 3rem;
+    align-self: center;
+}
+
+.about-card {
+    border: 1px solid white;
+    width: 100%;
+    padding: 1rem;
+
+    >p {
+        word-wrap: break-word;
+        text-wrap: wrap;
+    }
+
+    >img {
+        margin-bottom: .5rem;
+    }
+
+    transition: all 0.4s ease-in-out;
     border-radius: 10px;
-    transition: transform 0.3s ease;
+    border: 1px solid rgba(63, 228, 147, 0.1);
+    background: rgba(22, 27, 34, 0.8);
 }
 
-.about-feature:hover {
-    border: 2px solid #3f4a5d;
-    transform: translateY(-5px);
+.about-card:hover {
+    transform: translateY(-3px);
+    border-color: #37f69a;
+    box-shadow: 0 0 12px -2px #37f69a;
 }
 
-.about-feature i {
-    font-size: 2em;
-    color: #3fe493;
-    margin-bottom: 15px;
-}
 
-.about-feature h3 {
-    font-size: 1.3em;
-    margin-bottom: 15px;
-    color: #e8effc;
-}
-
-.about-feature p {
-    font-size: 0.9em;
-    color: #8990a0;
-}
 
 #particles-js {
     position: fixed;
@@ -732,11 +742,6 @@ h1 {
     animation: gradient-shift 8s ease infinite;
 }
 
-.parallax-section {
-    background-attachment: fixed;
-    transform-style: preserve-3d;
-    perspective: 1000px;
-}
 
 @keyframes gradient-shift {
     0% {
@@ -766,18 +771,7 @@ h1 {
     }
 }
 
-.section {
-    width: 100%;
-    padding: 6rem 2rem;
-    position: relative;
-    z-index: 2;
-    background: rgba(22, 27, 34, 0.5);
-    margin: 4rem 0;
-    border-radius: 30px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(63, 228, 147, 0.1);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-}
+
 
 .container {
     width: 100%;
@@ -787,47 +781,3 @@ h1 {
     z-index: 2;
 }
 
-/* Common section styling */
-.section,
-.about-section {
-    width: 90%;
-    max-width: 1400px;
-    margin: 4rem auto;
-    padding: 6rem 4rem;
-    position: relative;
-    z-index: 2;
-    background: rgba(22, 27, 34, 0.5);
-    border-radius: 30px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(63, 228, 147, 0.1);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-}
-
-/* Container standardization */
-.about-content {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-
-    .section,
-    .about-section {
-        width: 95%;
-        padding: 4rem 2rem;
-        margin: 2rem auto;
-    }
-}
-
-@media (max-width: 480px) {
-
-    .section,
-    .about-section {
-        width: 98%;
-        padding: 3rem 1.5rem;
-        margin: 1.5rem auto;
-    }
-}

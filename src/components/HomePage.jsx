@@ -3,6 +3,7 @@ import '../styles/HomePage.css';
 import 'aos/dist/aos.css';
 import Toolsdata from '../data/Tools-data.json'
 import Featuredata from '../data/feature.json'
+import aboutdata from '../data/about.json'
 import AOS from 'aos';
 import { useNavigate } from 'react-router-dom';
 const HomePage = () => {
@@ -141,7 +142,7 @@ const HomePage = () => {
       document.removeEventListener('click', handleSmoothScroll);
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+   }, []);
 
   return (
     <>
@@ -189,7 +190,7 @@ const HomePage = () => {
                       <img src={tool.img} alt="Img" />
                       <h3>{tool.heading}</h3>
                       <p>{tool.Des}</p>
-                      <button onClick={()=> navigate(tool.path)} >Try Now</button>
+                      <button onClick={() => navigate(tool.path)} >Try Now</button>
                     </div>
                   )
                 })
@@ -224,41 +225,33 @@ const HomePage = () => {
 
 
         {/* About Section */}
-        <div id="about" className="about-section section" data-aos="fade-up">
-          <div className="container">
-            <h2>About CritiqueAI</h2>
-            <div className="about-content">
-              <p>
-                CritiqueAI is an innovative project developed for the Google Solution Challenge 2025... Our platform combines answer evaluation, roadmap generation, and document summarization to create a comprehensive learning experience.
-              </p>
-              <div className="about-grid">
-                {[
-                  {
-                    icon: 'fas fa-bullseye',
-                    title: 'Our Mission',
-                    text: 'To make quality education accessible through AI-powered tools...'
-                  },
-                  {
-                    icon: 'fas fa-users',
-                    title: 'Our Team',
-                    text: 'Dedicated professionals combining expertise in AI, education, and Google technologies...'
-                  },
-                  {
-                    icon: 'fab fa-google',
-                    title: 'Technologies',
-                    text: 'Built with Google Cloud Platform, Firebase, and more...'
-                  }
-                ].map((item, idx) => (
-                  <div className="about-item" key={idx}>
-                    <i className={item.icon}></i>
-                    <h3>{item.title}</h3>
-                    <p>{item.text}</p>
-                  </div>
-                ))}
-              </div>
+        <div className='main-about-section'>
+          <div className='sub-about'>
+            <div className='sub-about-title'>
+              <h2>heading</h2>
+              <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Porro eius cum fuga, enim possimus quod consequuntur modi laborum repellat neque adipisci, cupiditate, eaque atque maiores! Eum sit qui pariatur repudiandae!</p>
+            </div>
+            <div className='about-cards'>
+              {
+
+                aboutdata.map((item) => {
+                  return (
+                    <>
+                      <div className='about-card'>
+                        <img src={item.img} alt="Img" />
+                        <h3>{item.heading}</h3>
+                        <p>{item.Des}</p>
+                      </div>
+                    </>
+                  )
+                })
+              }
             </div>
           </div>
         </div>
+
+
+
       </div>
 
     </>
