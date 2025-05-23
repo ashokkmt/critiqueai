@@ -29,6 +29,6 @@ Thumbs.db
 code/test*
 tests/
 images/
-output*
+output.*
 
 !.gitignore
