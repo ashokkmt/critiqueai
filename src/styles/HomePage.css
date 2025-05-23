@@ -499,7 +499,7 @@ h1 {
 /* Tools */
 .main-tools-section {
     height: auto;
-    width: 90%;
+    width: 73%;
     border: 1px solid white;
     display: flex;
     justify-content: center;
@@ -523,7 +523,7 @@ h1 {
 
 
 .sub-tools {
-    width: 90%;
+    width: 100%;
     height: 100%;
     padding: 1rem 2rem;
     text-align: center;
@@ -575,7 +575,7 @@ h1 {
 /* features */
 .main-feature-section {
     height: auto;
-    width: 90%;
+    width: 73%;
     border: 1px solid white;
     display: flex;
     justify-content: center;
@@ -598,7 +598,7 @@ h1 {
 
 
 .sub-feature {
-    width: 90%;
+    width: 100%;
     height: 100%;
     padding: 1rem 1rem;
     text-align: center;
@@ -620,7 +620,7 @@ h1 {
 .feature-card {
     border: 1px solid white;
     width: 100%;
-    padding: 1rem;
+    padding: 3rem 1rem;
 
     >p {
         word-wrap: break-word;
@@ -628,7 +628,7 @@ h1 {
     }
 
     >img {
-        margin-bottom: .5rem;
+        margin-bottom: 1rem;
     }
 
     transition: all 0.4s ease-in-out;

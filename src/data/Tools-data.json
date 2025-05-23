@@ -1,26 +1,26 @@
 [
     {
         "img": "#",
-        "heading": "Test1",
-        "Des": "dekabdesad vbieabduead",
+        "heading": "Answer Evaluation",
+        "Des": "Get instant AI feedback on your answers with detailed scoring and improvement suggestions",
         "path": "/input"
     },
     {
         "img": "#",
-        "heading": "Test1",
-        "Des": "dekabdesadvbieabduzd bfkdsjbchksDbfhlkdsbnf fsjhdbfhdsjvfshjdvfjhkdsead",
+        "heading": "Learning Roadmap",
+        "Des": "Generate personalized learning paths for any skill or subject you want to master",
         "path": "/roadmap"
     },
     {
         "img": "#",
-        "heading": "Test1",
-        "Des": "dekabdesadvbi eabduead",
+        "heading": "Document Summary",
+        "Des": "Turn lengthy documents into concise, meaningful summaries instantly",
         "path": "/summary"
     },
     {
         "img": "#",
-        "heading": "Test1",
-        "Des": "dekabdesad vbieabduead",
+        "heading": "Generate Notes",
+        "Des": "Create comprehensive study notes tailored to your academic needs",
         "path": "/get-content"
     }
 ]
