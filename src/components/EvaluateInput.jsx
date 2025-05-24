@@ -1,12 +1,18 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../styles/EvaluateInput.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { useNavigate } from 'react-router-dom';
-import { FaCloudUploadAlt } from 'react-icons/fa';
+import { FaClipboardCheck, FaCloudUploadAlt, FaCopy, FaRedo, FaStar } from 'react-icons/fa';
 
 const EvaluateInput = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
+  const [showres, setshowres] = useState(false);
+  const output = useRef(null);
+  const evaluation = useRef(null)
+
+
+
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -66,7 +72,8 @@ const EvaluateInput = () => {
     e.preventDefault();
     const text = e.target.elements.fname.value;
     console.log('Text submitted:', text);
-    navigate('/evaluate');
+    navigate('/input');
+    setshowres(true);
   };
 
   const handleBrowseClick = () => {
@@ -76,18 +83,66 @@ const EvaluateInput = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     console.log('File uploaded:', file);
+    setshowres(true);
     navigate('/evaluate');
   };
+
+
+  useEffect(() => {
+    if (output.current) {
+      output.current.style.display = "none"
+    }
+  }, [])
+
+  const copyEvaluation = (e) => {
+    if (evaluation.current) {
+      navigator.clipboard.writeText(evaluation.current.innerText)
+    }
+  }
 
   return (
     <>
       <div id="particles-js"></div>
 
-      {/* <div className='popup -output'>
-        <div className='output-text'>
-          Text Output
+      {
+        showres && <div ref={output} className='popup-output'>
+          <div className='output-text'>
+
+            <div className='res-heading'>
+              <h2> <FaStar style={{ color: "#3fe493" }} /> Evaluation Results</h2>
+              <div className='marks-circle'>
+                <span className='mark'>-/</span>
+                <span className='score-head'>Score</span>
+              </div>
+            </div>
+
+            <div className='result-text'>
+              <h3><FaClipboardCheck />  Detailed Feedback</h3>
+              <p
+                ref={evaluation}
+              >
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti ex atque ea tempora quae illum aliquid quo consequuntur perspiciatis sint.
+                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officiis possimus excepturi tenetur quo suscipit et cum odio minus est accusantium iste exercitationem recusandae illum maiores animi culpa ex saepe voluptate vitae, repellat amet quasi officia fugit. Porro distinctio perspiciatis debitis similique minima voluptatum atque aperiam velit reprehenderit placeat! Adipisci, eos.
+              </p>
+            </div>
+
+            <div className='res-buttons'>
+              <button
+                onClick={() => setshowres(false)}
+                className='res-btn'
+              >
+                <FaRedo />
+                New Evaluation
+              </button>
+              <button
+                className='res-btn'
+                onClick={copyEvaluation}
+              > <FaCopy /> Copy Feedback</button>
+            </div>
+          </div>
+
         </div>
-      </div> */}
+      }
 
       <div className="main-wrapper">
         <div className="page-wrapper">
@@ -102,21 +157,21 @@ const EvaluateInput = () => {
 
           <div className="evaluation-card">
 
-              {/* Text Input */}
-              <div className="input-section input-section1">
-                <h2><i className="fas fa-keyboard"></i> Text Input</h2>
-                <form onSubmit={handleTextSubmit} className="input-form">
-                  <div className="textarea-container">
-                    <textarea
-                      name="fname"
-                      placeholder="Type or paste your question and answer here..."
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="action-button primary-button">
-                    <i className="fas fa-paper-plane"></i> Submit Text
-                  </button>
-                </form>
+            {/* Text Input */}
+            <div className="input-section input-section1">
+              <h2><i className="fas fa-keyboard"></i> Text Input</h2>
+              <form onSubmit={handleTextSubmit} className="input-form">
+                <div className="textarea-container">
+                  <textarea
+                    name="fname"
+                    placeholder="Type or paste your question and answer here..."
+                    required
+                  />
+                </div>
+                <button type="submit" className="action-button primary-button">
+                  <i className="fas fa-paper-plane"></i> Submit Text
+                </button>
+              </form>
             </div>
 
             <div className='seprate'></div>
@@ -128,7 +183,7 @@ const EvaluateInput = () => {
                 <div className="drag-area" id="drop-zone" onClick={handleBrowseClick}>
                   <div className="icon">
                     <FaCloudUploadAlt />
-                    </div>
+                  </div>
                   <h3>Drag & Drop Files</h3>
                   <span>OR</span>
                   <button type="button" className="browse-btn" onClick={handleBrowseClick}>
