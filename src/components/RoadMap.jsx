@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../styles/RoadMap.css'
-import { FaRoute, FaMapSigns } from 'react-icons/fa';
+import {FaMapSigns} from 'react-icons/fa';
 import OutputBox from './OutputBox';
 
 export default function RoadMap() {
@@ -88,39 +88,25 @@ export default function RoadMap() {
     return (
         <>
             <div className='Roadmap-page'>
+
                 <div className="roadmap-outer">
-                    <div className="roadmap-box">
-                        <div className="roadmap-glow"></div>
 
-                        <div className="roadmap-header">
-                            <h1 className="roadmap-title">
-                                <FaMapSigns className="icon" /> Skill Roadmap Generator
-                            </h1>
-                            <p className="roadmap-tagline">Chart your learning journey with a personalized roadmap</p>
-                        </div>
-
-                        <form onSubmit={handleSubmit} className="roadmap-form">
-                            <label htmlFor="topic" className="roadmap-label">
-                                What would you like to learn?
-                            </label>
-                            <textarea
-                                id="topic"
-                                className="roadmap-textarea"
-                                placeholder="e.g., Python, Web Development, Machine Learning"
-                                value={topic}
-                                onChange={(e) => setTopic(e.target.value)}
-                                required
-                            ></textarea>
-
-                            <button type="submit" className="roadmap-button">
-                                <FaRoute className="icon" /> Generate Roadmap
-                            </button>
-                        </form>
+                    <div className="roadmap-heading">
+                        <h2> <FaMapSigns color='#3fe493'/> Skill RoadMap Generator</h2>  
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, nihil!</p>
                     </div>
+
+
+                    <div className='second-Roadmapbox'>
+                        <div className='roadmap-box'>
+                            <h3>What would you like to learn?</h3>
+                            <textarea placeholder='e.g. Python, Web Development, Machine Learning' className='roadmap-textarea'></textarea>
+                            <button>Generate Roadmap</button>
+                        </div>
+                        <OutputBox />
+                    </div>
+
                 </div>
-
-
-              <OutputBox/>
 
             </div>
 

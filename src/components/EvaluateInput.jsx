@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import '../styles/EvaluateInput.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { useNavigate } from 'react-router-dom';
-import { FaClipboardCheck, FaCloudUploadAlt, FaCopy, FaRedo, FaStar } from 'react-icons/fa';
+import { FaClipboardCheck, FaCloudUploadAlt, FaCopy, FaRedo, FaRobot, FaStar } from 'react-icons/fa';
 
 const EvaluateInput = () => {
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const [showres, setshowres] = useState(false);
+  const [loading, isloading] = useState(true);
+  const [fadeIn, setFadeIn] = useState(false);
   const output = useRef(null);
   const evaluation = useRef(null)
 
@@ -74,6 +76,9 @@ const EvaluateInput = () => {
     console.log('Text submitted:', text);
     navigate('/input');
     setshowres(true);
+    setTimeout(() => {
+      isloading(false);
+    }, 3000);
   };
 
   const handleBrowseClick = () => {
@@ -83,16 +88,13 @@ const EvaluateInput = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     console.log('File uploaded:', file);
+    navigate('/input');
     setshowres(true);
-    navigate('/evaluate');
+    setTimeout(() => {
+      isloading(false);
+    }, 3000);
   };
 
-
-  useEffect(() => {
-    if (output.current) {
-      output.current.style.display = "none"
-    }
-  }, [])
 
   const copyEvaluation = (e) => {
     if (evaluation.current) {
@@ -100,45 +102,70 @@ const EvaluateInput = () => {
     }
   }
 
+
+  useEffect(() => {
+    if (showres) {
+      setTimeout(() => setFadeIn(true), 100);
+    } else {
+      setFadeIn(false);
+    }
+  }, [showres]);
+
+
+
   return (
     <>
       <div id="particles-js"></div>
 
       {
-        showres && <div ref={output} className='popup-output'>
+        showres && <div ref={output} className={`popup-output ${fadeIn ? 'show-fadein' : ''}`}>
           <div className='output-text'>
 
-            <div className='res-heading'>
-              <h2> <FaStar style={{ color: "#3fe493" }} /> Evaluation Results</h2>
-              <div className='marks-circle'>
-                <span className='mark'>-/</span>
-                <span className='score-head'>Score</span>
+            {
+              loading ? <div className='output-placeholder' >
+                <FaRobot size={40} color="#3fe493" />
+                <p>AI is ready to generate your result...</p>
+                <div className="shimmer-line"></div>
+                <div className="shimmer-line short"></div>
               </div>
-            </div>
 
-            <div className='result-text'>
-              <h3><FaClipboardCheck />  Detailed Feedback</h3>
-              <p
-                ref={evaluation}
-              >
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti ex atque ea tempora quae illum aliquid quo consequuntur perspiciatis sint.
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officiis possimus excepturi tenetur quo suscipit et cum odio minus est accusantium iste exercitationem recusandae illum maiores animi culpa ex saepe voluptate vitae, repellat amet quasi officia fugit. Porro distinctio perspiciatis debitis similique minima voluptatum atque aperiam velit reprehenderit placeat! Adipisci, eos.
-              </p>
-            </div>
+                :
 
-            <div className='res-buttons'>
-              <button
-                onClick={() => setshowres(false)}
-                className='res-btn'
-              >
-                <FaRedo />
-                New Evaluation
-              </button>
-              <button
-                className='res-btn'
-                onClick={copyEvaluation}
-              > <FaCopy /> Copy Feedback</button>
-            </div>
+                <>
+                  <div className='res-heading'>
+                    <h2> <FaStar style={{ color: "#3fe493" }} /> Evaluation Results</h2>
+                    <div className='marks-circle'>
+                      <span className='mark'>-/</span>
+                      <span className='score-head'>Score</span>
+                    </div>
+                  </div>
+
+                  <div className='result-text'>
+                    <h3><FaClipboardCheck />  Detailed Feedback</h3>
+                    <p
+                      ref={evaluation}
+                    >
+                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti ex atque ea tempora quae illum aliquid quo consequuntur perspiciatis sint.
+                      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officiis possimus excepturi tenetur quo suscipit et cum odio minus est accusantium iste exercitationem recusandae illum maiores animi culpa ex saepe voluptate vitae, repellat amet quasi officia fugit. Porro distinctio perspiciatis debitis similique minima voluptatum atque aperiam velit reprehenderit placeat! Adipisci, eos.
+                    </p>
+                  </div>
+
+                  <div className='res-buttons'>
+                    <button
+                      onClick={() => { setshowres(false); isloading(true) }}
+                      className='res-btn'
+                    >
+                      <FaRedo />
+                      New Evaluation
+                    </button>
+                    <button
+                      className='res-btn'
+                      onClick={copyEvaluation}
+                    > <FaCopy /> Copy Feedback</button>
+                  </div>
+                </>
+            }
+
           </div>
 
         </div>
@@ -186,7 +213,7 @@ const EvaluateInput = () => {
                   </div>
                   <h3>Drag & Drop Files</h3>
                   <span>OR</span>
-                  <button type="button" className="browse-btn" onClick={handleBrowseClick}>
+                  <button type="button" className="browse-btn" >
                     Browse Files
                   </button>
                 </div>
