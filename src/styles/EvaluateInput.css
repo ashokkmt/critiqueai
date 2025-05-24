@@ -277,11 +277,6 @@ textarea::placeholder {
     color: #8990a0;
 }
 
-/* File Input */
-input[type="file"] {
-    display: none;
-}
-
 /* Description Styling */
 .description {
     font-size: 14px;

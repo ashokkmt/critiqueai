@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import '../styles/RoadMap.css'
-import {FaMapSigns} from 'react-icons/fa';
+import { FaMapSigns } from 'react-icons/fa';
 import OutputBox from './OutputBox';
 
 export default function RoadMap() {
+
+
+    const [Loading, isLoading] = useState(false)
+    const [topic, setTopic] = useState('');
 
     useEffect(() => {
         // Load external JS files
@@ -75,13 +79,23 @@ export default function RoadMap() {
     }, []);
 
 
-    const [topic, setTopic] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!topic.trim()) return;
-        console.log('Generating roadmap for:', topic);
+
+
+        isLoading(true)
+
+        const SummRes = topic.trim();
+        console.log('Generating roadmap for:', SummRes);
         // Add logic for roadmap generation here
+
+
+        setTimeout(() => {
+            isLoading(false);
+        }, 3000);
+
     };
 
 
@@ -92,20 +106,29 @@ export default function RoadMap() {
                 <div className="roadmap-outer">
 
                     <div className="roadmap-heading">
-                        <h2> <FaMapSigns color='#3fe493'/> Skill RoadMap Generator</h2>  
+                        <h2> <FaMapSigns color='#3fe493' /> Skill RoadMap Generator</h2>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, nihil!</p>
                     </div>
 
+                    <div className='sub-sum-box'>
+                        <h3>What would you like to learn?</h3>
+                        <div className='second-Roadmapbox'>
+                            <div className='roadmap-box'>
+                                <textarea
+                                    required
+                                    placeholder='e.g. Python, Web Development, Machine Learning'
+                                    className='roadmap-textarea'
+                                    onChange={(e) => { setTopic(e.target.value) }}
+                                    value={topic}
+                                ></textarea>
+                                <button
+                                    onClick={handleSubmit}
 
-                    <div className='second-Roadmapbox'>
-                        <div className='roadmap-box'>
-                            <h3>What would you like to learn?</h3>
-                            <textarea placeholder='e.g. Python, Web Development, Machine Learning' className='roadmap-textarea'></textarea>
-                            <button>Generate Roadmap</button>
+                                > <FaMapSigns/> Generate Roadmap</button>
+                            </div>
+                            <OutputBox Loading={Loading} />
                         </div>
-                        <OutputBox />
                     </div>
-
                 </div>
 
             </div>
