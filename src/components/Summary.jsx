@@ -9,11 +9,7 @@ export default function Summary() {
     const [textInput, setTextInput] = useState('');
     const [isDragging, setIsDragging] = useState(false);
 
-
-
-
     useEffect(() => {
-        // Load external JS files
         const loadScript = (src) => {
             const script = document.createElement('script');
             script.src = src;
@@ -26,7 +22,6 @@ export default function Summary() {
         loadScript('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js');
         loadScript('../static/script/scriptroad.js');
 
-        // Wait for particles.js to load, then configure
         const particlesInterval = setInterval(() => {
             if (window.particlesJS) {
                 clearInterval(particlesInterval);
@@ -84,31 +79,19 @@ export default function Summary() {
     const handleFileChange = (e) => {
         const newFiles = Array.from(e.target.files);
         setFiles(prev => [...prev, ...newFiles]);
+        e.target.value = ''; // reset to allow re-upload of same files
     };
 
     const handleBrowseClick = () => {
         fileInputRef.current.click();
     };
 
-    const removeFile = (index) => {
-        setFiles(prev => prev.filter((_, i) => i !== index));
-    };
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         const formData = new FormData();
-
-        // Append files if present
-        files.forEach((file, index) => {
-            formData.append('files', file);
-        });
-
-        // Append text if present
-        if (textInput.trim() !== '') {
-            formData.append('text', textInput.trim());
-        }
+        files.forEach(file => formData.append('files', file));
+        if (textInput.trim()) formData.append('text', textInput.trim());
 
         try {
             const response = await fetch('http://your-backend-endpoint/api/summarize', {
@@ -119,13 +102,12 @@ export default function Summary() {
             const result = await response.json();
             console.log('Server response:', result);
         } catch (err) {
+            console.log(files);
             console.error('Error sending data:', err);
         }
     };
 
-
-
-    // Drag Drop Section
+    // Drag-and-drop handlers
     const handleDragEnter = (e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -147,18 +129,17 @@ export default function Summary() {
         e.preventDefault();
     };
 
-
-
     return (
         <div className='summay-page'>
-            <div className="container1">
-                <div className="main-content">
-                    <div className="content-title">
-                        <h1>Content <span className="highlight">Summarizer</span></h1>
-                        <p className="tagline">Upload your files or enter text to get started</p>
-                    </div>
+            <div className="summary-page-subbox">
+                <div className="content-title">
+                    <h2>Content <span className="highlight">Summarizer</span></h2>
+                    <p className="tagline">Upload your files or enter text to get started</p>
+                </div>
 
-                    <form className="upload-form">
+                <div className="summary-main-content">
+                    <form className="upload-form summay-upload-form">
+
                         <div className="drag-upload-container">
                             <div
                                 className={`drag-area ${isDragging ? 'drag-over' : ''}`}
@@ -168,69 +149,73 @@ export default function Summary() {
                                 onDragEnter={handleDragEnter}
                                 onDragLeave={handleDragLeave}
                             >
-                                <div className="upload-content">
-                                    <div className="icon"><FaCloudUploadAlt size={40} color="#3fe493" /></div>
-                                    <h3>Drag & Drop Files</h3>
-                                    <span>OR</span>
-                                    <button type="button" className="browse-btn" onClick={handleBrowseClick}>
-                                        <FaFolderOpen /> Add Files
-                                    </button>
-                                    <input
-                                        type="file"
-                                        ref={fileInputRef}
-                                        multiple
-                                        hidden
-                                        onChange={handleFileChange}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* File list preview */}
-                        {files.length > 0 && (
-                            <div className="file-list">
-                                <h4 className="file-list-title"><FaFile /> Selected Files</h4>
-                                {files.map((file, index) => (
-                                    <div className="file-item" key={index}>
-                                        <span className="file-name">{file.name}</span>
-                                        <span className="file-size">{(file.size / 1024).toFixed(1)} KB</span>
-                                        <button type='button' className="remove-file" onClick={() =>
-                                            removeFile(index)
-                                        }>
-                                            <FaTimes />
+                                {files.length === 0 ? (
+                                    <div className="upload-content">
+                                        <div className="icon"><FaCloudUploadAlt size={40} color="#3fe493" /></div>
+                                        <h3>Drag & Drop Files</h3>
+                                        <span>OR</span>
+                                        <button type="button" className="browse-btn">
+                                            <FaFolderOpen /> Add Files
                                         </button>
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                ) : (
+                                    <div className="file-preview-list scrollable-list">
+                                        {files.map((file, index) => (
+                                            <div className="file-preview" key={index}>
+                                                <FaFile className="file-icon" />
+                                                <span className="file-name">{file.name}</span>
+                                                <FaTimes
+                                                    className="remove-file"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setFiles(prev => prev.filter((_, i) => i !== index));
+                                                    }}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
 
-                        <div className="text-input-container">
-                            <textarea
-                                required
-                                placeholder="Enter prompt to modify summary"
-                                value={textInput}
-                                onChange={(e) => setTextInput(e.target.value)}
-                            ></textarea>
+                                {/* Always render the input so file browser can open anytime */}
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    multiple
+                                    hidden
+                                    onChange={handleFileChange}
+                                />
+                            </div>
                         </div>
 
-                        <button
-                            className="submit-btn"
-                            disabled={textInput.trim() === '' && files.length === 0}
-                            onClick={handleSubmit}
-                        >
-                            <FaPaperPlane /> Submit Content
-                        </button>
-                    </form>
+                        <div className='second-summary-box'>
+                            <div className="text-input-container">
+                                <textarea
+                                    className='summary-textarea'
+                                    required
+                                    placeholder="Enter prompt to modify summary"
+                                    value={textInput}
+                                    onChange={(e) => setTextInput(e.target.value)}
+                                />
+                            </div>
 
-                    <div className="features">
-                        <div className="feature"><FaFileAlt /><span>Multiple Formats</span></div>
-                        <div className="feature"><FaTachometerAlt /><span>Fast Analysis</span></div>
-                        <div className="feature"><FaBrain /><span>AI-Powered</span></div>
-                    </div>
+                            <button
+                                className="submit-btn"
+                                disabled={textInput.trim() === '' && files.length === 0}
+                                onClick={handleSubmit}
+                            >
+                                <FaPaperPlane /> Submit Content
+                            </button>
+
+                            <div className="features">
+                                <div className="feature"><FaFileAlt /><span>Multiple Formats</span></div>
+                                <div className="feature"><FaTachometerAlt /><span>Fast Analysis</span></div>
+                                <div className="feature"><FaBrain /><span>AI-Powered</span></div>
+                            </div>
+                        </div>
+                    </form>
+                    <OutputBox />
                 </div>
             </div>
-
-            <OutputBox />
         </div>
     );
 }

@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react';
 import '../styles/RoadMap.css'
-import {FaMapSigns} from 'react-icons/fa';
+import { FaMapSigns } from 'react-icons/fa';
 import OutputBox from './OutputBox';
 
 export default function RoadMap() {
+
+
+    const [Loading, isLoading] = useState(false)
+    const [topic, setTopic] = useState('');
 
     useEffect(() => {
         // Load external JS files
@@ -75,13 +79,23 @@ export default function RoadMap() {
     }, []);
 
 
-    const [topic, setTopic] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!topic.trim()) return;
-        console.log('Generating roadmap for:', topic);
+
+
+        isLoading(true)
+
+        const SummRes = topic.trim();
+        console.log('Generating roadmap for:', SummRes);
         // Add logic for roadmap generation here
+
+
+        setTimeout(() => {
+            isLoading(false);
+        }, 3000);
+
     };
 
 
@@ -92,20 +106,41 @@ export default function RoadMap() {
                 <div className="roadmap-outer">
 
                     <div className="roadmap-heading">
-                        <h2> <FaMapSigns color='#3fe493'/> Skill RoadMap Generator</h2>  
+                        <h2> <FaMapSigns color='#3fe493' /> Skill RoadMap Generator</h2>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, nihil!</p>
                     </div>
 
 
                     <div className='second-Roadmapbox'>
-                        <div className='roadmap-box'>
-                            <h3>What would you like to learn?</h3>
-                            <textarea placeholder='e.g. Python, Web Development, Machine Learning' className='roadmap-textarea'></textarea>
-                            <button>Generate Roadmap</button>
-                        </div>
-                        <OutputBox />
-                    </div>
+                        <div className='roadmap-input-box'>
+                            <div className='roadmap-box'>
+                                <h3>What would you like to learn?</h3>
+                                <textarea
+                                    required
+                                    placeholder='e.g. Python, Web Development, Machine Learning'
+                                    className='roadmap-textarea'
+                                    onChange={(e) => { setTopic(e.target.value) }}
+                                    value={topic}
+                                ></textarea>
+                                <button
+                                    onClick={handleSubmit}
 
+                                > <FaMapSigns /> Generate Roadmap</button>
+
+                            </div>
+                            <div class="roadmap-input-tip">
+                                <h3>How it works?</h3>
+                                <ul>
+                                    <li><strong>Enter Skills</strong> — Type what you want to learn (e.g. Python, Web Development).</li>
+                                    <li><strong>Click Generate</strong> — Hit the <strong>Generate Roadmap</strong> button.</li>
+                                    <li><strong>AI Builds Roadmap</strong> — The AI creates a personalized learning path.</li>
+                                    <li><strong>Start Learning</strong> — Follow the roadmap and track your progress.</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                        <OutputBox Loading={Loading} />
+                    </div>
                 </div>
 
             </div>

@@ -63,7 +63,7 @@ function App() {
           <Route path="/input" element={<EvaluateInputFunc />} />
           <Route path="/roadmap" element={<RoadMapFunc />} />
           <Route path="/summary" element={<Summarypage />} />
-          <Route path="/get-content" element={<Generatenote />} />
+          <Route path="/notes" element={<Generatenote />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import '../styles/GenerateNote.css';
-import OutputBox from './OutputBox.jsx';
 
 export default function GenerateNote() {
-  const [isSendable, setisSendable] = useState(false)
+
+  const [Loading, isLoading] = useState(false);
   const [topic, setTopic] = useState('');
   const [dropdownValues, setDropdownValues] = useState({
     academicLevel: '',
@@ -98,32 +98,52 @@ export default function GenerateNote() {
       ...dropdownValues,
     };
 
-    try {
-      const response = await fetch('/api/generate-notes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
 
-      const result = await response.json();
-      console.log("Server response:", result);
+    console.log(topic)
+    console.log(topic)
 
-      // Pass result to OutputBox or handle however you want
-      // ......
+    isLoading(true)
+    setTimeout(() => {
+      isLoading(false)
+    }, 3000);
 
-    } catch (error) {
-      console.error('Error sending data:', error);
-    }
+    // try {
+    //   const response = await fetch('/api/generate-notes', {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify(data),
+    //   });
+
+    //   const result = await response.json();
+    // console.log("Server response:", result);
+
+    // Pass result to OutputBox or handle however you want
+    // ......
+
+    // } catch (error) {
+    //   console.error('Error sending data:', error);
+    // }
   };
 
   return (
-    <div className='generatenote-page'>
-      <div className="note-section">
+    <>
+      {Loading ?
+        <div class="loading-screen">
+          <div class="loading-content">
+            <div class="spinner"></div>
+            <p class="loading-text">Creating personalized Notes...</p>
+          </div>
+        </div> : undefined
+      }
+      <div className='generatenote-page'>
+
         <div className="card">
-          <h1 className="title">✨ Generate Study Notes</h1>
-          <p className="subtitle">Create comprehensive study materials tailored to your needs</p>
+          <div className='note-heading'>
+            <h1 className="title">✨ Generate Study Notes</h1>
+            <p className="subtitle">Create comprehensive study materials tailored to your needs</p>
+          </div>
 
           {/* Topic Input */}
           <div className="form-group">
@@ -175,15 +195,18 @@ export default function GenerateNote() {
 
           {/* Submit Button */}
           <div className="button-container">
-            <button className="generate-button" onClick={handleSubmit}>
+            <button
+              className="generate-button-note"
+              onClick={() => {
+                handleSubmit()
+              }}>
               ✏️ Generate Notes
             </button>
           </div>
         </div>
-      </div>
 
-      <OutputBox />
-    </div>
+      </div>
+    </>
   );
 }
 

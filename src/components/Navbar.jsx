@@ -1,4 +1,3 @@
-// NavbarFooter.jsx
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import AOS from 'aos';
@@ -28,7 +27,7 @@ const Navbar = () => {
 
     // Load custom script.js if needed
     const customScript = document.createElement('script');
-    customScript.src = '/script.js'; // Adjust path if needed
+    customScript.src = '/script.js';
     customScript.async = true;
     document.body.appendChild(customScript);
 
@@ -86,7 +85,7 @@ const Navbar = () => {
                   <i className="fas fa-file-alt"></i>
                   <span>Document Summary</span>
                 </Link>
-                <Link to="/get-content" className="dropdown-item">
+                <Link to="/notes" className="dropdown-item">
                   <i className="fas fa-book"></i>
                   <span>Generate Notes</span>
                 </Link>
