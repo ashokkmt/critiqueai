@@ -1,10 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../styles/GenerateNote.css';
+import { FaDownload, FaRobot, FaSlack } from 'react-icons/fa';
+import { MdContentCopy } from 'react-icons/md';
+import { RiCloseLargeLine } from 'react-icons/ri';
 
 export default function GenerateNote() {
 
   const [Loading, isLoading] = useState(false);
+  const [showoutput, setshowoutput] = useState(false);
   const [topic, setTopic] = useState('');
+  const [FadeIn, setFadeIn] = useState(false);
+  const [noteData, setnoteData] = useState("");
+  const copyContent = useRef(null);
+
   const [dropdownValues, setDropdownValues] = useState({
     academicLevel: '',
     detailLevel: '',
@@ -86,9 +94,10 @@ export default function GenerateNote() {
   };
 
 
+
+
   // Data To Backend
   const handleSubmit = async () => {
-
     if (topic == "") {
       return;
     }
@@ -99,13 +108,17 @@ export default function GenerateNote() {
     };
 
 
-    console.log(topic)
-    console.log(topic)
+    console.log(data);
 
+
+    setFadeIn(true)
+    setshowoutput(true)
     isLoading(true)
+
     setTimeout(() => {
       isLoading(false)
     }, 3000);
+
 
     // try {
     //   const response = await fetch('/api/generate-notes', {
@@ -127,16 +140,57 @@ export default function GenerateNote() {
     // }
   };
 
+
+  const DownloadFile = () => {
+    console.log("Download Button Pressed.....")
+  }
+
+  const CopyContent = () => {
+    navigator.clipboard.writeText(copyContent.current.innerText);
+  }
+
+
   return (
     <>
-      {Loading ?
-        <div class="loading-screen">
-          <div class="loading-content">
-            <div class="spinner"></div>
-            <p class="loading-text">Creating personalized Notes...</p>
+      {
+        showoutput && (
+          <div className={`note-output ${FadeIn ? "fadein" : ""}`}>
+            <div className='sub-note-output'>
+              {Loading ? (
+                <div className='output-placeholder'>
+                  <FaRobot size={40} color="#3fe493" />
+                  <p>AI is ready to generate your result...</p>
+                  <div className="shimmer-line"></div>
+                  <div className="shimmer-line short"></div>
+                </div>
+              ) : (
+                <>
+                  <div className='note-toolbar'>
+                    <h2>Generated Notes</h2>
+                    <div className='notes-btns'>
+                      <div className='note-icon' onClick={CopyContent} >
+                        <MdContentCopy />
+                      </div>
+                      <div className='note-icon' onClick={DownloadFile} >
+                        <FaDownload />
+                      </div>
+                      <div className='note-icon' onClick={() => setshowoutput(false)} >
+                        <RiCloseLargeLine />
+                      </div>
+                    </div>
+                  </div>
+                  <div className='note-content' ref={copyContent} >
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti quia accusamus, aspernatur assumenda odit repudiandae ab libero beatae amet obcaecati praese
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        </div> : undefined
+        )
       }
+
+
+
       <div className='generatenote-page'>
 
         <div className="card">
@@ -180,16 +234,6 @@ export default function GenerateNote() {
               label="📚 Include Code Examples:"
               options={["Yes", "No"]}
               onChange={(val) => handleDropdownChange("includeCode", val)}
-            />
-            <Dropdown
-              label="⏳ Urgency Level:"
-              options={["Quick Summary", "Full Explanation"]}
-              onChange={(val) => handleDropdownChange("urgency", val)}
-            />
-            <Dropdown
-              label="🎯 Exam-Focused:"
-              options={["Yes", "No"]}
-              onChange={(val) => handleDropdownChange("examFocused", val)}
             />
           </div>
 
