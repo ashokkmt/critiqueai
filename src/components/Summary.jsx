@@ -237,7 +237,7 @@ export default function Summary() {
                                 >
                                     {files.length === 0 ? (
                                         <div className="upload-content">
-                                            <div className="icon"><FaCloudUploadAlt size={40} color="#3fe493" /></div>
+                                            <div className="icon" ><FaCloudUploadAlt size={40} color="#3fe493" /></div>
                                             <h3>Drag & Drop Files</h3>
                                             <span>OR</span>
                                             <button type="button" className="browse-btn">

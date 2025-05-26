@@ -30,4 +30,5 @@ code/test*
 tests/
 output.*
 
+!.filenignore
 !.gitignore

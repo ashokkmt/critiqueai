@@ -196,7 +196,7 @@ export default function RoadMap() {
                                 > <FaMapSigns /> Generate Roadmap</button>
 
                             </div>
-                            <div class="roadmap-input-tip">
+                            {/* <div class="roadmap-input-tip">
                                 <h3>How it works?</h3>
                                 <ul>
                                     <li><strong>Enter Skills</strong> — Type what you want to learn (e.g. Python, Web Development).</li>
@@ -204,7 +204,7 @@ export default function RoadMap() {
                                     <li><strong>AI Builds Roadmap</strong> — The AI creates a personalized learning path.</li>
                                     <li><strong>Start Learning</strong> — Follow the roadmap and track your progress.</li>
                                 </ul>
-                            </div>
+                            </div> */}
 
                         </div>
                     </div>

@@ -11,7 +11,7 @@
 .roadmap-outer {
     padding: 20px;
     gap: 2rem;
-    width: 60%;
+    width: 50%;
     /* min-height: 80%; */
     border: 1px solid rgba(63, 228, 147, 0.1);
     border-radius: 30px;
@@ -32,6 +32,7 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    width: 60%;
 }
 
 .roadmap-heading {
@@ -61,7 +62,7 @@
 
 .roadmap-textarea {
     width: 100%;
-    background-color: #1e2130;
+    background-color: #00000026;
     color: white;
     padding: 1rem;
     height: 20%;
@@ -70,6 +71,7 @@
     resize: none;
     font-size: 1rem;
     flex-grow: 1;
+    margin-bottom: 0;
 }
 
 .roadmap-textarea::placeholder {
@@ -81,13 +83,12 @@
     flex-direction: column;
     gap: .5rem;
     width: 100%;
-    /* height: 40%; */
     padding: 0 1rem;
     border-radius: 10px;
-    /* flex-grow: 1; */
+    align-items: center;
 
 
-    >h3 {
+    >h2 {
         font-size: 15px;
         font-weight: 400;
     }
@@ -97,7 +98,7 @@
         justify-content: center;
         align-items: center;
         gap: .5rem;
-        align-self: flex-end;
+        /* align-self: flex-end; */
         
     }
 }
