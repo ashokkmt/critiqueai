@@ -118,7 +118,7 @@ const EvaluateInput = () => {
       <div id="particles-js"></div>
 
       {
-        showres && <div ref={output} className={`popup-output ${fadeIn ? 'show-fadein' : ''}`}>
+        showres && <div className={`popup-output ${fadeIn ? 'show-fadein' : ''}`}>
           <div className='output-text'>
 
             {

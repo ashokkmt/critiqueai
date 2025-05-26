@@ -1,13 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import '../styles/RoadMap.css'
-import { FaMapSigns } from 'react-icons/fa';
-import OutputBox from './OutputBox';
+import { FaDownload, FaMapSigns, FaRobot } from 'react-icons/fa';
+import { FiMaximize, FiMinimize } from 'react-icons/fi';
+import { MdContentCopy } from 'react-icons/md';
+import { RiCloseLargeLine } from 'react-icons/ri';
 
 export default function RoadMap() {
 
-
-    const [Loading, isLoading] = useState(false)
     const [topic, setTopic] = useState('');
+    const [Loading, setLoading] = useState(false);
+    const [showoutput, setshowoutput] = useState(false);
+    const [FadeIn, setFadeIn] = useState(false);
+    const [Maximize, setMaximize] = useState(false);
+    const copyContent = useRef(null)
 
     useEffect(() => {
         // Load external JS files
@@ -85,7 +90,9 @@ export default function RoadMap() {
         if (!topic.trim()) return;
 
 
-        isLoading(true)
+        setFadeIn(true)
+        setshowoutput(true)
+        setLoading(true)
 
         const SummRes = topic.trim();
         console.log('Generating roadmap for:', SummRes);
@@ -93,14 +100,75 @@ export default function RoadMap() {
 
 
         setTimeout(() => {
-            isLoading(false);
+            setLoading(false)
         }, 3000);
+
 
     };
 
 
+
+    const DownloadFile = () => {
+        console.log("Download Button Pressed.....")
+    }
+
+    const CopyContent = () => {
+        navigator.clipboard.writeText(copyContent.current.innerText);
+    }
+
+    const MaximizeNotesSize = () => {
+        setMaximize(!Maximize);
+    }
+
+
     return (
         <>
+            {
+                showoutput && (
+                    <div className={`note-output ${FadeIn ? "fadein" : ""}`}>
+                        <div className={`sub-note-output ${Maximize ? "sub-note-output-max" : ""}`}>
+                            {Loading ? (
+                                <div className='output-placeholder'>
+                                    <FaRobot size={40} color="#3fe493" />
+                                    <p>AI is ready to generate your result...</p>
+                                    <div className="shimmer-line"></div>
+                                    <div className="shimmer-line short"></div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className='note-toolbar'>
+                                        <h2>Generated Notes</h2>
+                                        <div className='notes-btns'>
+                                            <div className='note-icon' onClick={MaximizeNotesSize} >
+                                                {Maximize ? <FiMinimize /> : <FiMaximize />}
+                                            </div>
+                                            <div className='note-icon' onClick={CopyContent} >
+                                                <MdContentCopy />
+                                            </div>
+                                            <div className='note-icon' onClick={DownloadFile} >
+                                                <FaDownload />
+                                            </div>
+                                            <div className='note-icon' onClick={() => {
+                                                setshowoutput(false)
+                                                setMaximize(false)
+                                            }}
+                                            >
+                                                <RiCloseLargeLine />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='note-content' ref={copyContent} >
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti quia accusamus, aspernatur assumenda odit repudiandae ab libero beatae amet obcaecati praese
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )
+            }
+
+
+
             <div className='Roadmap-page'>
 
                 <div className="roadmap-outer">
@@ -139,7 +207,6 @@ export default function RoadMap() {
                             </div>
 
                         </div>
-                        <OutputBox Loading={Loading} />
                     </div>
                 </div>
 

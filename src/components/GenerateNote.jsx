@@ -3,6 +3,7 @@ import '../styles/GenerateNote.css';
 import { FaDownload, FaRobot, FaSlack } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
 import { RiCloseLargeLine } from 'react-icons/ri';
+import { FiMaximize, FiMinimize } from 'react-icons/fi';
 
 export default function GenerateNote() {
 
@@ -10,7 +11,7 @@ export default function GenerateNote() {
   const [showoutput, setshowoutput] = useState(false);
   const [topic, setTopic] = useState('');
   const [FadeIn, setFadeIn] = useState(false);
-  const [noteData, setnoteData] = useState("");
+  const [Maximize, setMaximize] = useState(false);
   const copyContent = useRef(null);
 
   const [dropdownValues, setDropdownValues] = useState({
@@ -18,8 +19,6 @@ export default function GenerateNote() {
     detailLevel: '',
     format: '',
     includeCode: '',
-    urgency: '',
-    examFocused: '',
   });
 
   useEffect(() => {
@@ -149,13 +148,17 @@ export default function GenerateNote() {
     navigator.clipboard.writeText(copyContent.current.innerText);
   }
 
+  const MaximizeNotesSize = () => {
+    setMaximize(!Maximize);
+  }
+
 
   return (
     <>
       {
         showoutput && (
           <div className={`note-output ${FadeIn ? "fadein" : ""}`}>
-            <div className='sub-note-output'>
+            <div className={`sub-note-output ${Maximize ? "sub-note-output-max" : ""}`}>
               {Loading ? (
                 <div className='output-placeholder'>
                   <FaRobot size={40} color="#3fe493" />
@@ -168,13 +171,20 @@ export default function GenerateNote() {
                   <div className='note-toolbar'>
                     <h2>Generated Notes</h2>
                     <div className='notes-btns'>
+                      <div className='note-icon' onClick={MaximizeNotesSize} >
+                        {Maximize ? <FiMinimize /> : <FiMaximize />}
+                      </div>
                       <div className='note-icon' onClick={CopyContent} >
                         <MdContentCopy />
                       </div>
                       <div className='note-icon' onClick={DownloadFile} >
                         <FaDownload />
                       </div>
-                      <div className='note-icon' onClick={() => setshowoutput(false)} >
+                      <div className='note-icon' onClick={() => {
+                        setshowoutput(false)
+                        setMaximize(false)
+                      }}
+                      >
                         <RiCloseLargeLine />
                       </div>
                     </div>
@@ -231,7 +241,7 @@ export default function GenerateNote() {
               onChange={(val) => handleDropdownChange("format", val)}
             />
             <Dropdown
-              label="📚 Include Code Examples:"
+              label="📚 Code Examples:"
               options={["Yes", "No"]}
               onChange={(val) => handleDropdownChange("includeCode", val)}
             />
@@ -265,16 +275,18 @@ const Dropdown = ({ label, options, onChange }) => {
   };
 
   return (
-    <div className="form-group">
-      <label className="label green">{label}</label>
-      <select className="select" value={selected} onChange={handleChange}>
-        {selected === "" && <option value="">-- Select Option --</option>}
-        {options.map((option, index) => (
-          <option key={index} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
+    <div className="dropdown-options">
+      <div className='dropdown-sub-box'>
+        <label className="label green">{label}</label>
+        <select className="select" value={selected} onChange={handleChange}>
+          {selected === "" && <option value="">-- Select Option --</option>}
+          {options.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };

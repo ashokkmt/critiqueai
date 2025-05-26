@@ -1,13 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import OutputBox from './OutputBox';
-import { FaCloudUploadAlt, FaFolderOpen, FaPaperPlane, FaFileAlt, FaTachometerAlt, FaBrain, FaTimes, FaFile } from 'react-icons/fa';
+import { FaCloudUploadAlt, FaFolderOpen, FaPaperPlane, FaFileAlt, FaTachometerAlt, FaBrain, FaTimes, FaFile, FaRobot, FaDownload } from 'react-icons/fa';
 import '../styles/Summary.css';
+import { FiMaximize, FiMinimize } from 'react-icons/fi';
+import { MdContentCopy } from 'react-icons/md';
+import { RiCloseLargeLine } from 'react-icons/ri';
 
 export default function Summary() {
     const fileInputRef = useRef(null);
     const [files, setFiles] = useState([]);
     const [textInput, setTextInput] = useState('');
     const [isDragging, setIsDragging] = useState(false);
+    const [Loading, setLoading] = useState(false);
+    const [showoutput, setshowoutput] = useState(false);
+    const [FadeIn, setFadeIn] = useState(false);
+    const [Maximize, setMaximize] = useState(false);
+    const copyContent = useRef(null)
 
     useEffect(() => {
         const loadScript = (src) => {
@@ -89,23 +97,41 @@ export default function Summary() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+
         const formData = new FormData();
         files.forEach(file => formData.append('files', file));
         if (textInput.trim()) formData.append('text', textInput.trim());
 
-        try {
-            const response = await fetch('http://your-backend-endpoint/api/summarize', {
-                method: 'POST',
-                body: formData,
-            });
 
-            const result = await response.json();
-            console.log('Server response:', result);
-        } catch (err) {
-            console.log(files);
-            console.error('Error sending data:', err);
-        }
+        setFadeIn(true)
+        setshowoutput(true)
+        setLoading(true)
+
+
+        console.log(files)
+        console.log(textInput)
+
+        setTimeout(() => {
+            setLoading(false)
+        }, 3000);
+
+
+
+        // try {
+        //     const response = await fetch('http://your-backend-endpoint/api/summarize', {
+        //         method: 'POST',
+        //         body: formData,
+        //     });
+
+        //     const result = await response.json();
+        //     console.log('Server response:', result);
+        // } catch (err) {
+        //     console.log(files);
+        //     console.error('Error sending data:', err);
+        // }
     };
+
+
 
     // Drag-and-drop handlers
     const handleDragEnter = (e) => {
@@ -129,93 +155,155 @@ export default function Summary() {
         e.preventDefault();
     };
 
+
+
+    const DownloadFile = () => {
+        console.log("Download Button Pressed.....")
+    }
+
+    const CopyContent = () => {
+        navigator.clipboard.writeText(copyContent.current.innerText);
+    }
+
+    const MaximizeNotesSize = () => {
+        setMaximize(!Maximize);
+    }
+
     return (
-        <div className='summay-page'>
-            <div className="summary-page-subbox">
-                <div className="content-title">
-                    <h2>Content <span className="highlight">Summarizer</span></h2>
-                    <p className="tagline">Upload your files or enter text to get started</p>
-                </div>
 
-                <div className="summary-main-content">
-                    <form className="upload-form summay-upload-form">
-
-                        <div className="drag-upload-container">
-                            <div
-                                className={`drag-area ${isDragging ? 'drag-over' : ''}`}
-                                onClick={handleBrowseClick}
-                                onDrop={handleDrop}
-                                onDragOver={handleDragOver}
-                                onDragEnter={handleDragEnter}
-                                onDragLeave={handleDragLeave}
-                            >
-                                {files.length === 0 ? (
-                                    <div className="upload-content">
-                                        <div className="icon"><FaCloudUploadAlt size={40} color="#3fe493" /></div>
-                                        <h3>Drag & Drop Files</h3>
-                                        <span>OR</span>
-                                        <button type="button" className="browse-btn">
-                                            <FaFolderOpen /> Add Files
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="file-preview-list scrollable-list">
-                                        {files.map((file, index) => (
-                                            <div className="file-preview" key={index}>
-                                                <FaFile className="file-icon" />
-                                                <span className="file-name">{file.name}</span>
-                                                <FaTimes
-                                                    className="remove-file"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setFiles(prev => prev.filter((_, i) => i !== index));
-                                                    }}
-                                                />
+        <>
+            {
+                showoutput && (
+                    <div className={`note-output ${FadeIn ? "fadein" : ""}`}>
+                        <div className={`sub-note-output ${Maximize ? "sub-note-output-max" : ""}`}>
+                            {Loading ? (
+                                <div className='output-placeholder'>
+                                    <FaRobot size={40} color="#3fe493" />
+                                    <p>AI is ready to generate your result...</p>
+                                    <div className="shimmer-line"></div>
+                                    <div className="shimmer-line short"></div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className='note-toolbar'>
+                                        <h2>Generated Notes</h2>
+                                        <div className='notes-btns'>
+                                            <div className='note-icon' onClick={MaximizeNotesSize} >
+                                                {Maximize ? <FiMinimize /> : <FiMaximize />}
                                             </div>
-                                        ))}
+                                            <div className='note-icon' onClick={CopyContent} >
+                                                <MdContentCopy />
+                                            </div>
+                                            <div className='note-icon' onClick={DownloadFile} >
+                                                <FaDownload />
+                                            </div>
+                                            <div className='note-icon' onClick={() => {
+                                                setshowoutput(false)
+                                                setMaximize(false)
+                                            }}
+                                            >
+                                                <RiCloseLargeLine />
+                                            </div>
+                                        </div>
                                     </div>
-                                )}
-
-                                {/* Always render the input so file browser can open anytime */}
-                                <input
-                                    type="file"
-                                    ref={fileInputRef}
-                                    multiple
-                                    hidden
-                                    onChange={handleFileChange}
-                                />
-                            </div>
+                                    <div className='note-content' ref={copyContent} >
+                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti quia accusamus, aspernatur assumenda odit repudiandae ab libero beatae amet obcaecati praese
+                                    </div>
+                                </>
+                            )}
                         </div>
+                    </div>
+                )
+            }
 
-                        <div className='second-summary-box'>
-                            <div className="text-input-container">
-                                <textarea
-                                    className='summary-textarea'
-                                    required
-                                    placeholder="Enter prompt to modify summary"
-                                    value={textInput}
-                                    onChange={(e) => setTextInput(e.target.value)}
-                                />
+            <div className='summay-page'>
+                <div className="summary-page-subbox">
+                    <div className="content-title">
+                        <h2>Content <span className="highlight">Summarizer</span></h2>
+                        <p className="tagline">Upload your files or enter text to get started</p>
+                    </div>
+
+                    <div className="summary-main-content">
+                        <form className="upload-form summay-upload-form">
+
+                            <div className="drag-upload-container">
+                                <div
+                                    className={`drag-area ${isDragging ? 'drag-over' : ''}`}
+                                    onClick={handleBrowseClick}
+                                    onDrop={handleDrop}
+                                    onDragOver={handleDragOver}
+                                    onDragEnter={handleDragEnter}
+                                    onDragLeave={handleDragLeave}
+                                >
+                                    {files.length === 0 ? (
+                                        <div className="upload-content">
+                                            <div className="icon"><FaCloudUploadAlt size={40} color="#3fe493" /></div>
+                                            <h3>Drag & Drop Files</h3>
+                                            <span>OR</span>
+                                            <button type="button" className="browse-btn">
+                                                <FaFolderOpen /> Add Files
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="file-preview-list scrollable-list">
+                                            {files.map((file, index) => (
+                                                <div className="file-preview" key={index}>
+                                                    <div className='file-show'>
+                                                        <FaFile className="file-icon" />
+                                                        <span className="file-name">{file.name}</span>
+                                                    </div>
+                                                    <FaTimes
+                                                        className="remove-file"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setFiles(prev => prev.filter((_, i) => i !== index));
+                                                        }}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Always render the input so file browser can open anytime */}
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        multiple
+                                        hidden
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
                             </div>
 
-                            <button
-                                className="submit-btn"
-                                disabled={textInput.trim() === '' && files.length === 0}
-                                onClick={handleSubmit}
-                            >
-                                <FaPaperPlane /> Submit Content
-                            </button>
+                            <div className='second-summary-box'>
+                                <div className="text-input-container">
+                                    <textarea
+                                        className='summary-textarea'
+                                        required
+                                        placeholder="Enter prompt to modify summary"
+                                        value={textInput}
+                                        onChange={(e) => setTextInput(e.target.value)}
+                                    />
+                                </div>
 
-                            <div className="features">
-                                <div className="feature"><FaFileAlt /><span>Multiple Formats</span></div>
-                                <div className="feature"><FaTachometerAlt /><span>Fast Analysis</span></div>
-                                <div className="feature"><FaBrain /><span>AI-Powered</span></div>
+                                <button
+                                    className="submit-btn"
+                                    disabled={textInput.trim() === '' && files.length === 0}
+                                    onClick={handleSubmit}
+                                >
+                                    <FaPaperPlane /> Submit Content
+                                </button>
+
+                                <div className="features">
+                                    <div className="feature"><FaFileAlt /><span>Multiple Formats</span></div>
+                                    <div className="feature"><FaTachometerAlt /><span>Fast Analysis</span></div>
+                                    <div className="feature"><FaBrain /><span>AI-Powered</span></div>
+                                </div>
                             </div>
-                        </div>
-                    </form>
-                    <OutputBox />
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

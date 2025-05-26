@@ -22,6 +22,17 @@
     border: 1px solid #30f57d30;
 }
 
+.dropdown-options {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.dropdown-sub-box {
+    width: 75%;
+}
 
 /* Headings */
 
@@ -157,7 +168,7 @@
 
 
 .sub-note-output {
-    width: 85%;
+    width: 40%;
     height: 90%;
     padding: 1rem;
     display: flex;
@@ -170,8 +181,12 @@
     border: 1px solid #2dad6f41;
     border-radius: 25px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
+    transition: all 0.5s ease;
 }
 
+.sub-note-output-max {
+    width: 85%;
+}
 
 .note-toolbar {
     border-bottom: 1px solid #2dad6f41;

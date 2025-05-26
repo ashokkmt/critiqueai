@@ -21,6 +21,6 @@
         "icon": "FaBook",
         "heading": "Generate Notes",
         "Des": "Create comprehensive study notes tailored to your academic needs",
-        "path": "/get-content"
+        "path": "/notes"
     }
 ]
