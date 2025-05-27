@@ -199,6 +199,9 @@ button {
     z-index: 1000;
 }
 
+.login-dropdown-content{
+    min-width: 210px;
+}
 
 .nav-dropdown:hover .nav-dropdown-content {
     display: flex;
@@ -281,4 +284,19 @@ button {
     .nav-dropdown-content {
         min-width: 160px;
     }
+}
+
+
+.user-info-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
 }

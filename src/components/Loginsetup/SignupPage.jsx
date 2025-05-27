@@ -124,84 +124,84 @@ export default function SignUpPage() {
 
   return (
     <>
-    <div id='particles-js'></div>
-    <div className="login-main-box">
-      <div className="login-box">
-        <div className="login-header">
-          <div className="logo-shield">
-            <img width={50} height={50} src="/images/favicon.png" alt="Logo" />
+      <div id='particles-js'></div>
+      <div className="login-main-box">
+        <div className="login-box">
+          <div className="login-header">
+            <div className="logo-shield">
+              <img width={50} height={50} src="/images/favicon.png" alt="Logo" />
+            </div>
+            <h2>Create Account</h2>
           </div>
-          <h2>Create Account</h2>
-        </div>
 
-        <form className="login-form" onSubmit={SubmitSignUp}>
+          <form className="login-form" onSubmit={SubmitSignUp}>
 
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-
-          <input
-            type="email"
-            placeholder="Email address"
-            value={email}
-            onChange={(e) => setemail(e.target.value)}
-            required
-          />
-
-          <div className="password-box">
             <input
-              type={passtype}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setpassword(e.target.value)}
+              type="text"
+              placeholder="First Name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               required
             />
-            <span onClick={showpass} className="eye-icon">
-              {eye ? <FiEyeOff /> : <FaEye />}
-            </span>
-          </div>
 
-          <div className="password-box">
             <input
-              type={passtype}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setconfirmPassword(e.target.value)}
+              type="text"
+              placeholder="Last Name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               required
             />
-            <span onClick={showpass} className="eye-icon">
-              {eye ? <FiEyeOff /> : <FaEye />}
-            </span>
-          </div>
 
-          <button type="submit" className="login-button">Sign Up</button>
-          <ToastContainer />
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setemail(e.target.value)}
+              required
+            />
 
-          <p className="signup-text">
-            Already have an account? <Link to="/login">Sign In</Link>
-          </p>
+            <div className="password-box">
+              <input
+                type={passtype}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setpassword(e.target.value)}
+                required
+              />
+              <span onClick={showpass} className="eye-icon">
+                {eye ? <FiEyeOff /> : <FaEye />}
+              </span>
+            </div>
 
+            <div className="password-box">
+              <input
+                type={passtype}
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setconfirmPassword(e.target.value)}
+                required
+              />
+              <span onClick={showpass} className="eye-icon">
+                {eye ? <FiEyeOff /> : <FaEye />}
+              </span>
+            </div>
+
+            <button type="submit" className="login-button">Sign Up</button>
+            <ToastContainer />
+
+            <p className="signup-text">
+              Already have an account? <Link to="/login">Sign In</Link>
+            </p>
+            {/* 
           <div className="divider"><span>OR</span></div>
 
           <button type="button" className="google-button">
             <FaGoogle color="green" className="google-icon" />
             Continue with Google
-          </button>
-        </form>
+          </button> */}
+          </form>
+        </div>
       </div>
-    </div>
     </>
   );
 }

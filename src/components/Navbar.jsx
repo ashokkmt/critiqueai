@@ -8,9 +8,11 @@ import { doc, getDoc } from 'firebase/firestore';
 import { CgLogOut } from 'react-icons/cg';
 import { auth, db } from './firebase/firebase';
 import { Slide, toast } from 'react-toastify';
+import { GrNotes } from 'react-icons/gr';
 
 const Navbar = () => {
   const [userDetail, setUserDetail] = useState(null)
+  const [userURL, setUserURL] = useState(null)
 
   useEffect(() => {
     // Initialize AOS
@@ -59,6 +61,7 @@ const Navbar = () => {
   const fetchUserDetail = async () => {
     auth.onAuthStateChanged(async (user) => {
       console.log(user);
+      setUserURL(user.photoURL);
 
       const docRef = doc(db, "Users", user.uid);
       const userdata = await getDoc(docRef)
@@ -72,7 +75,7 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchUserDetail();
-  },[])
+  }, [])
 
 
   const LogOutUser = async () => {
@@ -151,11 +154,19 @@ const Navbar = () => {
               userDetail ?
                 <>
                   <div className="nav-dropdown">
-                    <button className="nav-dropdown-btn">
+                    <button className="nav-dropdown-btn user-info-btn">
+                      {userURL && (
+                        <img src={userURL} alt="User Avatar" className="user-avatar" />
+                      )}
                       <span>{userDetail.firstName}</span>
                     </button>
-                    <div className="nav-dropdown-content">
-                      <Link onClick={LogOutUser} className="nav-link">
+                    <div className="nav-dropdown-content login-dropdown-content">
+                      <Link to='/savedNotes' className="dropdown-item">
+                        <GrNotes  size={18} />
+                        <span>Saved Notes</span>
+                      </Link>
+
+                      <Link onClick={LogOutUser} className="dropdown-item">
                         <CgLogOut size={22} />
                         <span>Logout</span>
                       </Link>

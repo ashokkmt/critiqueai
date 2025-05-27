@@ -3,10 +3,11 @@ import '../../styles/LoginSetup/LoginPage.css';
 import { FaEye, FaGoogle } from 'react-icons/fa';
 import { FiEyeOff } from 'react-icons/fi';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { auth } from '../firebase/firebase';
+import { auth, db } from '../firebase/firebase';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleAuthProvider } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
 
 export default function LoginPage() {
@@ -114,12 +115,30 @@ export default function LoginPage() {
         const Provider = new GoogleAuthProvider();
         try {
             const result = await signInWithPopup(auth, Provider);
-            console.log(result)
+            const GoogleUser = result.user.auth.currentUser;
+
+            if (GoogleUser) {
+                let fname = result.user.reloadUserInfo.displayName;
+                console.log(fname.split(" "))
+                await setDoc(doc(db, "Users", GoogleUser.uid), {
+                    firstName: fname.split(" ")[0],
+                    lastName: fname.split(" ")[1],
+                    email: GoogleUser.reloadUserInfo.email,
+                    Date: Date.now()
+                })
+            }
+
+
             toast.success("Logged in SuccessFully", {
                 position: "top-center",
                 autoClose: 2000,
                 transition: Slide,
             });
+
+
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
 
         } catch (error) {
             console.log(error.message);
@@ -185,3 +204,14 @@ export default function LoginPage() {
         </>
     );
 }
+
+
+
+
+
+
+
+// console.log(result.user.reloadUserInfo.displayName)
+// console.log(result.user.auth.currentUser.reloadUserInfo.photoUrl)
+// console.log(result.user.auth.currentUser.reloadUserInfo.email)
+// console.log(result.user.auth.currentUser.uid)
