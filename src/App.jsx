@@ -6,6 +6,8 @@ import Footer from "./components/Footer.jsx"
 import RoadMap from "./components/RoadMap.jsx"
 import Summary from "./components/Summary.jsx"
 import GenerateNote from "./components/GenerateNote.jsx"
+import LoginPage from "./components/Loginsetup/LoginPage.jsx"
+import SignUpPage from "./components/Loginsetup/SignupPage.jsx"
 
 function Homepagefunc() {
   return (
@@ -55,6 +57,7 @@ function Generatenote() {
 
 
 function App() {
+
   return (
     <>
       <BrowserRouter>
@@ -64,6 +67,8 @@ function App() {
           <Route path="/roadmap" element={<RoadMapFunc />} />
           <Route path="/summary" element={<Summarypage />} />
           <Route path="/notes" element={<Generatenote />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signUp" element={<SignUpPage />} />
         </Routes>
       </BrowserRouter>
     </>

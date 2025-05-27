@@ -1,10 +1,17 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import '../styles/Navbar.css';
+import { FiLogIn } from 'react-icons/fi';
+import { doc, getDoc } from 'firebase/firestore';
+import { CgLogOut } from 'react-icons/cg';
+import { auth, db } from './firebase/firebase';
+import { Slide, toast } from 'react-toastify';
 
 const Navbar = () => {
+  const [userDetail, setUserDetail] = useState(null)
+
   useEffect(() => {
     // Initialize AOS
     AOS.init({
@@ -44,6 +51,49 @@ const Navbar = () => {
     const lastAbout = aboutSections[aboutSections.length - 1];
     if (lastAbout) {
       lastAbout.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
+
+
+  const fetchUserDetail = async () => {
+    auth.onAuthStateChanged(async (user) => {
+      console.log(user);
+
+      const docRef = doc(db, "Users", user.uid);
+      const userdata = await getDoc(docRef)
+
+      if (userdata.exists()) {
+        console.log(userdata.data())
+        setUserDetail(userdata.data());
+      }
+    })
+  }
+
+  useEffect(() => {
+    fetchUserDetail();
+  },[])
+
+
+  const LogOutUser = async () => {
+    try {
+      await auth.signOut();
+
+      toast.success("Logged Out SuccessFully", {
+        position: "top-center",
+        autoClose: 2000,
+        transition: Slide,
+      });
+
+
+      setUserDetail(null)
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Having Some issue...", {
+        position: "top-center",
+        autoClose: 2000,
+        transition: Slide,
+      });
     }
   }
 
@@ -96,6 +146,28 @@ const Navbar = () => {
               <i className="fas fa-info-circle"></i>
               <span>About</span>
             </a>
+
+            {
+              userDetail ?
+                <>
+                  <div className="nav-dropdown">
+                    <button className="nav-dropdown-btn">
+                      <span>{userDetail.firstName}</span>
+                    </button>
+                    <div className="nav-dropdown-content">
+                      <Link onClick={LogOutUser} className="nav-link">
+                        <CgLogOut size={22} />
+                        <span>Logout</span>
+                      </Link>
+                    </div>
+                  </div>
+                </>
+                :
+                <Link to="/login" className="nav-link">
+                  <FiLogIn size={18} />
+                  <span>Login</span>
+                </Link>
+            }
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/HomePage.css';
 import 'aos/dist/aos.css';
 import Toolsdata from '../data/tools.json'
@@ -7,11 +7,10 @@ import aboutdata from '../data/about.json'
 import AOS from 'aos';
 import { useNavigate } from 'react-router-dom';
 import { IoCheckmarkCircleSharp } from "react-icons/io5";
-import { FaBolt, FaBook, FaBrain, FaBullseye, FaChartLine, FaFileAlt, FaFileImport, FaGoogle, FaRoad, FaUsers } from 'react-icons/fa';
+import { FaBolt, FaBook, FaBrain, FaBullseye, FaChartLine, FaFileAlt, FaFileImport, FaGoogle, FaRoad, FaSlack, FaUsers } from 'react-icons/fa';
 
 
 const HomePage = () => {
-
   const navigate = useNavigate();
 
   useEffect(() => {
