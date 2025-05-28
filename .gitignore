@@ -30,5 +30,8 @@ code/test*
 tests/
 images/
 output.*
+output_*
 
+test/
+!.filenignore
 !.gitignore
