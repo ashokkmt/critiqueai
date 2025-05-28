@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import '../styles/EvaluateInput.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { useNavigate } from 'react-router-dom';
 import { FaClipboardCheck, FaCloudUploadAlt, FaCopy, FaRedo, FaRobot, FaStar } from 'react-icons/fa';
+import axios from 'axios';
 
 const EvaluateInput = () => {
   const fileInputRef = useRef(null);
-  const navigate = useNavigate();
   const [showres, setshowres] = useState(false);
   const [loading, isloading] = useState(true);
   const [fadeIn, setFadeIn] = useState(false);
-  const output = useRef(null);
   const evaluation = useRef(null)
+  const [Score, setScore] = useState("-/")
+  const [feedbackHTML, setFeedbackHTML] = useState('');
+
 
 
 
@@ -70,29 +71,61 @@ const EvaluateInput = () => {
     document.body.appendChild(script);
   }, []);
 
-  const handleTextSubmit = (e) => {
+
+
+  const handleTextSubmit = async (e) => {
     e.preventDefault();
     const text = e.target.elements.fname.value;
     console.log('Text submitted:', text);
-    navigate('/input');
+
     setshowres(true);
-    setTimeout(() => {
+
+    try {
+      const res = await axios.post("http://127.0.0.1:5000/evaluate", {
+        text: text
+      });
+
+      const rawScore = res.data.score.trim();
+      setScore(rawScore);
+      setFeedbackHTML(res.data.evaluation);
       isloading(false);
-    }, 3000);
+
+      console.log(res);
+    } catch (error) {
+      console.log(error.message);
+    }
   };
+
+  useEffect(() => {
+    if (evaluation.current && feedbackHTML) {
+      evaluation.current.innerHTML = feedbackHTML;
+    }
+  }, [feedbackHTML, showres]);
+
 
   const handleBrowseClick = () => {
     fileInputRef.current.click();
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     console.log('File uploaded:', file);
-    navigate('/input');
+
     setshowres(true);
-    setTimeout(() => {
+
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const res = await axios.post("http://127.0.0.1:5000/evaluate", formData);
+      console.log('Response:', res.data);
       isloading(false);
-    }, 3000);
+      setScore(res.data.score);
+      setFeedbackHTML(res.data.evaluation);
+    } catch (error) {
+      console.error('Upload failed:', error);
+    }
   };
 
 
@@ -135,19 +168,18 @@ const EvaluateInput = () => {
                   <div className='res-heading'>
                     <h2> <FaStar style={{ color: "#3fe493" }} /> Evaluation Results</h2>
                     <div className='marks-circle'>
-                      <span className='mark'>-/</span>
+                      <span className='mark'>{Score}</span>
                       <span className='score-head'>Score</span>
                     </div>
                   </div>
 
                   <div className='result-text'>
                     <h3><FaClipboardCheck />  Detailed Feedback</h3>
-                    <p
+                    <div
                       ref={evaluation}
                     >
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit. Corrupti ex atque ea tempora quae illum aliquid quo consequuntur perspiciatis sint.
-                      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officiis possimus excepturi tenetur quo suscipit et cum odio minus est accusantium iste exercitationem recusandae illum maiores animi culpa ex saepe voluptate vitae, repellat amet quasi officia fugit. Porro distinctio perspiciatis debitis similique minima voluptatum atque aperiam velit reprehenderit placeat! Adipisci, eos.
-                    </p>
+
+                    </div>
                   </div>
 
                   <div className='res-buttons'>
@@ -167,8 +199,8 @@ const EvaluateInput = () => {
             }
 
           </div>
-
         </div>
+        
       }
 
       <div className="main-wrapper">

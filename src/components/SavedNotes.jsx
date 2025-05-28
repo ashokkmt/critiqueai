@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
 import '../styles/SavedNotes.css';
+import { auth } from './firebase/firebase';
+import axios from 'axios';
+
 
 export default function SavedNotes() {
   useEffect(() => {
@@ -55,6 +58,34 @@ export default function SavedNotes() {
     };
     document.body.appendChild(script);
   }, []);
+
+
+
+  const fetchUserDetail = async () => {
+    auth.onAuthStateChanged(async (user) => {
+
+      console.log(user.uid);
+
+      try {
+        const res = await axios.post("http://127.0.0.1:5000/set-output", {
+          Heading: "Heading",
+          Time: "20/20/20",
+          Content: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti quia accusamus, aspernatur assumenda odit repudiandae ab libero beatae amet obcaecati praese",
+          Uid: user.uid
+        })
+
+        console.log(res)
+      } catch (error) {
+
+      }
+
+    })
+  }
+
+  useEffect(() => {
+    fetchUserDetail();
+  }, [])
+
 
   return (
     <>

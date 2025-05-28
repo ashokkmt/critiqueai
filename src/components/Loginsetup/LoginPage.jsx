@@ -119,7 +119,7 @@ export default function LoginPage() {
 
             if (GoogleUser) {
                 let fname = result.user.reloadUserInfo.displayName;
-                console.log(fname.split(" "))
+                // console.log(fname.split(" "))
                 await setDoc(doc(db, "Users", GoogleUser.uid), {
                     firstName: fname.split(" ")[0],
                     lastName: fname.split(" ")[1] || "",

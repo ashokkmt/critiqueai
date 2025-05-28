@@ -473,6 +473,28 @@ textarea::placeholder {
 
 
 
+/* Yha Changes kran output css ke lie */
+
+.result-text div{
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.result-text div p {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.result-text div p > strong{
+    color: #2dad6f;
+}
+
+/* Yaha tak */
+
+
+
 
 
 .output-placeholder {

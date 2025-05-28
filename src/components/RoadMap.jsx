@@ -4,6 +4,8 @@ import { FaDownload, FaMapSigns, FaRobot } from 'react-icons/fa';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
 import { MdContentCopy } from 'react-icons/md';
 import { RiCloseLargeLine } from 'react-icons/ri';
+import { TfiSave } from 'react-icons/tfi';
+import axios from 'axios';
 
 export default function RoadMap() {
 
@@ -85,7 +87,7 @@ export default function RoadMap() {
 
 
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!topic.trim()) return;
 
@@ -97,12 +99,13 @@ export default function RoadMap() {
         const SummRes = topic.trim();
         console.log('Generating roadmap for:', SummRes);
         // Add logic for roadmap generation here
-
-
-        setTimeout(() => {
+        try {
+            const res = await axios.post("http://127.0.0.1:5000/get-roadmap", SummRes)
+            console.log(res);
             setLoading(false)
-        }, 3000);
-
+        } catch (error) {
+            console.log(error.message);
+        }
 
     };
 
@@ -141,6 +144,9 @@ export default function RoadMap() {
                                         <div className='notes-btns'>
                                             <div className='note-icon' onClick={MaximizeNotesSize} >
                                                 {Maximize ? <FiMinimize /> : <FiMaximize />}
+                                            </div>
+                                            <div className='note-icon' >
+                                                <TfiSave />
                                             </div>
                                             <div className='note-icon' onClick={CopyContent} >
                                                 <MdContentCopy />
@@ -217,3 +223,6 @@ export default function RoadMap() {
         </>
     )
 }
+
+
+// Ashok baat krwa dena

@@ -98,8 +98,8 @@ export default function SignUpPage() {
         })
       }
 
-      console.log("User created:", user);
-      console.log("Name:", firstName, lastName);
+      // console.log("User created:", user);
+      // console.log("Name:", firstName, lastName);
 
       toast.success("Account Created SuccessFully", {
         position: "top-center"

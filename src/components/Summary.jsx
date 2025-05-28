@@ -5,6 +5,7 @@ import '../styles/Summary.css';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
 import { MdContentCopy } from 'react-icons/md';
 import { RiCloseLargeLine } from 'react-icons/ri';
+import { TfiSave } from 'react-icons/tfi';
 
 export default function Summary() {
     const fileInputRef = useRef(null);
@@ -190,6 +191,9 @@ export default function Summary() {
                                         <div className='notes-btns'>
                                             <div className='note-icon' onClick={MaximizeNotesSize} >
                                                 {Maximize ? <FiMinimize /> : <FiMaximize />}
+                                            </div>
+                                            <div className='note-icon' >
+                                                <TfiSave />
                                             </div>
                                             <div className='note-icon' onClick={CopyContent} >
                                                 <MdContentCopy />

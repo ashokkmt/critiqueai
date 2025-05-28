@@ -60,14 +60,14 @@ const Navbar = () => {
 
   const fetchUserDetail = async () => {
     auth.onAuthStateChanged(async (user) => {
-      console.log(user);
-      setUserURL(user.photoURL);
+      // console.log(user);
+      // setUserURL(user.photoURL);
 
       const docRef = doc(db, "Users", user.uid);
       const userdata = await getDoc(docRef)
 
       if (userdata.exists()) {
-        console.log(userdata.data())
+        // console.log(userdata.data())
         setUserDetail(userdata.data());
       }
     })

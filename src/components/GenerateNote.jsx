@@ -141,9 +141,10 @@ export default function GenerateNote() {
   };
 
 
-  const DownloadFile = () => {
-    console.log("Download Button Pressed.....")
-  }
+  const DownloadFile = async () => {
+    console.log("Download Section Started")
+  };
+
 
   const CopyContent = () => {
     navigator.clipboard.writeText(copyContent.current.innerText);
@@ -175,7 +176,7 @@ export default function GenerateNote() {
                       <div className='note-icon' onClick={MaximizeNotesSize} >
                         {Maximize ? <FiMinimize /> : <FiMaximize />}
                       </div>
-                      <div className='note-icon' onClick={CopyContent} >
+                      <div className='note-icon' >
                         <TfiSave />
                       </div>
                       <div className='note-icon' onClick={CopyContent} >

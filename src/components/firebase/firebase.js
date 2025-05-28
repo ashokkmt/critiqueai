@@ -4,7 +4,7 @@ import { getFirestore } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA3yHqmSfCnm4VOwP61DasfTvX4Tku414Y",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: "instant-theater-449913-h4.firebaseapp.com",
   databaseURL: "https://instant-theater-449913-h4-default-rtdb.asia-southeast1.firebasedatabase.app",
   projectId: "instant-theater-449913-h4",
