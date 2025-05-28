@@ -122,7 +122,7 @@ export default function LoginPage() {
                 console.log(fname.split(" "))
                 await setDoc(doc(db, "Users", GoogleUser.uid), {
                     firstName: fname.split(" ")[0],
-                    lastName: fname.split(" ")[1],
+                    lastName: fname.split(" ")[1] || "",
                     email: GoogleUser.reloadUserInfo.email,
                     Date: Date.now()
                 })
@@ -141,7 +141,7 @@ export default function LoginPage() {
             }, 2000);
 
         } catch (error) {
-            console.log(error.message);
+            console.log(error);
             toast.error(error.message, {
                 position: "top-center",
                 autoClose: 2000,

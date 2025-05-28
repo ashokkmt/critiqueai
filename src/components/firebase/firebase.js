@@ -1,22 +1,24 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getAnalytics } from "firebase/analytics";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBVr53-hrEKoYic27L7aBBjF-tqQG3Z070",
-  authDomain: "loginsetup23.firebaseapp.com",
-  projectId: "loginsetup23",
-  storageBucket: "loginsetup23.firebasestorage.app",
-  messagingSenderId: "230490400310",
-  appId: "1:230490400310:web:ca49f2e3c609b348c75a97"
+  apiKey: "AIzaSyA3yHqmSfCnm4VOwP61DasfTvX4Tku414Y",
+  authDomain: "instant-theater-449913-h4.firebaseapp.com",
+  databaseURL: "https://instant-theater-449913-h4-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "instant-theater-449913-h4",
+  storageBucket: "instant-theater-449913-h4.firebasestorage.app",
+  messagingSenderId: "952301619936",
+  appId: "1:952301619936:web:7e6fb04a7edaab4e6d1e85",
+  measurementId: "G-QLF53ETE3M"
 };
-
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth();
 export const db = getFirestore(app)
+export const analytics = getAnalytics(app);
 
 export default app;

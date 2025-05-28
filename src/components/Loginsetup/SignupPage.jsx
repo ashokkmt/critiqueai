@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import '../../styles/LoginSetup/SignupPage.css';
-import { FaEye, FaGoogle } from 'react-icons/fa';
+import { FaEye } from 'react-icons/fa';
 import { FiEyeOff } from 'react-icons/fi';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../firebase/firebase';
@@ -94,7 +94,6 @@ export default function SignUpPage() {
           firstName: firstName,
           lastName: lastName,
           email: user.email,
-          password: user.reloadUserInfo.passwordHash,
           Date: Date.now()
         })
       }

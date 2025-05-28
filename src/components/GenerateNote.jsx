@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import '../styles/GenerateNote.css';
-import { FaDownload, FaRobot, FaSlack } from 'react-icons/fa';
+import { FaDownload, FaRobot } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
 import { RiCloseLargeLine } from 'react-icons/ri';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
+import { TfiSave } from 'react-icons/tfi';
 
 export default function GenerateNote() {
 
@@ -173,6 +174,9 @@ export default function GenerateNote() {
                     <div className='notes-btns'>
                       <div className='note-icon' onClick={MaximizeNotesSize} >
                         {Maximize ? <FiMinimize /> : <FiMaximize />}
+                      </div>
+                      <div className='note-icon' onClick={CopyContent} >
+                        <TfiSave />
                       </div>
                       <div className='note-icon' onClick={CopyContent} >
                         <MdContentCopy />
