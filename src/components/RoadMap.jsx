@@ -6,6 +6,7 @@ import { MdContentCopy } from 'react-icons/md';
 import { RiCloseLargeLine } from 'react-icons/ri';
 import { TfiSave } from 'react-icons/tfi';
 import axios from 'axios';
+import { auth } from './firebase/firebase';
 
 export default function RoadMap() {
 
@@ -14,7 +15,8 @@ export default function RoadMap() {
     const [showoutput, setshowoutput] = useState(false);
     const [FadeIn, setFadeIn] = useState(false);
     const [Maximize, setMaximize] = useState(false);
-    const copyContent = useRef(null)
+    const [RoadMap, setRoadMap] = useState("");
+    const RoadOut = useRef(null)
 
     useEffect(() => {
         // Load external JS files
@@ -98,16 +100,31 @@ export default function RoadMap() {
 
         const SummRes = topic.trim();
         console.log('Generating roadmap for:', SummRes);
+
         // Add logic for roadmap generation here
         try {
-            const res = await axios.post("http://127.0.0.1:5000/get-roadmap", SummRes)
+            const res = await axios.post("http://127.0.0.1:5000/get-roadmap", SummRes, {
+                headers: {
+                    "Content-Type": "text/plain"
+                }
+            });
+
             console.log(res);
+            setRoadMap(res.data.output);
             setLoading(false)
+
         } catch (error) {
             console.log(error.message);
         }
 
     };
+
+
+    useEffect(() => {
+        if (RoadOut.current) {
+            RoadOut.current.innerHTML = RoadMap;
+        }
+    }, [RoadMap])
 
 
 
@@ -116,13 +133,49 @@ export default function RoadMap() {
     }
 
     const CopyContent = () => {
-        navigator.clipboard.writeText(copyContent.current.innerText);
+        navigator.clipboard.writeText(RoadOut.current.innerText);
     }
 
     const MaximizeNotesSize = () => {
         setMaximize(!Maximize);
     }
 
+
+    const SendDataBackend = () => {
+        console.log("Sending Data Backend....")
+
+        auth.onAuthStateChanged(async (user) => {
+
+            if (user) {
+                console.log(user);
+                try {
+                    const res = await axios.post("http://127.0.0.1:5000/set-output", {
+                        heading: topic,
+                        time: Date.now(),
+                        content: RoadMap,
+                        uid: user.uid
+                    })
+                    console.log(res)
+
+
+                    toast.success("Saved Successfully", {
+                        position: "top-center",
+                        autoClose: 2000,
+                        transition: Slide,
+                    });
+
+                    setshowoutput(false)
+
+
+                } catch (error) {
+                    console.log(error.message)
+                }
+            }
+            else {
+                return;
+            }
+        })
+    }
 
     return (
         <>
@@ -145,7 +198,7 @@ export default function RoadMap() {
                                             <div className='note-icon' onClick={MaximizeNotesSize} >
                                                 {Maximize ? <FiMinimize /> : <FiMaximize />}
                                             </div>
-                                            <div className='note-icon' >
+                                            <div onClick={SendDataBackend} className='note-icon' >
                                                 <TfiSave />
                                             </div>
                                             <div className='note-icon' onClick={CopyContent} >
@@ -163,8 +216,9 @@ export default function RoadMap() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className='note-content' ref={copyContent} >
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti quia accusamus, aspernatur assumenda odit repudiandae ab libero beatae amet obcaecati praese
+                                    <div className='note-content' ref={RoadOut} >
+                                        {/* output Yha Ayega */}
+
                                     </div>
                                 </>
                             )}
@@ -224,5 +278,3 @@ export default function RoadMap() {
     )
 }
 
-
-// Ashok baat krwa dena

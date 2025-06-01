@@ -5,6 +5,8 @@ import { MdContentCopy } from 'react-icons/md';
 import { RiCloseLargeLine } from 'react-icons/ri';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
 import { TfiSave } from 'react-icons/tfi';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export default function GenerateNote() {
 
@@ -13,7 +15,9 @@ export default function GenerateNote() {
   const [topic, setTopic] = useState('');
   const [FadeIn, setFadeIn] = useState(false);
   const [Maximize, setMaximize] = useState(false);
-  const copyContent = useRef(null);
+  const [Notes_Out, setNotes_Out] = useState("");
+  const ShowOut = useRef(null);
+
 
   const [dropdownValues, setDropdownValues] = useState({
     academicLevel: '',
@@ -93,12 +97,8 @@ export default function GenerateNote() {
     setDropdownValues(prev => ({ ...prev, [field]: value }));
   };
 
-
-
-
-  // Data To Backend
   const handleSubmit = async () => {
-    if (topic == "") {
+    if (topic === "") {
       return;
     }
 
@@ -107,38 +107,32 @@ export default function GenerateNote() {
       ...dropdownValues,
     };
 
-
     console.log(data);
 
+    setFadeIn(true);
+    setshowoutput(true);
+    isLoading(true);
 
-    setFadeIn(true)
-    setshowoutput(true)
-    isLoading(true)
+    try {
+      const res = await axios.post('http://127.0.0.1:5000/content-out', data);
+      console.log("Server response:", res);
 
-    setTimeout(() => {
-      isLoading(false)
-    }, 3000);
+      // Output yha se Krenge...
+      console.log(res.data.output)
+      setNotes_Out(res.data.output)
+      isLoading(false);
 
-
-    // try {
-    //   const response = await fetch('/api/generate-notes', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(data),
-    //   });
-
-    //   const result = await response.json();
-    // console.log("Server response:", result);
-
-    // Pass result to OutputBox or handle however you want
-    // ......
-
-    // } catch (error) {
-    //   console.error('Error sending data:', error);
-    // }
+    } catch (error) {
+      console.error('Error sending data:', error.message);
+    }
   };
+
+
+  useEffect(() => {
+    if (ShowOut.current) {
+      ShowOut.current.innerHTML = Notes_Out;
+    }
+  }, [Notes_Out])
 
 
   const DownloadFile = async () => {
@@ -147,11 +141,47 @@ export default function GenerateNote() {
 
 
   const CopyContent = () => {
-    navigator.clipboard.writeText(copyContent.current.innerText);
+    navigator.clipboard.writeText(ShowOut.current.innerText);
   }
 
   const MaximizeNotesSize = () => {
     setMaximize(!Maximize);
+  }
+
+
+
+  const SendDataBackend = () => {
+    console.log("Sending Data Backend....")
+
+    auth.onAuthStateChanged(async (user) => {
+
+      if (user) {
+        console.log(user);
+        try {
+          const res = await axios.post("http://127.0.0.1:5000/set-output", {
+            heading: "Generated Notes",
+            time: Date.now(),
+            content: Notes_Out,
+            uid: user.uid
+          })
+          console.log(res)
+
+          toast.success("Saved Successfully", {
+            position: "top-center",
+            autoClose: 2000,
+            transition: Slide,
+          });
+
+          setshowoutput(false);
+
+        } catch (error) {
+          console.log(error.message)
+        }
+      }
+      else {
+        return;
+      }
+    })
   }
 
 
@@ -176,7 +206,7 @@ export default function GenerateNote() {
                       <div className='note-icon' onClick={MaximizeNotesSize} >
                         {Maximize ? <FiMinimize /> : <FiMaximize />}
                       </div>
-                      <div className='note-icon' >
+                      <div onClick={SendDataBackend} className='note-icon' >
                         <TfiSave />
                       </div>
                       <div className='note-icon' onClick={CopyContent} >
@@ -194,8 +224,8 @@ export default function GenerateNote() {
                       </div>
                     </div>
                   </div>
-                  <div className='note-content' ref={copyContent} >
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti quia accusamus, aspernatur assumenda odit repudiandae ab libero beatae amet obcaecati praese
+                  <div className='note-content' ref={ShowOut} >
+
                   </div>
                 </>
               )}

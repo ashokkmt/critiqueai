@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/SavedNotes.css';
 import { auth } from './firebase/firebase';
 import axios from 'axios';
 
 
 export default function SavedNotes() {
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
@@ -63,7 +64,6 @@ export default function SavedNotes() {
 
   const fetchUserDetail = async () => {
     auth.onAuthStateChanged(async (user) => {
-
       console.log(user.uid);
 
       try {

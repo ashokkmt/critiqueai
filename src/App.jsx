@@ -9,6 +9,9 @@ import GenerateNote from "./components/GenerateNote.jsx"
 import LoginPage from "./components/Loginsetup/LoginPage.jsx"
 import SignUpPage from "./components/Loginsetup/SignupPage.jsx"
 import SavedNotes from "./components/SavedNotes.jsx"
+import { useEffect, useState } from "react"
+import { auth } from './components/firebase/firebase.js';
+
 
 function Homepagefunc() {
   return (
@@ -66,7 +69,26 @@ function SavedNotesPage() {
 }
 
 
+
+
 function App() {
+
+  const [userPresent, setuserPresent] = useState(false)
+
+
+
+
+  const fetchUserDetail = async () => {
+    auth.onAuthStateChanged(async (user) => {
+      if ((user)) {
+        setuserPresent(true)
+      }
+    })
+  }
+
+  useEffect(() => {
+    fetchUserDetail();
+  }, [])
 
   return (
     <>
@@ -77,7 +99,7 @@ function App() {
           <Route path="/roadmap" element={<RoadMapFunc />} />
           <Route path="/summary" element={<Summarypage />} />
           <Route path="/notes" element={<Generatenote />} />
-          <Route path="/savedNotes" element={<SavedNotesPage />} />
+          <Route path="/savedNotes" element={userPresent ? <SavedNotesPage /> : <Homepagefunc />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signUp" element={<SignUpPage />} />
         </Routes>

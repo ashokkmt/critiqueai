@@ -44,6 +44,41 @@
     align-items: center;
 }
 
+
+
+
+
+/* Yha Se output ke boxes ka color change krna ha */
+
+.note-content {
+    h2 {
+        color: #00ffb3;
+    }
+
+    p {
+        color: #00ffff;
+    }
+
+
+    ul,
+    ol {
+        margin-left: 1.5rem;
+    }
+
+}
+
+.note-content ul strong,
+ol strong {
+    color: rgb(183, 241, 35);
+}
+
+/* Yha tak ha output ka */
+
+
+
+
+
+
 .title {
     font-size: 2rem;
     color: #3fe493;

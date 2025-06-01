@@ -6,6 +6,7 @@ import { FiMaximize, FiMinimize } from 'react-icons/fi';
 import { MdContentCopy } from 'react-icons/md';
 import { RiCloseLargeLine } from 'react-icons/ri';
 import { TfiSave } from 'react-icons/tfi';
+import axios from 'axios';
 
 export default function Summary() {
     const fileInputRef = useRef(null);
@@ -16,7 +17,8 @@ export default function Summary() {
     const [showoutput, setshowoutput] = useState(false);
     const [FadeIn, setFadeIn] = useState(false);
     const [Maximize, setMaximize] = useState(false);
-    const copyContent = useRef(null)
+    const [SummaryOut, setSummaryOut] = useState("");
+    const Summarydata = useRef(null)
 
     useEffect(() => {
         const loadScript = (src) => {
@@ -112,26 +114,26 @@ export default function Summary() {
         console.log(files)
         console.log(textInput)
 
-        setTimeout(() => {
-            setLoading(false)
-        }, 3000);
+        try {
+            const res = await axios.post('http://127.0.0.1:5000/summary-out', formData);
+            console.log('Server response:', res);
 
 
 
-        // try {
-        //     const response = await fetch('http://your-backend-endpoint/api/summarize', {
-        //         method: 'POST',
-        //         body: formData,
-        //     });
+            setSummaryOut(res.data.output);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error sending data:', err.message);
+        }
 
-        //     const result = await response.json();
-        //     console.log('Server response:', result);
-        // } catch (err) {
-        //     console.log(files);
-        //     console.error('Error sending data:', err);
-        // }
     };
 
+
+    useEffect(() => {
+        if (Summarydata.current) {
+            Summarydata.current.innerHTML = SummaryOut;
+        }
+    }, [SummaryOut])
 
 
     // Drag-and-drop handlers
@@ -163,12 +165,54 @@ export default function Summary() {
     }
 
     const CopyContent = () => {
-        navigator.clipboard.writeText(copyContent.current.innerText);
+        navigator.clipboard.writeText(Summarydata.current.innerText);
     }
 
     const MaximizeNotesSize = () => {
         setMaximize(!Maximize);
     }
+
+
+
+
+
+    const SendDataBackend = () => {
+        console.log("Sending Data Backend....")
+
+        auth.onAuthStateChanged(async (user) => {
+
+            if (user) {
+                console.log(user);
+                try {
+                    const res = await axios.post("http://127.0.0.1:5000/set-output", {
+                        heading: "Summary",
+                        time: Date.now(),
+                        content: SummaryOut,
+                        uid: user.uid
+                    })
+                    console.log(res)
+
+
+                    toast.success("Saved Successfully", {
+                        position: "top-center",
+                        autoClose: 2000,
+                        transition: Slide,
+                    });
+
+                    setshowoutput(false)
+
+
+                } catch (error) {
+                    console.log(error.message)
+                }
+            }
+            else {
+                return;
+            }
+        })
+    }
+
+
 
     return (
 
@@ -192,7 +236,7 @@ export default function Summary() {
                                             <div className='note-icon' onClick={MaximizeNotesSize} >
                                                 {Maximize ? <FiMinimize /> : <FiMaximize />}
                                             </div>
-                                            <div className='note-icon' >
+                                            <div onClick={SendDataBackend} className='note-icon' >
                                                 <TfiSave />
                                             </div>
                                             <div className='note-icon' onClick={CopyContent} >
@@ -210,8 +254,8 @@ export default function Summary() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className='note-content' ref={copyContent} >
-                                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti quia accusamus, aspernatur assumenda odit repudiandae ab libero beatae amet obcaecati praese
+                                    <div className='note-content' ref={Summarydata} >
+
                                     </div>
                                 </>
                             )}

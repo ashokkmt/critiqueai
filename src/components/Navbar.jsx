@@ -61,7 +61,7 @@ const Navbar = () => {
   const fetchUserDetail = async () => {
     auth.onAuthStateChanged(async (user) => {
       // console.log(user);
-      // setUserURL(user.photoURL);
+      setUserURL(user.photoURL);
 
       const docRef = doc(db, "Users", user.uid);
       const userdata = await getDoc(docRef)
@@ -98,6 +98,11 @@ const Navbar = () => {
         transition: Slide,
       });
     }
+  }
+
+
+  const FetchUserSavedData = () => {
+    console.log("Testing...")
   }
 
   return (
@@ -161,8 +166,8 @@ const Navbar = () => {
                       <span>{userDetail.firstName}</span>
                     </button>
                     <div className="nav-dropdown-content login-dropdown-content">
-                      <Link to='/savedNotes' className="dropdown-item">
-                        <GrNotes  size={18} />
+                      <Link onClick={FetchUserSavedData} to='/savedNotes' className="dropdown-item">
+                        <GrNotes size={18} />
                         <span>Saved Notes</span>
                       </Link>
 
