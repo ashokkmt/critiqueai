@@ -5,7 +5,7 @@ import pdfplumber
 import os
 import json
 import docx
-import markdown
+import markdown2
 from werkzeug.utils import secure_filename
 from google import genai
 from google.genai import types
@@ -34,9 +34,9 @@ load_dotenv()
 EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. Do not mention the question and answer or any word like evaluation, JUST GIVE EVALUATION AS YOU TOLD.
 eg-   Q:
       A:
-       
+
 question:
-answer: 
+answer:
 """
 
 SCORE_PROMPT = """Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score in digit like '3', '1', '10', '7', '0'. (Always give 0 if the answer is absolutely wrong)"""
@@ -65,15 +65,13 @@ Format the output for easy readability.'''
 IMG_PROMPT = "Describe the content of the image extracted from the PDF."
 
 CONTENT_PROMPT = """
-You are a professional educator. Generate well-structured study notes for the topic: '{topic}'. 
-The student is in '{academic_level}' {course} and prefers '{note_level}' notes. 
-Format the notes in '{format_preference}' style. 
-Exam-focused: '{exam_focus}'. 
-If the topic is technical, include code snippets: '{technical_content}'. 
-Urgency level: '{urgency_level}'. 
+You are a professional educator. Generate well-structured study notes for the topic: '{topic}'.
+The student is in '{academic_level}'and prefers '{detail_level}' notes.
+Format the notes in '{format_preference}' style.
+If the topic is technical, include code snippets: '{technical_content}'.
 Adjust content depth, complexity, and length based on these inputs.
 
-Don't any greeting and thank you note.
+Don't add any greeting and thank you note.
 """
 
 
@@ -111,6 +109,28 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'txt', 'pdf', 'docx'}
 # Function to check allowed file extensions
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def resolve_session(data):
+    uid = data.get("uid")
+    guest_id = data.get("guestId")
+
+    print("Inside resolve session function and printing the IDs:\n")
+    print(uid)
+    print(guest_id)
+
+    if uid:
+        identifier = uid
+        session_id = f"{uid}_{uuid.uuid4().hex[:8]}"
+    elif guest_id:
+        identifier = f"guest_{guest_id}"
+        session_id = f"{identifier}_{uuid.uuid4().hex[:8]}"
+    else:
+        raise ValueError("Neither UID nor guestId provided")
+
+    print("Session ID: ", session_id)
+
+    return identifier, session_id
 
 # Function for summary page
 
@@ -405,19 +425,19 @@ def extract_docx_content(content):
 
 
 # Function to upload file to Google Cloud Storage
-def upload_files(file):
-    session_id = session.get('session_id')
+def upload_files(file, session):
+    # session_id = session.get('session_id')
     unique_filename = f"{uuid.uuid4()}.{file.filename.split('.')[-1]}"
-    blob = bucket.blob(f"sessions/{session_id}/{unique_filename}")
+    blob = bucket.blob(f"sessions/{session}/{unique_filename}")
     blob.upload_from_file(file)
     blob.make_public()
-    url = f"gs://instant-theater-449913-h4.firebasestorage.app/sessions/{session_id}/{unique_filename}"
+    url = f"gs://instant-theater-449913-h4.firebasestorage.app/sessions/{session}/{unique_filename}"
 
-    print(session_id)
+    print(session)
     print("file uploaded now updating db")
 
     db.collection("user_files").document(unique_filename).set({
-        "session_id": session_id,
+        "session_id": session,
         "filename": unique_filename,
         "url": url,
         "uploaded_at": datetime.now(timezone.utc)
@@ -477,7 +497,7 @@ def process_file(gs_url):
 # <---------- Save Output to Firebase ----------->
 
 
-def set_output_helper(user, head, data, time):
+def set_output_helper(user, head, data, time, typ):
     user_id = user
     parent_doc = db.collection("Users").document(user_id)
     outputs_ref = parent_doc.collection("outputs")
@@ -485,9 +505,9 @@ def set_output_helper(user, head, data, time):
 
     output_data = {
         "name": head,
-        "type": "Answer Evaluation",
         "time": time,
-        "content": data
+        "content": data,
+        "type": typ
     }
 
     outputs_ref.document(output_id).set(output_data)
@@ -502,58 +522,53 @@ def get_output_helper(user):
     outputs_ref = parent_doc.collection("outputs")
     outputs = outputs_ref.stream()
 
-    # Print each document in 'outputs'
-    print(f"\n--- Outputs for User ID: {user} ---")
+    output_list = []
+
     for doc in outputs:
         data = doc.to_dict()
-        print(f"\nDocument ID: {doc.id}")
-        print(f"Name     : {data.get('name')}")
-        print(f"Type     : {data.get('type')}")
-        print(f"Time     : {data.get('time')}")
-        print(f"Content  : {data.get('content')}")
+        output_list.append({
+            "id": doc.id,
+            "name": data.get("name"),
+            "type": data.get("type"),
+            "time": data.get("time"),
+            "content": data.get("content")
+        })
 
-    return "Print Successful"
-
+    return output_list
 
 # Set session before each request
-@app.before_request
-def set_session():
-    if 'session_id' not in session:
-        session['session_id'] = str(uuid.uuid4())
-        print("Session ID - ", session['session_id'])
+# @app.before_request
+# def set_session():
+#     if 'session_id' not in session:
+#         session['session_id'] = str(uuid.uuid4())
+#         print("Session ID - ", session['session_id'])
 
 
-@app.route('/content_out', methods=['POST'])
+@app.route('/content-out', methods=['POST'])
 def generate_content():
     try:
         if request.method == 'POST':
-            if session.get("result_generated"):
-                print("Rechecked result generation reload")
-                return redirect(url_for("get-content"))
+            # if session.get("result_generated"):
+            #     print("Rechecked result generation reload")
+            #     return redirect(url_for("get-content"))
             data = request.get_json()
+            if not data:
+                return "Please enter a valid topic", 400
+
             topic = data.get('topic')
-            academic_level = data.get('academic_level')
-            course = f"({data.get('course')})" if academic_level == "College" else ""
-            note_level = data.get('note_level')
-            format_preference = data.get('format_preference')
-            technical_content = data.get('technical_content')
-            urgency_level = data.get('urgency_level')
-            exam_focus = data.get('exam_focus')
+            academic_level = data.get('academicLevel')
+            detail_level = data.get('detailLevel')
+            format = data.get('format')
+            include_code = data.get('includeCode')
 
             # Format the prompt
             full_prompt = CONTENT_PROMPT.format(
                 topic=topic,
                 academic_level=academic_level,
-                course=course,
-                note_level=note_level,
-                format_preference=format_preference,
-                technical_content=technical_content,
-                urgency_level=urgency_level,
-                exam_focus=exam_focus
+                detail_level=detail_level,
+                format_preference=format,
+                technical_content=include_code,
             )
-
-            if not data:
-                return "Please enter a valid topic", 400
 
             try:
                 # full_prompt = CONTENT_PROMPT.format(topic=data)
@@ -566,15 +581,22 @@ def generate_content():
                         temperature=0.5
                     )
                 )
-                temp = markdown.markdown(response.text)
-                session["result_generated"] = True
-                print("result marked true")
-                return render_template("content_out.html", output=temp)
+
+                temp = markdown2.markdown(
+                    response.text,
+                    extras=["fenced-code-blocks", "tables",
+                            "strike", "task_list", "header-ids"]
+                )
+
+                # session["result_generated"] = True
+                # print("result marked true")
+
+                return jsonify({"output": temp}), 200
 
             except Exception as e:
-                return f"Error generating roadmap: {str(e)}", 500
+                return jsonify({"error": f"Error Generating Notes: {str(e)}"}), 500
     except Exception as e:
-        print("🔥 ERROR:", str(e))
+        print("🔥ERROR: ", str(e))
         return jsonify({"error": str(e)}), 500
 
 
@@ -582,14 +604,14 @@ def generate_content():
 @app.route('/get-roadmap', methods=['POST'])
 def get_roadmap():
     if request.method == 'POST':
-        if session.get("result_generated"):
-            print("Rechecked result generation reload")
-            return redirect(url_for("roadmap"))
-        data = request.form['topic']
-
+        # if session.get("result_generated"):
+        #     print("Rechecked result generation reload")
+        #     return redirect(url_for("roadmap"))
+        data = request.data.decode('utf-8')
         if not data:
             return "Please enter a valid topic", 400
 
+        print("Topic Received: ", data)
         try:
             full_prompt = ROADMAP_PROMPT.format(topic=data)
             response = client.models.generate_content(
@@ -600,103 +622,138 @@ def get_roadmap():
                     temperature=0.5
                 )
             )
-            temp = markdown.markdown(response.text)
-            session["result_generated"] = True
-            print("result marked true")
-            return temp if response.candidates else "Failed to generate roadmap"
+            temp = markdown2.markdown(
+                response.text,
+                extras=["fenced-code-blocks", "tables",
+                        "strike", "task_list", "header-ids"]
+            )
+
+            # session["result_generated"] = True
+            # print("result marked true")
+            if response.candidates:
+                return jsonify({"output": temp}), 200
+            else:
+                return jsonify({"error": "Failed to generate roadmap"}), 500
 
         except Exception as e:
-            return f"Error generating roadmap: {str(e)}", 500
+            return jsonify({"error": f"Error generating roadmap: {str(e)}"}), 500
+
 
 # Route for Summary output page
-
 
 @app.route('/summary-out', methods=['POST'])
 def summary_out():
     if request.method == 'POST':
-        if session.get("result_generated"):
-            print("Session key 'result_generated' found. Redirecting to /summary...")
-            return redirect(url_for("summary"))
-        check_file = 'file' in request.files and request.files.getlist('file')
-        check_fname = 'fname' in request.form and request.form['fname']
+        # if session.get("result_generated"):
+        #     print("Session key 'result_generated' found. Redirecting to /summary...")
+        #     return redirect(url_for("summary"))
+        check_file = 'files' in request.files and request.files.getlist(
+            'files')
+        check_fname = 'text' in request.form and request.form['text']
         combined_text = ""
         time = datetime.now(timezone.utc)
-        if check_file and check_fname:
-            instruction = request.form['fname']
-            files = request.files.getlist('file')
 
-            for f in files:
-                if f and allowed_file(f.filename):
-                    upload_files(f)
-                else:
-                    combined_text += f"Invalid or unsupported file: {f.filename}\n"
+        data = request.form
 
-            session_id = session.get('session_id')
-            file_url = get_user_files(session_id, time)
-            # print("URL LIST AT FIREBASE - ", file_url)
-            for url in file_url:
-                combined_text += process_file(
-                    url) + "\n\n***************************************************\n\n"
+        guest_id = request.form.get('guestId')
 
-            with open("output_final.txt", "w", encoding="utf-8") as final:
-                final.write(combined_text)
+        print("Inside summary Function: ", guest_id, "\n")
 
-            print("Instructions - ", instruction)
-            combined_summary = get_evaluation(
-                combined_text, isInstruction=instruction)
-            temp = markdown.markdown(combined_summary)
-            session["result_generated"] = True
-            print("result marked true")
-            return render_template("summary_out.html", output=temp)
-        elif check_file:
-            files = request.files.getlist('file')
-            for f in files:
-                if f and allowed_file(f.filename):
-                    upload_files(f)
-                else:
-                    combined_text += f"Invalid or unsupported file: {f.filename}\n"
+        user_id, session_id = resolve_session(data)
 
-            session_id = session.get('session_id')
-            file_url = get_user_files(session_id, time)
-            # print("URL LIST AT FIREBASE - ", file_url)
-            for url in file_url:
-                combined_text += process_file(
-                    url) + "\n\n***************************************************\n\n"
+        try:
+            if check_file and check_fname:
+                instruction = request.form.get('text')
+                files = request.files.getlist('files')
 
-            with open("output_final.txt", "w", encoding="utf-8") as final:
-                final.write(combined_text)
+                for f in files:
+                    if f and allowed_file(f.filename):
+                        upload_files(f, session_id)
+                    else:
+                        combined_text += f"Invalid or unsupported file: {f.filename}\n"
 
-            combined_summary = get_evaluation(combined_text)
-            temp = markdown.markdown(combined_summary)
-            session["result_generated"] = True
-            print("result marked true")
-            return render_template("summary_out.html", output=temp)
-        else:
-            return render_template("summary_out.html", output="<p>Invalid input received.</p>")
+                # session_id = session.get('session_id')
+                file_url = get_user_files(session_id, time)
+                # print("URL LIST AT FIREBASE - ", file_url)
+                for url in file_url:
+                    combined_text += process_file(
+                        url) + "\n\n***************************************************\n\n"
+
+                with open("output_final.txt", "w", encoding="utf-8") as final:
+                    final.write(combined_text)
+
+                print("Instructions - ", instruction)
+                combined_summary = get_evaluation(
+                    combined_text, isInstruction=instruction)
+                temp = markdown2.markdown(
+                    combined_summary,
+                    extras=["fenced-code-blocks", "tables",
+                            "strike", "task_list", "header-ids"]
+                )
+
+                # session["result_generated"] = True
+                # print("result marked true")
+                return jsonify({"output": temp}), 200
+            elif check_file:
+                files = request.files.getlist('files')
+                for f in files:
+                    if f and allowed_file(f.filename):
+                        upload_files(f, session_id)
+                    else:
+                        combined_text += f"Invalid or unsupported file: {f.filename}\n"
+
+                # session_id = session.get('session_id')
+                file_url = get_user_files(session_id, time)
+                # print("URL LIST AT FIREBASE - ", file_url)
+                for url in file_url:
+                    combined_text += process_file(
+                        url) + "\n\n***************************************************\n\n"
+
+                with open("output_final.txt", "w", encoding="utf-8") as final:
+                    final.write(combined_text)
+
+                combined_summary = get_evaluation(combined_text)
+                temp = markdown2.markdown(
+                    combined_summary,
+                    extras=["fenced-code-blocks", "tables",
+                            "strike", "task_list", "header-ids"]
+                )
+
+                # session["result_generated"] = True
+                # print("result marked true")
+                return jsonify({"output": temp}), 200
+            else:
+                return jsonify({"error": "Invalid input received. No files or text provided."}), 400
+        except Exception as e:
+            return jsonify({"error": f"Server exception: {str(e)}"}), 500
 
 
 @app.route('/set-output', methods=['POST'])
 def set_output():
     print("nested collection function started")
     data = request.get_json()
-    user = data.get('Uid')
-    heading = data.get('Time')
-    time = data.get('Heading')
-    content = data.get('Content')
+    user = data.get('uid')
+    heading = data.get('heading')
+    time = data.get('time')
+    content = data.get('content')
+    tp = data.get('type')
 
-    res = set_output_helper(user, heading, content, time)
+    res = set_output_helper(user, heading, content, time, tp)
     print("Output Id - ", res)
     return res
 
 
 @app.route('/get-output', methods=['GET'])
 def get_output():
-    data = request.get_json()
-    user = data.get('uid')
+    user = request.args.get('uid')
+    if not user:
+        return jsonify({"error": "User ID is required"}), 400
 
-    get_output_helper(user)
-
-    return render_template("index.html")
+    try:
+        outputs = get_output_helper(user)
+        return jsonify({"outputs": outputs})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Route for deleting user files from firebase bucket
 
@@ -743,6 +800,13 @@ def evaluate():
             # if session.get("result_generated"):
             #     print("Rechecked result generation reload")
             #     return redirect(url_for("input"))
+            data = request.form
+            guest_id = request.form.get('guestId')
+
+            print("Inside Evaluation Function: ", guest_id, "\n")
+
+            user_id, session_id = resolve_session(data)
+
             if 'file' in request.files:
                 file = request.files['file']
                 if file.filename == '':
@@ -751,8 +815,8 @@ def evaluate():
                 if file and allowed_file(file.filename):
                     # filename = secure_filename(file.filename)
                     time = datetime.now(timezone.utc)
-                    upload_files(file)
-                    session_id = session.get('session_id')
+                    upload_files(file, session_id)
+                    # session_id = session.get('session_id')
                     file_url = get_user_files(session_id, time)
                     file_content, name = read_file_from_gcs(file_url[0])
                     file_extension = name.split(".")[-1].lower()
@@ -772,8 +836,8 @@ def evaluate():
                     else:
                         return jsonify({"error": "Unsupported file type"}), 400
 
-
-                    print("response-", response.text, " score-", score_response.text)
+                    print("response-", response.text,
+                          "score-", score_response.text)
                     # score_list = score_response.text.split(":")
                     # if len(score_list) >= 0:
                     #     score = score_list[1].strip()
@@ -783,7 +847,11 @@ def evaluate():
                     #     score = "-/"
 
                     # evaluation_md = response.text
-                    evaluation_html = markdown.markdown(response.text)
+                    evaluation_html = markdown2.markdown(
+                        response.text,
+                        extras=["fenced-code-blocks", "tables",
+                                "strike", "task_list", "header-ids"]
+                    )
 
                     # session["result_generated"] = True
                     # print("result marked true")
@@ -800,7 +868,8 @@ def evaluate():
                 if not text:
                     return jsonify({"error": "No text provided"}), 400
                 response, score_response = get_evaluate(text)
-                print("response-", response.text, " score-", score_response.text)
+                print("response-", response.text,
+                      " score-", score_response.text)
                 # score_list = score_response.text.split(":")
                 # if len(score_list) >= 0:
                 #     score = score_list[1].strip()
@@ -810,7 +879,12 @@ def evaluate():
                 #     score = "-/"
 
                 evaluation_md = response.text
-                evaluation_html = markdown.markdown(evaluation_md)
+                evaluation_html = markdown2.markdown(
+                    evaluation_md,
+                    extras=["fenced-code-blocks", "tables",
+                            "strike", "task_list", "header-ids"]
+                )
+
                 # session["result_generated"] = True
                 # print("result marked true")
                 return jsonify({"evaluation": evaluation_html, "score": score_response.text}), 200
