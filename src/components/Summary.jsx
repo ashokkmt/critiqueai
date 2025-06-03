@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import OutputBox from './OutputBox';
 import { FaCloudUploadAlt, FaFolderOpen, FaPaperPlane, FaFileAlt, FaTachometerAlt, FaBrain, FaTimes, FaFile, FaRobot, FaDownload } from 'react-icons/fa';
 import '../styles/Summary.css';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
@@ -7,6 +6,8 @@ import { MdContentCopy } from 'react-icons/md';
 import { RiCloseLargeLine } from 'react-icons/ri';
 import { TfiSave } from 'react-icons/tfi';
 import axios from 'axios';
+import { auth } from './firebase/firebase';
+import { Slide, toast, ToastContainer } from 'react-toastify';
 
 export default function Summary() {
     const fileInputRef = useRef(null);
@@ -105,6 +106,9 @@ export default function Summary() {
         files.forEach(file => formData.append('files', file));
         if (textInput.trim()) formData.append('text', textInput.trim());
 
+        // Temporary hardcoded guest ID
+        formData.append('guestId', 'abc123');
+
 
         setFadeIn(true)
         setshowoutput(true)
@@ -172,10 +176,6 @@ export default function Summary() {
         setMaximize(!Maximize);
     }
 
-
-
-
-
     const SendDataBackend = () => {
         console.log("Sending Data Backend....")
 
@@ -183,12 +183,21 @@ export default function Summary() {
 
             if (user) {
                 console.log(user);
+                const formatted = new Date(Date.now()).toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                });
                 try {
                     const res = await axios.post("http://127.0.0.1:5000/set-output", {
+                        uid: user.uid,
+                        time: formatted,
                         heading: "Summary",
-                        time: Date.now(),
                         content: SummaryOut,
-                        uid: user.uid
+                        type: "Summary"
                     })
                     console.log(res)
 
@@ -199,7 +208,7 @@ export default function Summary() {
                         transition: Slide,
                     });
 
-                    setshowoutput(false)
+                    // setshowoutput(false)
 
 
                 } catch (error) {
@@ -352,6 +361,20 @@ export default function Summary() {
                     </div>
                 </div>
             </div>
+
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                transition={Slide}
+                style={{ zIndex: 10000 }}
+            />
         </>
     );
 }

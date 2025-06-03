@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { use, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import '../styles/Navbar.css';
@@ -9,10 +9,12 @@ import { CgLogOut } from 'react-icons/cg';
 import { auth, db } from './firebase/firebase';
 import { Slide, toast } from 'react-toastify';
 import { GrNotes } from 'react-icons/gr';
+import axios from 'axios';
 
 const Navbar = () => {
   const [userDetail, setUserDetail] = useState(null)
   const [userURL, setUserURL] = useState(null)
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Initialize AOS
@@ -90,6 +92,8 @@ const Navbar = () => {
 
 
       setUserDetail(null)
+
+      navigate("/")
     } catch (error) {
       console.log(error.message);
       toast.error("Having Some issue...", {
@@ -101,9 +105,19 @@ const Navbar = () => {
   }
 
 
-  const FetchUserSavedData = () => {
-    console.log("Testing...")
-  }
+  // const FetchUserSavedData = () => {
+  //   auth.onAuthStateChanged(async (user) => {
+
+  //     if (user) {
+  //       const res = await axios.post("http://127.0.0.1/", {
+  //         uid : user.uid
+  //       })
+
+  //       console.log(res);
+  //     }
+
+  //   })
+  // }
 
   return (
     <>
@@ -166,7 +180,7 @@ const Navbar = () => {
                       <span>{userDetail.firstName}</span>
                     </button>
                     <div className="nav-dropdown-content login-dropdown-content">
-                      <Link onClick={FetchUserSavedData} to='/savedNotes' className="dropdown-item">
+                      <Link to='/savedNotes' className="dropdown-item">
                         <GrNotes size={18} />
                         <span>Saved Notes</span>
                       </Link>

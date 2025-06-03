@@ -6,7 +6,9 @@ import { RiCloseLargeLine } from 'react-icons/ri';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
 import { TfiSave } from 'react-icons/tfi';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { Slide, toast, ToastContainer } from 'react-toastify';
+import { auth } from './firebase/firebase';
+
 
 export default function GenerateNote() {
 
@@ -118,7 +120,7 @@ export default function GenerateNote() {
       console.log("Server response:", res);
 
       // Output yha se Krenge...
-      console.log(res.data.output)
+      // console.log(res.data.output)
       setNotes_Out(res.data.output)
       isLoading(false);
 
@@ -157,12 +159,21 @@ export default function GenerateNote() {
 
       if (user) {
         console.log(user);
+        const formatted = new Date(Date.now()).toLocaleString('en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: true,
+        });
         try {
           const res = await axios.post("http://127.0.0.1:5000/set-output", {
-            heading: "Generated Notes",
-            time: Date.now(),
+            uid: user.uid,
+            time: formatted,
+            heading: topic,
             content: Notes_Out,
-            uid: user.uid
+            type: "Generated Notes"
           })
           console.log(res)
 
@@ -172,7 +183,7 @@ export default function GenerateNote() {
             transition: Slide,
           });
 
-          setshowoutput(false);
+          // setshowoutput(false);
 
         } catch (error) {
           console.log(error.message)
@@ -295,6 +306,22 @@ export default function GenerateNote() {
         </div>
 
       </div>
+
+
+      <ToastContainer
+        position="top-center"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        transition={Slide}
+        style={{ zIndex: 10000 }}
+      />
+
     </>
   );
 }

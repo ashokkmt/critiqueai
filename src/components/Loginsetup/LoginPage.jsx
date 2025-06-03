@@ -97,7 +97,7 @@ export default function LoginPage() {
             // Go to Home/Dashboard
             setTimeout(() => {
                 navigate('/');
-            }, 2000);
+            }, 1000);
 
         } catch (error) {
             toast.error("Doesn't have Account..", {
@@ -124,7 +124,7 @@ export default function LoginPage() {
                     firstName: fname.split(" ")[0],
                     lastName: fname.split(" ")[1] || "",
                     email: GoogleUser.reloadUserInfo.email,
-                    Date: Date.now()
+                    Date: new Date(Date.now()).toLocaleString()
                 })
             }
 

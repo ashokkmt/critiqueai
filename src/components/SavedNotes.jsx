@@ -3,8 +3,10 @@ import '../styles/SavedNotes.css';
 import { auth } from './firebase/firebase';
 import axios from 'axios';
 
-
 export default function SavedNotes() {
+  const [udata, setudata] = useState([]);
+  const [Loading, isLoading] = useState(false);
+  const [notaUser, setnotaUser] = useState(false);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -60,32 +62,59 @@ export default function SavedNotes() {
     document.body.appendChild(script);
   }, []);
 
-
-
   const fetchUserDetail = async () => {
     auth.onAuthStateChanged(async (user) => {
-      console.log(user.uid);
 
-      try {
-        const res = await axios.post("http://127.0.0.1:5000/set-output", {
-          Heading: "Heading",
-          Time: "20/20/20",
-          Content: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam corrupti quia accusamus, aspernatur assumenda odit repudiandae ab libero beatae amet obcaecati praese",
-          Uid: user.uid
-        })
-
-        console.log(res)
-      } catch (error) {
-
+      if (user) {
+        isLoading(true);
+        try {
+          const res = await axios.get("http://127.0.0.1:5000/get-output", {
+            params: {
+              uid: user.uid
+            }
+          });
+          setudata(res.data.outputs);
+        } catch (error) {
+          console.log(error.message);
+        }
+        isLoading(false);
       }
 
-    })
-  }
+      else {
+        setnotaUser(true);
+      }
+    });
+  };
 
   useEffect(() => {
     fetchUserDetail();
-  }, [])
+  }, []);
 
+  const showSavedDoc = async (id) => {
+    try {
+      const docResponse = await axios.post("http://127.0.0.1:5000/get-output", {
+        params: {
+          id
+        }
+      });
+      console.log(docResponse);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const deleteDocument = async (id) => {
+    try {
+      await axios.post("http://127.0.0.1:5000/get-output", {
+        params: {
+          id
+        }
+      });
+      fetchUserDetail();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <>
@@ -104,30 +133,41 @@ export default function SavedNotes() {
 
           <div className="saved-notes-container">
             <div className="saved-table-wrapper">
-              <table className="saved-notes-table">
-                <thead>
-                  <tr>
-                    <th className="serial-number">Sno</th>
-                    <th className="heading-name">Name</th>
-                    <th className="title-type">Type</th>
-                    <th className="time">Time</th>
-                    <th className="feature-buttons">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr >
-                    <td>01</td>
-                    <td>Heading</td>
-                    <td>Answer Evaluation</td>
-                    <td>May 28, 2025 • 3:45 PM</td>
-                    <td>
-                      <button className="action-btn view">View</button>
-                      <button className="action-btn share">Share</button>
-                      <button className="action-btn delete">Delete</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+              {
+                Loading ?
+                  (
+                    <div className="loading-overlay">
+                      <div className='circle'></div>
+                      <p>Loading content...</p>
+                    </div>
+                  ) : (
+                    <table className="saved-notes-table">
+                      <thead>
+                        <tr>
+                          <th className="serial-number">Sno</th>
+                          <th className="heading-name">Name</th>
+                          <th className="title-type">Type</th>
+                          <th className="time">Time</th>
+                          <th className="feature-buttons">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {udata.map((val, key) => (
+                          <tr key={val.id || key}>
+                            <td>{key + 1}</td>
+                            <td>{val.name}</td>
+                            <td>{val.type}</td>
+                            <td>{val.time}</td>
+                            <td>
+                              <button onClick={() => showSavedDoc(val.id)} className="action-btn view">View</button>
+                              <button className="action-btn share">Share</button>
+                              <button onClick={() => deleteDocument(val.id)} className="action-btn delete">Delete</button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
             </div>
           </div>
         </div>

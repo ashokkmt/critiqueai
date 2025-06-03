@@ -90,6 +90,7 @@ function App() {
     fetchUserDetail();
   }, [])
 
+
   return (
     <>
       <BrowserRouter>
@@ -99,7 +100,12 @@ function App() {
           <Route path="/roadmap" element={<RoadMapFunc />} />
           <Route path="/summary" element={<Summarypage />} />
           <Route path="/notes" element={<Generatenote />} />
-          <Route path="/savedNotes" element={userPresent ? <SavedNotesPage /> : <Homepagefunc />} />
+          {
+            userPresent ?
+              <Route path="/savedNotes" element={<SavedNotesPage />} />
+              :
+              <Route path="/" element={<Homepagefunc />} />
+          }
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signUp" element={<SignUpPage />} />
         </Routes>

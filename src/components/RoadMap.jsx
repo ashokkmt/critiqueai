@@ -7,6 +7,8 @@ import { RiCloseLargeLine } from 'react-icons/ri';
 import { TfiSave } from 'react-icons/tfi';
 import axios from 'axios';
 import { auth } from './firebase/firebase';
+import { Slide, toast, ToastContainer } from 'react-toastify';
+
 
 export default function RoadMap() {
 
@@ -148,12 +150,21 @@ export default function RoadMap() {
 
             if (user) {
                 console.log(user);
+                const formatted = new Date(Date.now()).toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                });
                 try {
                     const res = await axios.post("http://127.0.0.1:5000/set-output", {
+                        uid: user.uid,
+                        time: formatted,
                         heading: topic,
-                        time: Date.now(),
                         content: RoadMap,
-                        uid: user.uid
+                        type: "roadmap"
                     })
                     console.log(res)
 
@@ -164,7 +175,7 @@ export default function RoadMap() {
                         transition: Slide,
                     });
 
-                    setshowoutput(false)
+                    // setshowoutput(false)
 
 
                 } catch (error) {
@@ -272,7 +283,19 @@ export default function RoadMap() {
 
             </div>
 
-
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                transition={Slide}
+                style={{ zIndex: 10000 }}
+            />
 
         </>
     )

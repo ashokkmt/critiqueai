@@ -116,6 +116,7 @@ const EvaluateInput = () => {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('guestId', 'abc123');
 
     try {
       const res = await axios.post("http://127.0.0.1:5000/evaluate", formData);
@@ -200,7 +201,7 @@ const EvaluateInput = () => {
 
           </div>
         </div>
-        
+
       }
 
       <div className="main-wrapper">

@@ -94,7 +94,7 @@ export default function SignUpPage() {
           firstName: firstName,
           lastName: lastName,
           email: user.email,
-          Date: Date.now()
+          Date: new Date(Date.now()).toLocaleString()
         })
       }
 
