@@ -743,9 +743,10 @@ def set_output():
     return res
 
 
-@app.route('/get-output', methods=['GET'])
+@app.route('/get-output', methods=['POST'])
 def get_output():
-    user = request.args.get('uid')
+    data = request.get_json()
+    user = data.get("uid")
     if not user:
         return jsonify({"error": "User ID is required"}), 400
 
@@ -755,9 +756,93 @@ def get_output():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route("/api/delete-output", methods=['DELETE'])
+def delete_output():
+    data = request.get_json()
+    user_id = data.get("user_id")
+    doc_id = data.get("doc_id")
+
+    if not user_id or not doc_id:
+        return jsonify({"error": "Missing user_id or doc_id"}), 400
+
+    try:
+        db.collection("Users").document(user_id).collection(
+            "outputs").document(doc_id).delete()
+        return jsonify({"status": "success"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/share-output', methods=['POST'])
+def share_output():
+    data = request.get_json()
+    doc_id = data.get("doc_id")
+    user_id = data.get("user_id")
+
+    if not doc_id or not user_id:
+        return jsonify({"error": "outputDocId and userUid required"}), 400
+
+    # Fetch the original output doc
+    original_doc_ref = db.collection('Users').document(
+        user_id).collection('outputs').document(doc_id)
+    original_doc = original_doc_ref.get()
+
+    if not original_doc.exists:
+        return jsonify({"error": "Original output document not found"}), 404
+
+    original_data = original_doc.to_dict()
+
+    # Add the copyTime with UTC time
+    copied_data = dict(original_data)
+    copied_data['copyTime'] = datetime.now(timezone.utc)
+
+    # Create a new document in 'shared' collection with copied data
+    shared_doc_ref = db.collection('shared').document()
+    shared_doc_ref.set(copied_data)
+
+    return jsonify({"sharedDocId": shared_doc_ref.id}), 200
+
+@app.route('/shared/<doc_id>', methods=['GET'])
+def get_shared_doc(doc_id):
+    try:
+        shared_doc_ref = db.collection('shared').document(doc_id)
+        shared_doc = shared_doc_ref.get()
+
+        if not shared_doc.exists:
+            return jsonify({"error": "Shared document not found"}), 404
+
+        return jsonify(shared_doc.to_dict()), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/delete-shared-docs', methods=['GET'])
+def delete_expired_shared_docs():
+    print("Cleanup for shared docs started.")
+
+    # 30 minutes ago from current UTC time
+    expiration_time = datetime.now(timezone.utc) - timedelta(minutes=2)
+
+    # Query the shared collection for expired docs
+    expired_docs = db.collection("shared").where(
+        "copyTime", "<", expiration_time
+    ).stream()
+
+    deleted_count = 0
+    batch = db.batch()
+
+    for doc in expired_docs:
+        print(f"Deleting shared doc: {doc.id}")
+        batch.delete(doc.reference)
+        deleted_count += 1
+
+    batch.commit()
+    return jsonify({"deleted": deleted_count}), 200
+
+
 # Route for deleting user files from firebase bucket
-
-
 @app.route('/delete-user-files', methods=['GET'])
 def accountcleanup():
     print("Delete Function is called.")
