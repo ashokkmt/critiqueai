@@ -58,7 +58,9 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 93vh;
+    height: auto; /* Changed for responsiveness */
+    min-height: 93vh; /* Ensures it's tall on large screens */
+    padding: 2rem 0; /* Adds vertical padding for smaller screens */
 }
 
 .page-wrapper {
@@ -215,6 +217,7 @@ textarea::placeholder {
     height: 60%;
     border: 2px dashed rgba(63, 228, 147, 0.3);
     display: flex;
+    flex-direction: column; /* Stack elements inside */
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -222,7 +225,6 @@ textarea::placeholder {
     background-color: #1a1f27;
     border-radius: 10px;
     transition: border-color 0.3s ease, background-color 0.3s ease;
-    /* margin: 20px 0; */
     cursor: pointer;
 }
 
@@ -334,6 +336,7 @@ textarea::placeholder {
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
+    margin-top: 10px; /* Added margin */
 }
 
 .browse-btn:hover {
@@ -370,8 +373,9 @@ textarea::placeholder {
 
 /* Output pop-up */
 .popup-output {
-    position: absolute;
+    position: fixed; /* Changed from absolute to fixed */
     top: 0;
+    left: 0; /* Added left: 0 */
     width: 100%;
     height: 100%;
     z-index: 1000;
@@ -538,51 +542,6 @@ textarea::placeholder {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .page {
-        padding: 10px;
-    }
-
-    .column {
-        flex-direction: column;
-        /* Stacks the two sections vertically on smaller screens */
-    }
-
-    #drop-zone {
-        max-width: 300px;
-        height: 120px;
-    }
-
-    .divider {
-        height: 2px;
-        width: 80%;
-    }
-
-    .input-sections {
-        grid-template-columns: 1fr;
-    }
-
-    .evaluation-card {
-        padding: 20px;
-    }
-
-    .card-header h1 {
-        font-size: 1.8rem;
-    }
-}
-
 .input-form {
     width: 100%;
     display: flex;
@@ -600,4 +559,84 @@ textarea::placeholder {
     /* Subtracting padding */
     box-sizing: border-box;
     margin: 0;
+}
+
+/* Responsive Design */
+
+/* Tablet and larger mobile */
+@media (max-width: 1024px) {
+    .page-wrapper {
+        width: 90%;
+        padding: 20px 15px;
+    }
+
+    .evaluation-card {
+        /* Stack the columns */
+        grid-template-columns: 1fr;
+        gap: 2rem; /* Add more vertical gap */
+        padding: 20px 0;
+    }
+
+    .seprate {
+        /* Convert separator to a horizontal line */
+        height: 1px;
+        width: 80%;
+        border-bottom: 1px solid rgba(0, 251, 67, 0.123);
+        border-right: none;
+    }
+
+    .input-section1,
+    .input-section2 {
+        width: 90%;
+        align-self: center;
+    }
+    
+    .output-text {
+        width: 70vw;
+    }
+}
+
+
+/* Smaller Mobile Devices */
+@media (max-width: 768px) {
+    .page-wrapper {
+        width: 95%;
+        padding: 20px 10px;
+    }
+
+    .card-header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .tagline {
+        font-size: 0.9rem;
+        padding: 0 1rem;
+    }
+
+    #drop-zone {
+        height: 55%;
+        padding: 1rem;
+    }
+
+    /* Responsive Popup */
+    .output-text {
+        width: 90vw;
+        height: 90vh;
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+
+    .res-heading h2 {
+        font-size: 1.5rem;
+    }
+
+    .res-buttons {
+        /* Stack buttons vertically */
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .res-btn {
+        width: 100%;
+    }
 }

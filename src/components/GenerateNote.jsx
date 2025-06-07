@@ -144,6 +144,8 @@ export default function GenerateNote() {
     const element = ShowOut.current;
     if (!element) return;
 
+    const randomNum = Math.floor(100000 + Math.random() * 900000);
+    const filename = `critiqueai_output_${randomNum}.pdf`;
     // Clone the node to apply export-specific styles
     const clone = element.cloneNode(true);
 
@@ -178,7 +180,7 @@ export default function GenerateNote() {
 
     const opt = {
       margin: 0.5,
-      filename: "CritiqueAI_Output.pdf",
+      filename: filename,
       image: { type: "jpeg", quality: 0.98 },
       html2canvas: {
         scale: 2,

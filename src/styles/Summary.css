@@ -4,7 +4,9 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 93vh;
+    min-height: 93vh; /* Changed for responsiveness */
+    height: auto;
+    padding: 2rem 0; /* Add padding for small screens */
 }
 
 .summary-page-subbox {
@@ -16,6 +18,7 @@
     display: flex;
     flex-direction: column;
     background: rgb(22 27 34);
+    transition: width 0.3s ease;
 }
 
 .summary-main-content {
@@ -40,6 +43,7 @@
     padding: 1rem;
     color: white;
     font-size: 1rem;
+    min-height: 100px; /* Added min-height */
 }
 
 .highlight {
@@ -79,12 +83,6 @@
     display: flex;
     flex-direction: column;
 }
-
-element.style {
-    display: flex;
-    flex-direction: column;
-}
-
 
 .drag-area h3,
 .drag-area span {
@@ -192,6 +190,7 @@ element.style {
     flex-direction: column;
     width: 40%;
     gap: 1rem;
+    transition: width 0.3s ease;
 }
 
 
@@ -364,9 +363,11 @@ element.style {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center; /* Center content vertically */
     gap: 1rem;
     color: #ccc;
     opacity: 0.8;
+    height: 100%;
 }
 
 .output-placeholder p {
@@ -397,5 +398,55 @@ element.style {
 
     100% {
         background-position: 100% 0;
+    }
+}
+
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .summary-page-subbox {
+        width: 85%;
+    }
+
+    .second-summary-box {
+        width: 80%;
+    }
+
+    .sub-note-output {
+        width: 75%;
+    }
+
+    .sub-note-output-max {
+        width: 95%;
+    }
+}
+
+@media (max-width: 768px) {
+    .summay-page {
+        padding: 1rem;
+    }
+
+    .summary-page-subbox {
+        width: 95%;
+        padding: 1.5rem 1rem;
+        gap: 1.5rem;
+    }
+    
+    .content-title > h2 {
+        font-size: 1.8rem;
+    }
+
+    .second-summary-box {
+        width: 100%;
+    }
+
+    .features {
+        gap: 1.5rem;
+    }
+
+    .sub-note-output,
+    .sub-note-output-max {
+        width: 95vw;
+        height: 90vh;
     }
 }

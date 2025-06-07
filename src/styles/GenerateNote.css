@@ -5,7 +5,8 @@
     align-items: center;
     gap: 1rem;
     padding: 2rem;
-    height: 93vh;
+    min-height: 93vh; /* Changed for better responsiveness */
+    height: auto;
 }
 
 .card {
@@ -20,6 +21,7 @@
     align-items: center;
     gap: 2rem;
     border: 1px solid #30f57d30;
+    transition: width 0.3s ease; /* Added transition */
 }
 
 .dropdown-options {
@@ -268,9 +270,11 @@ ol strong {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center; /* Added for centering */
     gap: 1rem;
     color: #ccc;
     opacity: 0.8;
+    height: 100%; /* Ensure it takes full height to center */
 }
 
 .output-placeholder p {
@@ -304,3 +308,72 @@ ol strong {
     }
 }
 
+/* Responsive Design */
+
+/* Tablet view */
+@media (max-width: 1024px) {
+    .card {
+        width: 85%;
+    }
+
+    .dropdown-grid {
+        grid-template-columns: 1fr; /* Stack dropdowns */
+        width: 80%;
+    }
+
+    .sub-note-output {
+        width: 75%;
+    }
+
+    .sub-note-output-max {
+        width: 95%;
+    }
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+    .generatenote-page {
+        padding: 1rem;
+    }
+
+    .card {
+        width: 95%;
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+        text-align: center;
+        padding: 0 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group,
+    .dropdown-grid,
+    .dropdown-sub-box {
+        width: 100%;
+    }
+
+    .sub-note-output,
+    .sub-note-output-max {
+        width: 95vw;
+        height: 90vh;
+    }
+
+    .note-toolbar h2 {
+        font-size: 1.2rem;
+    }
+
+    .notes-btns {
+        gap: 0.5rem;
+    }
+
+    .note-icon {
+        padding: 8px;
+    }
+}

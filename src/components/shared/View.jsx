@@ -1,22 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import '../../styles/shared/Shared.css'
-import { FaDownload, FaRobot } from 'react-icons/fa';
+import '../../styles/shared/View.css'
+import { FaDownload } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
 import { useParams } from "react-router-dom";
 import axios from 'axios';
 import html2pdf from "html2pdf.js";
 
-
-function Shared() {
+function Viewed() {
 
     const { id } = useParams();
     const [showoutput, setshowoutput] = useState(true);
     const [Loading, setLoading] = useState(false);
     const [shared, setshared] = useState("");
-    const [notfound, setnotfound] = useState(false);
-    // const [shareheading, setshareheading] = useState("");
-    // const [sharetype, setsharetype] = useState("");
-    const sharedout = useRef(null)
+    const viewedout = useRef(null)
+    const [notfound, setnotfound] = useState(false)
 
 
     useEffect(() => {
@@ -87,12 +84,9 @@ function Shared() {
         try {
 
             setLoading(true)
-            // const id = "fXFjWxU3iqNpEZ77gPJS";
-            const response = await axios.get(`http://127.0.0.1:5000/shared/${id}`);
+            const response = await axios.get(`http://127.0.0.1:5000/view/${id}`);
             console.log(response.data);
 
-            // setshareheading(response.data.name)
-            // setsharetype(response.data.type)
             setshared(response.data.content)
             setLoading(false)
         }
@@ -108,7 +102,7 @@ function Shared() {
     const DownloadFile = () => {
         console.log("Download Button Pressed.....")
 
-        const element = RoadOut.current;
+        const element = viewedout.current;
         if (!element) return;
 
 
@@ -178,40 +172,41 @@ function Shared() {
 
             {
                 showoutput && (
-                    <div className={`shared-output`}>
-                        <div className={`sub-shared-output`}>
+                    <div className={`view-output`}>
+                        <div className={`sub-view-output`}>
                             {Loading ? (
-                                <div className='shared-placeholder'>
+                                <div className='view-placeholder'>
                                     <div className="Loadcircle"></div>
                                     <p>Loading...</p>
                                 </div>
                             ) : (
                                 <>
-                                    <div className='shared-toolbar'>
-                                        {/* <h2>{shareheading} {sharetype}</h2> */}
-                                        <h2>Shared</h2>
-                                        <div className='shared-btns'>
-                                            <div className='share-icon' onClick={CopyContent} >
+                                    <div className='view-toolbar'>
+                                        <h2>View Document</h2>
+                                        <div className='viewed-btns'>
+
+                                            <div className='view-icon' onClick={CopyContent} >
                                                 <MdContentCopy />
                                             </div>
-                                            <div className='share-icon' onClick={DownloadFile} >
+                                            <div className='view-icon' onClick={DownloadFile} >
                                                 <FaDownload />
                                             </div>
                                         </div>
                                     </div>
-
                                     {
                                         notfound ?
-                                            <div className='not-shared-content'>
-                                                <p>Sorry, you Don't have any shared document</p>
+                                            <div className='not-viewed-content'>
+                                                <p>sorry, you don't have any document to view</p>
                                             </div>
                                             :
-                                            <div className='shared-content' ref={sharedout} >
+                                            <div className='viewed-content' ref={viewedout} >
                                                 {/* output Yha Ayega */}
 
 
                                             </div>
                                     }
+
+
                                 </>
                             )}
                         </div>
@@ -225,16 +220,12 @@ function Shared() {
     )
 }
 
-export default Shared;
+export default Viewed;
 
 
 
 
 
-
-{/* <div className='share-icon' >
-                                                <TfiSave />
-                                            </div> */}
 
 
 

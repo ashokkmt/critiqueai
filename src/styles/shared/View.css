@@ -1,4 +1,4 @@
-.shared-output {
+.viewed-output {
     /* position: fixed;
     top: 0; */
     width: 100%;
@@ -11,7 +11,7 @@
 }
 
 
-.shared-btns {
+.viewed-btns {
     display: flex;
     gap: 1rem;
     justify-content: center;
@@ -19,7 +19,7 @@
 }
 
 
-.share-icon {
+.view-icon {
     padding: 10px;
     border-radius: 10%;
     transition: background 0.1s ease;
@@ -28,17 +28,17 @@
     align-items: center;
 }
 
-.share-icon:hover {
+.view-icon:hover {
     background: #2e3440;
 }
 
-.share-icon:active {
+.view-icon:active {
     background: #2e34409a;
 }
 
 
 
-.shared-content {
+.viewed-content {
     flex-grow: 1;
     background: rgb(0 0 0 / 35%);
     text-wrap: wrap;
@@ -46,7 +46,7 @@
     padding: 1rem;
 }
 
-.not-shared-content {
+.not-viewed-content {
     flex-grow: 1;
     background: rgb(0 0 0 / 35%);
     text-wrap: wrap;
@@ -58,7 +58,7 @@
 }
 
 
-.shared-toolbar {
+.view-toolbar {
     border-bottom: 1px solid #2dad6f41;
     padding: .8rem 0 0.8rem 0;
     display: flex;
@@ -66,7 +66,7 @@
     align-items: center;
 }
 
-.sub-shared-output {
+.sub-view-output {
     width: 90%;
     height: 95%;
     padding: 1rem;
@@ -84,7 +84,7 @@
 }
 
 
-.shared-placeholder {
+.view-placeholder {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -96,7 +96,7 @@
 
 }
 
-.shared-placeholder p {
+.view-placeholder p {
     font-style: italic;
     color: #aaa;
     font-size: 1rem;

@@ -2,9 +2,10 @@ import { useEffect, useState } from 'react';
 import '../styles/SavedNotes.css';
 import { auth } from './firebase/firebase';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function SavedNotes() {
+  const navigate = useNavigate();
   const [udata, setudata] = useState([]);
   const [Loading, isLoading] = useState(false);
   const [notaUser, setnotaUser] = useState(false);
@@ -117,7 +118,10 @@ export default function SavedNotes() {
   const showSavedDoc = (id) => {
     // Implement your function or routing logic here
     console.log("View Doc ID:", id);
+
+    navigate(`/view/${id}`);
   };
+
 
   return (
     <>

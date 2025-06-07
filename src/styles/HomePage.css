@@ -299,69 +299,6 @@ body {
     }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .hero-content {
-        max-width: 100%;
-        padding: 0 1rem;
-    }
-
-    .hero-buttons {
-        justify-content: flex-start;
-    }
-
-    .hero-illustration {
-        display: none;
-    }
-
-    .hero-content h1 {
-        font-size: 3rem;
-        /* Adjusted for mobile */
-        margin-bottom: 0.5rem;
-    }
-
-    .dynamic-text {
-        font-size: 1.25rem;
-    }
-
-    .hero-buttons {
-        flex-direction: column;
-    }
-
-    .primary-btn,
-    .secondary-btn {
-        width: 100%;
-        text-align: center;
-    }
-
-    .hero-section {
-        padding: 4rem 2rem;
-    }
-
-    .hero-content {
-        padding-left: 1rem;
-        text-align: left;
-        max-width: 100%;
-        padding: 0 1rem;
-    }
-
-    .hero-buttons {
-        justify-content: flex-start;
-    }
-
-    .hero-content h1 {
-        font-size: 2rem;
-    }
-
-    .hero-illustration {
-        display: none;
-    }
-
-    .hero-subtitle {
-        font-size: 0.9rem;
-    }
-}
-
 h1 {
     font-size: 65px;
     line-height: 1.2;
@@ -496,8 +433,8 @@ h1 {
 /* Tools */
 .main-tools-section {
     height: auto;
-    width: 73%;
-    border: 1px solid white;
+    width: 80%;
+    /* border: 1px solid white; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -579,8 +516,8 @@ h1 {
 /* features */
 .main-feature-section {
     height: auto;
-    width: 73%;
-    border: 1px solid white;
+    width: 80%; /* Adjusted width for better spacing */
+    /* border: 1px solid white; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -618,16 +555,16 @@ h1 {
 
 .features-cards {
     width: 90%;
-    /* border: 1px solid white; */
     height: 100%;
-    display: flex;
-    gap: 3rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on large screens */
+    gap: 2rem; /* Adjusted gap */
     align-self: center;
 }
 
 .feature-card {
-    border: 1px solid white;
-    width: 100%;
+    /* border: 1px solid white; */ /* Removed for cleaner look */
+    width: 100%; /* Will adapt to grid column width */
     padding: 2rem;
 
     >p {
@@ -658,8 +595,8 @@ h1 {
 /* About Section Styles */
 .main-about-section {
     height: auto;
-    width: 73%;
-    border: 1px solid white;
+    width: 80%; /* Adjusted width */
+    /* border: 1px solid white; */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -704,19 +641,18 @@ h1 {
     }
 }
 
-
 .about-cards {
     width: 90%;
-    /* border: 1px solid white; */
     height: 100%;
-    display: flex;
-    gap: 3rem;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on large screens */
+    gap: 2rem; /* Adjusted gap */
     align-self: center;
 }
 
 .about-card {
-    border: 1px solid white;
-    width: 100%;
+    /* border: 1px solid white; */
+    width: 100%; /* Will adapt to grid column width */
     padding: 2rem;
 
     >p {
@@ -797,4 +733,144 @@ h1 {
     margin: 0 auto;
     position: relative;
     z-index: 2;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .hero-section {
+        padding: 3rem 2rem;
+    }
+    
+    .hero-illustration {
+        right: 2rem;
+        width: 40%;
+    }
+    
+    .main-tools-section,
+    .main-feature-section,
+    .main-about-section {
+        width: 95%;
+        padding: 2rem 1.5rem 4rem 1.5rem;
+    }
+
+    .features-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 50px;
+    }
+    
+    /* MODIFIED FOR LEFT ALIGNMENT ON MOBILE */
+    .hero-section {
+        min-height: calc(100vh - 50px);
+        padding: 2rem 1rem;
+        flex-direction: column;
+        text-align: left; /* Changed from center */
+        justify-content: center;
+        align-items: flex-start; /* Added for flexbox alignment */
+    }
+    
+    /* MODIFIED FOR LEFT ALIGNMENT ON MOBILE */
+    .hero-content {
+        max-width: 100%;
+        text-align: left; /* Changed from center */
+        padding: 0;
+        margin: 0;
+    }
+    
+    .hero-illustration {
+        display: none;
+    }
+
+    .hero-subtitle{
+        max-width: 75%;
+    }
+    
+    /* MODIFIED FOR LEFT ALIGNMENT ON MOBILE */
+    .hero-buttons {
+        justify-content: flex-start; /* Changed from center */
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .primary-btn,
+    .secondary-btn {
+        min-width: 140px;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .tools-cards,
+    .features-cards,
+    .about-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .sub-about-title > p {
+        padding: 0 1rem;
+    }
+    
+    .main-tools-section,
+    .main-feature-section,
+    .main-about-section {
+        width: 95%;
+        padding: 2rem 1rem 3rem 1rem;
+        margin: 2rem auto;
+    }
+    
+    .features {
+        padding: 0 1rem;
+    }
+    
+    .feature-box {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 1.5rem 1.5rem; /* Increased side padding slightly */
+    }
+    
+    .hero-content h1 {
+        font-size: clamp(1.8rem, 8vw, 2.5rem);
+    }
+    
+    .dynamic-text {
+        font-size: clamp(0.9rem, 4vw, 1.2rem);
+    }
+    
+    .hero-subtitle {
+        font-size: clamp(0.75rem, 3.5vw, 0.9rem);
+        max-width: 80%;
+    }
+    
+    
+    .main-tools-section,
+    .main-feature-section,
+    .main-about-section {
+        padding: 1.5rem 0.75rem 2rem 0.75rem;
+    }
+    
+    .tool-card,
+    .feature-card,
+    .about-card {
+        padding: 1.5rem;
+    }
+    
+    /* MODIFICATION for smaller screens */
+    .hero-buttons {
+        flex-direction: row; /* Keep it as a row for a single button */
+        width: auto; /* Allow it to size naturally */
+        align-items: flex-start;
+    }
+    
+    /* MODIFICATION for smaller screens */
+    .primary-btn,
+    .secondary-btn {
+        width: auto; /* Allow button to size to content */
+        max-width: 250px; /* Optional: prevent it from being too wide */
+    }
 }

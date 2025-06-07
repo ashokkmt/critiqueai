@@ -10,6 +10,7 @@ import LoginPage from "./components/Loginsetup/LoginPage.jsx"
 import SignUpPage from "./components/Loginsetup/SignupPage.jsx"
 import SavedNotes from "./components/SavedNotes.jsx"
 import Shared from "./components/shared/Shared.jsx"
+import View from "./components/shared/View.jsx"
 
 function Homepagefunc() {
   return (
@@ -75,6 +76,15 @@ function SharedPage() {
   )
 }
 
+function ViewPage() {
+  return (
+    <>
+      <Navbar />
+      <View />
+    </>
+  )
+}
+
 
 
 
@@ -111,6 +121,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signUp" element={<SignUpPage />} />
           <Route path="/shared/:id" element={<SharedPage />} />
+          <Route path="/view/:doc_id" element={<ViewPage />} />
         </Routes>
       </BrowserRouter>
     </>
