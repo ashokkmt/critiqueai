@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import '../styles/SavedNotes.css';
 import { auth } from './firebase/firebase';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 export default function SavedNotes() {
   const [udata, setudata] = useState([]);
   const [Loading, isLoading] = useState(false);
   const [notaUser, setnotaUser] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -64,23 +66,19 @@ export default function SavedNotes() {
 
   const fetchUserDetail = async () => {
     auth.onAuthStateChanged(async (user) => {
-
       if (user) {
+        setCurrentUser(user);
         isLoading(true);
         try {
-          const res = await axios.get("http://127.0.0.1:5000/get-output", {
-            params: {
-              uid: user.uid
-            }
+          const res = await axios.post("http://127.0.0.1:5000/get-output", {
+            uid: user.uid
           });
           setudata(res.data.outputs);
         } catch (error) {
           console.log(error.message);
         }
         isLoading(false);
-      }
-
-      else {
+      } else {
         setnotaUser(true);
       }
     });
@@ -90,12 +88,11 @@ export default function SavedNotes() {
     fetchUserDetail();
   }, []);
 
-  const showSavedDoc = async (id) => {
+  const shareOutput = async (id) => {
     try {
-      const docResponse = await axios.post("http://127.0.0.1:5000/get-output", {
-        params: {
-          id
-        }
+      const docResponse = await axios.post("http://127.0.0.1:5000/api/share-output", {
+        user_id: currentUser.uid,
+        doc_id: id
       });
       console.log(docResponse);
     } catch (error) {
@@ -105,15 +102,21 @@ export default function SavedNotes() {
 
   const deleteDocument = async (id) => {
     try {
-      await axios.post("http://127.0.0.1:5000/get-output", {
-        params: {
-          id
-        }
+      await axios.delete("http://127.0.0.1:5000/api/delete-output", {
+        data: {
+          user_id: currentUser.uid,
+          doc_id: id,
+        },
       });
       fetchUserDetail();
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const showSavedDoc = (id) => {
+    // Implement your function or routing logic here
+    console.log("View Doc ID:", id);
   };
 
   return (
@@ -125,10 +128,9 @@ export default function SavedNotes() {
           <h2>Saved Notes</h2>
 
           <ul className="sub-heading-title">
-            <li>Title1</li>
-            <li>Title2</li>
-            <li>Title3</li>
-            <li>Title4</li>
+            <li>Name</li>
+            <li>Type</li>
+            <li>Filter</li>
           </ul>
 
           <div className="saved-notes-container">
@@ -140,34 +142,56 @@ export default function SavedNotes() {
                       <div className='circle'></div>
                       <p>Loading content...</p>
                     </div>
-                  ) : (
-                    <table className="saved-notes-table">
-                      <thead>
-                        <tr>
-                          <th className="serial-number">Sno</th>
-                          <th className="heading-name">Name</th>
-                          <th className="title-type">Type</th>
-                          <th className="time">Time</th>
-                          <th className="feature-buttons">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {udata.map((val, key) => (
-                          <tr key={val.id || key}>
-                            <td>{key + 1}</td>
-                            <td>{val.name}</td>
-                            <td>{val.type}</td>
-                            <td>{val.time}</td>
-                            <td>
-                              <button onClick={() => showSavedDoc(val.id)} className="action-btn view">View</button>
-                              <button className="action-btn share">Share</button>
-                              <button onClick={() => deleteDocument(val.id)} className="action-btn delete">Delete</button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  )}
+                  )
+                  :
+                  notaUser ?
+                    (
+                      <div className="Not-user">
+                        <div className='notUserLogin'>
+                          <h3>Not a User</h3>
+                          <Link className='Go-login' to='/login'>Login</Link>
+                        </div>
+                      </div>
+                    )
+                    :
+                    udata.length === 0 ?
+                      (
+                        <div className="no-saved-data">
+                          <p>Haven't saved anything yet. Try saving a note.</p>
+                        </div>
+                      )
+                      :
+                      (
+                        <table className="saved-notes-table">
+                          <thead>
+                            <tr>
+                              <th className="serial-number">Sno</th>
+                              <th className="heading-name">Name</th>
+                              <th className="title-type">Type</th>
+                              <th className="time">Time</th>
+                              <th className="feature-buttons">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {
+                              udata.map((val, key) => (
+                                <tr key={val.id || key}>
+                                  <td>{key + 1}</td>
+                                  <td>{val.name}</td>
+                                  <td>{val.type}</td>
+                                  <td>{val.time}</td>
+                                  <td>
+                                    <button onClick={() => showSavedDoc(val.id)} className="action-btn view">View</button>
+                                    <button onClick={() => shareOutput(val.id)} className="action-btn share">Share</button>
+                                    <button onClick={() => deleteDocument(val.id)} className="action-btn delete">Delete</button>
+                                  </td>
+                                </tr>
+                              ))
+                            }
+                          </tbody>
+                        </table>
+                      )
+              }
             </div>
           </div>
         </div>

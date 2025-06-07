@@ -8,6 +8,7 @@ import { TfiSave } from 'react-icons/tfi';
 import axios from 'axios';
 import { auth } from './firebase/firebase';
 import { Slide, toast, ToastContainer } from 'react-toastify';
+import html2pdf from "html2pdf.js";
 
 export default function Summary() {
     const fileInputRef = useRef(null);
@@ -166,7 +167,60 @@ export default function Summary() {
 
     const DownloadFile = () => {
         console.log("Download Button Pressed.....")
-    }
+
+        const element = Summarydata.current;
+        if (!element) return;
+
+        // Clone the node to apply export-specific styles
+        const clone = element.cloneNode(true);
+
+        // Clean PDF styles
+        clone.style.backgroundColor = "white";
+        clone.style.color = "black";
+        clone.style.padding = "20px";
+        clone.style.fontFamily = "Arial, sans-serif";
+        clone.style.fontSize = "14px";
+        clone.style.width = "100%";
+
+        // Fix overflow and page breaks
+        clone.style.overflow = "visible";
+        clone.style.pageBreakInside = "auto";
+
+        // Optional: set minHeight to ensure spacing is not squashed
+        clone.style.minHeight = "100vh";
+
+        clone.querySelectorAll("h1, h2, h3, h4").forEach((el) => {
+            el.style.color = "black";
+            el.style.marginBottom = "10px";
+        });
+
+
+        // Page break styles for child elements
+        clone.querySelectorAll("p, div, li, strong").forEach((el) => {
+            el.style.pageBreakInside = "avoid";
+            el.style.breakInside = "avoid";
+            el.style.color = "black";
+            el.style.lineHeight = "1.6";
+        });
+
+        const opt = {
+            margin: 0.5,
+            filename: "CritiqueAI_Output.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                scrollY: 0
+            },
+            jsPDF: {
+                unit: "in",
+                format: "a4",
+                orientation: "portrait"
+            }
+        };
+
+        html2pdf().set(opt).from(clone).save();
+    };
 
     const CopyContent = () => {
         navigator.clipboard.writeText(Summarydata.current.innerText);

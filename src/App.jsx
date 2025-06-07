@@ -9,9 +9,7 @@ import GenerateNote from "./components/GenerateNote.jsx"
 import LoginPage from "./components/Loginsetup/LoginPage.jsx"
 import SignUpPage from "./components/Loginsetup/SignupPage.jsx"
 import SavedNotes from "./components/SavedNotes.jsx"
-import { useEffect, useState } from "react"
-import { auth } from './components/firebase/firebase.js';
-
+import Shared from "./components/shared/Shared.jsx"
 
 function Homepagefunc() {
   return (
@@ -68,27 +66,36 @@ function SavedNotesPage() {
   )
 }
 
+function SharedPage() {
+  return (
+    <>
+      <Navbar />
+      <Shared />
+    </>
+  )
+}
+
 
 
 
 function App() {
 
-  const [userPresent, setuserPresent] = useState(false)
+  // const [userPresent, setuserPresent] = useState(false)
 
 
 
 
-  const fetchUserDetail = async () => {
-    auth.onAuthStateChanged(async (user) => {
-      if ((user)) {
-        setuserPresent(true)
-      }
-    })
-  }
+  // const fetchUserDetail = async () => {
+  //   auth.onAuthStateChanged(async (user) => {
+  //     if ((user)) {
+  //       setuserPresent(true)
+  //     }
+  //   })
+  // }
 
-  useEffect(() => {
-    fetchUserDetail();
-  }, [])
+  // useEffect(() => {
+  //   fetchUserDetail();
+  // }, [])
 
 
   return (
@@ -100,14 +107,10 @@ function App() {
           <Route path="/roadmap" element={<RoadMapFunc />} />
           <Route path="/summary" element={<Summarypage />} />
           <Route path="/notes" element={<Generatenote />} />
-          {
-            userPresent ?
-              <Route path="/savedNotes" element={<SavedNotesPage />} />
-              :
-              <Route path="/" element={<Homepagefunc />} />
-          }
+          <Route path="/savedNotes" element={<SavedNotesPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signUp" element={<SignUpPage />} />
+          <Route path="/shared/:id" element={<SharedPage />} />
         </Routes>
       </BrowserRouter>
     </>

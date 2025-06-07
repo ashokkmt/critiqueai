@@ -1,0 +1,112 @@
+.shared-output {
+    /* position: fixed;
+    top: 0; */
+    width: 100%;
+    height: calc(100vh - 63px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* z-index: 10000; */
+    /* backdrop-filter: blur(10px); */
+}
+
+
+.shared-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.share-icon {
+    padding: 10px;
+    border-radius: 10%;
+    transition: background 0.1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.share-icon:hover {
+    background: #2e3440;
+}
+
+.share-icon:active {
+    background: #2e34409a;
+}
+
+
+
+.shared-content {
+    flex-grow: 1;
+    background: rgb(0 0 0 / 35%);
+    text-wrap: wrap;
+    border-radius: 25px;
+    padding: 1rem;
+}
+
+.shared-toolbar {
+    border-bottom: 1px solid #2dad6f41;
+    padding: .8rem 0 0.8rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sub-shared-output {
+    width: 90%;
+    height: 95%;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    gap: 1rem;
+    background: rgb(22 27 34);
+    border: 1px solid #2dad6f41;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
+    transition: all 0.5s ease;
+}
+
+
+.shared-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #ccc;
+    opacity: 0.8;
+    height: 100%;
+    justify-content: center;
+
+}
+
+.shared-placeholder p {
+    font-style: italic;
+    color: #aaa;
+    font-size: 1rem;
+    margin: 0;
+}
+
+
+.Loadcircle{
+    width: 60px;
+    height: 60px;
+    background: transparent;
+    border-radius: 50%; 
+    border: 3px solid gainsboro;
+    border-bottom: 3px solid transparent;
+    animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+    from{
+        transform: rotate(0deg);
+    }
+    to{
+        transform: rotate(360deg);
+    }
+}

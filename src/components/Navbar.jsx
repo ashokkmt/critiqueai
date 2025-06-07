@@ -1,5 +1,5 @@
-import { use, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import '../styles/Navbar.css';
@@ -9,12 +9,12 @@ import { CgLogOut } from 'react-icons/cg';
 import { auth, db } from './firebase/firebase';
 import { Slide, toast } from 'react-toastify';
 import { GrNotes } from 'react-icons/gr';
-import axios from 'axios';
+import { FaBars, FaTimes } from 'react-icons/fa'; // Import icons for the menu toggle
 
 const Navbar = () => {
-  const [userDetail, setUserDetail] = useState(null)
-  const [userURL, setUserURL] = useState(null)
-  const navigate = useNavigate();
+  const [userDetail, setUserDetail] = useState(null);
+  const [userURL, setUserURL] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
 
   useEffect(() => {
     // Initialize AOS
@@ -24,6 +24,22 @@ const Navbar = () => {
       once: true,
     });
 
+    // Prevent body scroll when mobile menu is open
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    // Cleanup function to restore scrolling
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isMenuOpen]);
+
+
+  // Other useEffect hooks and functions remain the same...
+  useEffect(() => {
     // Load particles.js
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js';
@@ -56,44 +72,40 @@ const Navbar = () => {
     if (lastAbout) {
       lastAbout.scrollIntoView({ behavior: 'smooth' });
     }
+    handleLinkClick(); // Close menu on click
   }
-
-
 
   const fetchUserDetail = async () => {
     auth.onAuthStateChanged(async (user) => {
-      // console.log(user);
-      setUserURL(user.photoURL);
-
-      const docRef = doc(db, "Users", user.uid);
-      const userdata = await getDoc(docRef)
-
-      if (userdata.exists()) {
-        // console.log(userdata.data())
-        setUserDetail(userdata.data());
+      if (user) {
+        setUserURL(user.photoURL);
+        const docRef = doc(db, "Users", user.uid);
+        const userdata = await getDoc(docRef);
+        if (userdata.exists()) {
+          setUserDetail(userdata.data());
+        }
+      } else {
+        setUserDetail(null);
+        setUserURL(null);
       }
-    })
-  }
+    });
+  };
 
   useEffect(() => {
     fetchUserDetail();
-  }, [])
+  }, []);
 
 
   const LogOutUser = async () => {
     try {
       await auth.signOut();
-
-      toast.success("Logged Out SuccessFully", {
+      toast.success("Logged Out Successfully", {
         position: "top-center",
         autoClose: 2000,
         transition: Slide,
       });
-
-
-      setUserDetail(null)
-
-      navigate("/")
+      setUserDetail(null);
+      handleLinkClick(); // Close menu
     } catch (error) {
       console.log(error.message);
       toast.error("Having Some issue...", {
@@ -102,22 +114,18 @@ const Navbar = () => {
         transition: Slide,
       });
     }
-  }
+  };
 
 
-  // const FetchUserSavedData = () => {
-  //   auth.onAuthStateChanged(async (user) => {
+  const FetchUserSavedData = () => {
+    console.log("Testing...");
+    handleLinkClick(); // Close menu
+  };
 
-  //     if (user) {
-  //       const res = await axios.post("http://127.0.0.1/", {
-  //         uid : user.uid
-  //       })
-
-  //       console.log(res);
-  //     }
-
-  //   })
-  // }
+  // Function to close the mobile menu
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
 
   return (
     <>
@@ -126,14 +134,20 @@ const Navbar = () => {
       <div className='navbar-main'>
         <div className="navbar">
           <div className="title-links" data-aos="fade-right">
-            <Link className="title" to="/">
+            <Link className="title" to="/" onClick={handleLinkClick}>
               <img src="/images/logo-svg.svg" alt="CritiqueAI Logo" className="title-img" />
               <span className="title-text">CritiqueAI</span>
             </Link>
           </div>
 
-          <div className="link-area" data-aos="fade-left">
-            <Link to="/" className="nav-link">
+          {/* Mobile Menu Toggle Button */}
+          <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+
+          {/* Add 'active' class based on state */}
+          <div className={`link-area ${isMenuOpen ? 'active' : ''}`} data-aos="fade-left">
+            <Link to="/" className="nav-link" onClick={handleLinkClick}>
               <i className="fas fa-home"></i>
               <span>Home</span>
             </Link>
@@ -145,19 +159,19 @@ const Navbar = () => {
                 <i className="fas fa-chevron-down"></i>
               </button>
               <div className="nav-dropdown-content">
-                <Link to="/input" className="dropdown-item">
+                <Link to="/input" className="dropdown-item" onClick={handleLinkClick}>
                   <i className="fas fa-check-circle"></i>
                   <span>Answer Evaluation</span>
                 </Link>
-                <Link to="/roadmap" className="dropdown-item">
+                <Link to="/roadmap" className="dropdown-item" onClick={handleLinkClick}>
                   <i className="fas fa-road"></i>
                   <span>Learning Roadmap</span>
                 </Link>
-                <Link to="/summary" className="dropdown-item">
+                <Link to="/summary" className="dropdown-item" onClick={handleLinkClick}>
                   <i className="fas fa-file-alt"></i>
                   <span>Document Summary</span>
                 </Link>
-                <Link to="/notes" className="dropdown-item">
+                <Link to="/notes" className="dropdown-item" onClick={handleLinkClick}>
                   <i className="fas fa-book"></i>
                   <span>Generate Notes</span>
                 </Link>
@@ -180,7 +194,7 @@ const Navbar = () => {
                       <span>{userDetail.firstName}</span>
                     </button>
                     <div className="nav-dropdown-content login-dropdown-content">
-                      <Link to='/savedNotes' className="dropdown-item">
+                      <Link onClick={FetchUserSavedData} to='/savedNotes' className="dropdown-item">
                         <GrNotes size={18} />
                         <span>Saved Notes</span>
                       </Link>
@@ -193,7 +207,7 @@ const Navbar = () => {
                   </div>
                 </>
                 :
-                <Link to="/login" className="nav-link">
+                <Link to="/login" className="nav-link" onClick={handleLinkClick}>
                   <FiLogIn size={18} />
                   <span>Login</span>
                 </Link>

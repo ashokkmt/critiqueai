@@ -20,6 +20,7 @@
 
 .saved-sub-container>h2 {
   padding: 0 1.1rem;
+  color:#d6d6d6;
 }
 
 .sub-heading-title {
@@ -31,9 +32,22 @@
 
 .sub-heading-title>li {
   padding: 0.3rem 1.5rem;
-  border: 1px solid white;
+  color: #10b981;
+  border: 1px solid #6c83495c;
   border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background-color: #0f1520;
 }
+
+.sub-heading-title li:hover{
+  transform: translateY(-3px);
+}
+
+.sub-heading-title li:active{
+  transform: scale(0.99);
+}
+
 
 .saved-notes-container {
   height: 100%;
@@ -160,4 +174,38 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.Not-user{
+  min-height: 550px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notUserLogin{
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  h3{
+    font-size: larger;
+    font-weight: 500;
+  }
+}
+
+.Go-login{
+   font-size: larger;
+   text-decoration: underline;
+}
+
+
+.no-saved-data {
+  min-height: 550px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 18px;
+  font-weight: 500;
 }
