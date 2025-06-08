@@ -108,7 +108,7 @@ function Shared() {
     const DownloadFile = () => {
         console.log("Download Button Pressed.....")
 
-        const element = RoadOut.current;
+        const element = sharedout.current;
         if (!element) return;
 
 
@@ -144,6 +144,19 @@ function Shared() {
             el.style.breakInside = "avoid";
             el.style.color = "black";
             el.style.lineHeight = "1.6";
+        });
+
+        clone.querySelectorAll("ul").forEach((ul) => {
+            ul.style.paddingLeft = "20px";
+            ul.style.marginTop = "10px";
+            ul.style.marginBottom = "10px";
+        });
+
+        clone.querySelectorAll("li").forEach((li) => {
+            li.style.marginBottom = "5px";
+            li.style.paddingLeft = "10px";
+            li.style.listStyleType = "disc";
+            li.style.color = "black";
         });
 
         const opt = {
@@ -226,21 +239,3 @@ function Shared() {
 }
 
 export default Shared;
-
-
-
-
-
-
-{/* <div className='share-icon' >
-                                                <TfiSave />
-                                            </div> */}
-
-
-
-{/* <div className='share-icon' onClick={() => {
-                                                setshowoutput(false)
-                                            }}
-                                            >
-                                                <RiCloseLargeLine />
-                                            </div> */}

@@ -21,6 +21,7 @@ export default function Summary() {
     const [Maximize, setMaximize] = useState(false);
     const [SummaryOut, setSummaryOut] = useState("");
     const Summarydata = useRef(null)
+    const [hide, sethide] = useState(true);
 
     useEffect(() => {
         const loadScript = (src) => {
@@ -206,6 +207,19 @@ export default function Summary() {
             el.style.lineHeight = "1.6";
         });
 
+        clone.querySelectorAll("ul").forEach((ul) => {
+            ul.style.paddingLeft = "20px";
+            ul.style.marginTop = "10px";
+            ul.style.marginBottom = "10px";
+        });
+
+        clone.querySelectorAll("li").forEach((li) => {
+            li.style.marginBottom = "5px";
+            li.style.paddingLeft = "10px";
+            li.style.listStyleType = "disc";
+            li.style.color = "black";
+        });
+
         const opt = {
             margin: 0.5,
             filename: filename,
@@ -227,6 +241,10 @@ export default function Summary() {
 
     const CopyContent = () => {
         navigator.clipboard.writeText(Summarydata.current.innerText);
+        sethide(false)
+        setTimeout(() => {
+            sethide(true)
+        }, 1200);
     }
 
     const MaximizeNotesSize = () => {
@@ -305,7 +323,8 @@ export default function Summary() {
                                             <div onClick={SendDataBackend} className='note-icon' >
                                                 <TfiSave />
                                             </div>
-                                            <div className='note-icon' onClick={CopyContent} >
+                                            <div className='note-icon sum-copy' onClick={CopyContent} >
+                                                <div className={`show ${hide ? "" : "unhide"}`}>copied</div>
                                                 <MdContentCopy />
                                             </div>
                                             <div className='note-icon' onClick={DownloadFile} >

@@ -1,68 +1,8 @@
-.viewed-output {
-    /* position: fixed;
-    top: 0; */
+.view-output {
     width: 100%;
     height: calc(100vh - 63px);
     display: flex;
     justify-content: center;
-    align-items: center;
-    /* z-index: 10000; */
-    /* backdrop-filter: blur(10px); */
-}
-
-
-.viewed-btns {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-    align-items: center;
-}
-
-
-.view-icon {
-    padding: 10px;
-    border-radius: 10%;
-    transition: background 0.1s ease;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.view-icon:hover {
-    background: #2e3440;
-}
-
-.view-icon:active {
-    background: #2e34409a;
-}
-
-
-
-.viewed-content {
-    flex-grow: 1;
-    background: rgb(0 0 0 / 35%);
-    text-wrap: wrap;
-    border-radius: 25px;
-    padding: 1rem;
-}
-
-.not-viewed-content {
-    flex-grow: 1;
-    background: rgb(0 0 0 / 35%);
-    text-wrap: wrap;
-    border-radius: 25px;
-    padding: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-.view-toolbar {
-    border-bottom: 1px solid #2dad6f41;
-    padding: .8rem 0 0.8rem 0;
-    display: flex;
-    justify-content: space-between;
     align-items: center;
 }
 
@@ -104,6 +44,7 @@
 }
 
 
+
 .Loadcircle {
     width: 60px;
     height: 60px;
@@ -122,4 +63,82 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+.view-toolbar {
+    border-bottom: 1px solid #2dad6f41;
+    padding: .8rem 0 0.8rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.viewed-btns {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.view-icon {
+    padding: 10px;
+    border-radius: 10%;
+    transition: background 0.1s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.view-icon:hover {
+    background: #2e3440;
+}
+
+.view-icon:active {
+    background: #2e34409a;
+}
+
+
+.not-viewed-content {
+    flex-grow: 1;
+    background: rgb(0 0 0 / 35%);
+    text-wrap: wrap;
+    border-radius: 25px;
+    padding: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.viewed-content {
+    flex-grow: 1;
+    background: rgb(0 0 0 / 35%);
+    text-wrap: wrap;
+    border-radius: 25px;
+    padding: 1rem;
+}
+
+.viewed-content ul {
+    padding-left: 1.5rem; /* indent */
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    list-style-type: disc; /* bullet points */
+}
+
+/* Style list items */
+.viewed-content li {
+    margin-bottom: 0.4rem;
+    padding-left: 0.2rem;
+}
+
+/* Optional: nested lists */
+.viewed-content ul ul {
+    list-style-type: circle;
+    padding-left: 1.25rem;
+}
+
+/* Optional: for better text wrapping inside li */
+.viewed-content li {
+    word-wrap: break-word;
 }

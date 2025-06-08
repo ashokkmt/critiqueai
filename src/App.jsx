@@ -121,7 +121,7 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signUp" element={<SignUpPage />} />
           <Route path="/shared/:id" element={<SharedPage />} />
-          <Route path="/view/:doc_id" element={<ViewPage />} />
+          <Route path="/view" element={<ViewPage />} />
         </Routes>
       </BrowserRouter>
     </>

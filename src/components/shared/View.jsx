@@ -2,18 +2,20 @@ import { useEffect, useRef, useState } from 'react';
 import '../../styles/shared/View.css'
 import { FaDownload } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
-import { useParams } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from 'axios';
 import html2pdf from "html2pdf.js";
+import { auth } from '../firebase/firebase';
 
 function Viewed() {
 
-    const { id } = useParams();
-    const [showoutput, setshowoutput] = useState(true);
+    const location = useLocation();
+    const { doc_id } = location.state || {};
     const [Loading, setLoading] = useState(false);
     const [shared, setshared] = useState("");
     const viewedout = useRef(null)
     const [notfound, setnotfound] = useState(false)
+    // const [userFound, setuserfound] = useState(false)
 
 
     useEffect(() => {
@@ -72,31 +74,42 @@ function Viewed() {
 
 
     useEffect(() => {
-        if (sharedout.current) {
-            sharedout.current.innerHTML = shared;
+        if (viewedout.current) {
+            viewedout.current.innerHTML = shared;
         }
     }, [shared])
 
 
+    useEffect(() => {
+        // console.log(doc_id)
+        auth.onAuthStateChanged(async (user) => {
+            if (user && doc_id) {
+                console.log(user);
 
-    useEffect(async () => {
+                try {
+                    setLoading(true)
+                    const response = await axios.post("http://127.0.0.1:5000/view", {
+                        uid: user.uid,
+                        doc_id: doc_id
+                    });
+                    console.log(response.data);
 
-        try {
-
-            setLoading(true)
-            const response = await axios.get(`http://127.0.0.1:5000/view/${id}`);
-            console.log(response.data);
-
-            setshared(response.data.content)
-            setLoading(false)
-        }
-        catch (error) {
-            setLoading(false)
-            setnotfound(true)
-            console.log(error.message);
-        }
-
+                    setshared(response.data.content)
+                    setLoading(false)
+                }
+                catch (error) {
+                    setLoading(false)
+                    setnotfound(true)
+                    console.log(error.message);
+                }
+            }
+            else {
+                setLoading(false)
+                setnotfound(true)
+            }
+        })
     }, [])
+
 
 
     const DownloadFile = () => {
@@ -140,6 +153,19 @@ function Viewed() {
             el.style.lineHeight = "1.6";
         });
 
+        clone.querySelectorAll("ul").forEach((ul) => {
+            ul.style.paddingLeft = "20px";
+            ul.style.marginTop = "10px";
+            ul.style.marginBottom = "10px";
+        });
+
+        clone.querySelectorAll("li").forEach((li) => {
+            li.style.marginBottom = "5px";
+            li.style.paddingLeft = "10px";
+            li.style.listStyleType = "disc";
+            li.style.color = "black";
+        });
+
         const opt = {
             margin: 0.5,
             filename: filename,
@@ -160,78 +186,52 @@ function Viewed() {
     }
 
     const CopyContent = () => {
-        navigator.clipboard.writeText(sharedout.current.innerText);
+        navigator.clipboard.writeText(viewedout.current.innerText);
     }
-
-
-
 
     return (
         <>
             <div id="particles-js"></div>
-
             {
-                showoutput && (
-                    <div className={`view-output`}>
-                        <div className={`sub-view-output`}>
-                            {Loading ? (
-                                <div className='view-placeholder'>
-                                    <div className="Loadcircle"></div>
-                                    <p>Loading...</p>
-                                </div>
-                            ) : (
-                                <>
-                                    <div className='view-toolbar'>
-                                        <h2>View Document</h2>
-                                        <div className='viewed-btns'>
-
-                                            <div className='view-icon' onClick={CopyContent} >
-                                                <MdContentCopy />
-                                            </div>
-                                            <div className='view-icon' onClick={DownloadFile} >
-                                                <FaDownload />
-                                            </div>
+                <div className={`view-output`}>
+                    <div className={`sub-view-output`}>
+                        {Loading ? (
+                            <div className='view-placeholder'>
+                                <div className="Loadcircle"></div>
+                                <p>Loading...</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className='view-toolbar'>
+                                    <h2>View Document</h2>
+                                    <div className='viewed-btns'>
+                                        <div className='view-icon' onClick={CopyContent} >
+                                            <MdContentCopy />
+                                        </div>
+                                        <div className='view-icon' onClick={DownloadFile} >
+                                            <FaDownload />
                                         </div>
                                     </div>
-                                    {
-                                        notfound ?
-                                            <div className='not-viewed-content'>
-                                                <p>sorry, you don't have any document to view</p>
-                                            </div>
-                                            :
-                                            <div className='viewed-content' ref={viewedout} >
-                                                {/* output Yha Ayega */}
+                                </div>
+                                {
+                                    notfound ?
+                                        <div className='not-viewed-content'>
+                                            <p>sorry, you don't have any document to view</p>
+                                        </div>
+                                        :
+                                        <div className='viewed-content' ref={viewedout} >
+                                            {/* output Yha Ayega */}
 
-
-                                            </div>
-                                    }
-
-
-                                </>
-                            )}
-                        </div>
+                                        </div>
+                                }
+                            </>
+                        )}
                     </div>
-                )
+                </div>
             }
-
-
-
         </>
     )
 }
 
 export default Viewed;
 
-
-
-
-
-
-
-
-{/* <div className='share-icon' onClick={() => {
-                                                setshowoutput(false)
-                                            }}
-                                            >
-                                                <RiCloseLargeLine />
-                                            </div> */}

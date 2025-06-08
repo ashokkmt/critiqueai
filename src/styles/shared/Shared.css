@@ -46,6 +46,30 @@
     padding: 1rem;
 }
 
+.shared-content ul {
+    padding-left: 1.5rem; /* indent */
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    list-style-type: disc; /* bullet points */
+}
+
+/* Style list items */
+.shared-content li {
+    margin-bottom: 0.4rem;
+    padding-left: 0.2rem;
+}
+
+/* Optional: nested lists */
+.shared-content ul ul {
+    list-style-type: circle;
+    padding-left: 1.25rem;
+}
+
+/* Optional: for better text wrapping inside li */
+.shared-content li {
+    word-wrap: break-word;
+}
+
 .not-shared-content {
     flex-grow: 1;
     background: rgb(0 0 0 / 35%);

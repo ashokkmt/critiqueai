@@ -3,6 +3,8 @@ import '../styles/SavedNotes.css';
 import { auth } from './firebase/firebase';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { IoMdClose } from "react-icons/io";
+
 
 export default function SavedNotes() {
   const navigate = useNavigate();
@@ -10,6 +12,10 @@ export default function SavedNotes() {
   const [Loading, isLoading] = useState(false);
   const [notaUser, setnotaUser] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [URL, setURL] = useState("");
+  const [showURL, setshowURL] = useState(false);
+  const [LoadingURL, setLoadingURL] = useState(false);
+  const [hide, sethide] = useState(true);
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -89,17 +95,26 @@ export default function SavedNotes() {
     fetchUserDetail();
   }, []);
 
+
+
   const shareOutput = async (id) => {
+    setshowURL(true)
+    setLoadingURL(true);
     try {
       const docResponse = await axios.post("http://127.0.0.1:5000/api/share-output", {
         user_id: currentUser.uid,
         doc_id: id
       });
-      console.log(docResponse);
+      console.log(docResponse.data.sharedDocId);
+      setURL(`http://localhost:5173/shared/${docResponse.data.sharedDocId}`);
+      setLoadingURL(false);
     } catch (error) {
+      setLoadingURL(false);
       console.log(error.message);
     }
   };
+
+
 
   const deleteDocument = async (id) => {
     try {
@@ -119,13 +134,91 @@ export default function SavedNotes() {
     // Implement your function or routing logic here
     console.log("View Doc ID:", id);
 
-    navigate(`/view/${id}`);
+
+    navigate('/view', {
+      state: {
+        doc_id: id,
+      },
+    })
+
+
   };
 
+
+
+  const copypopup = () =>{
+    sethide(false)
+    setTimeout(() => {
+      sethide(true)
+    }, 1200);
+  }
 
   return (
     <>
       <div id="particles-js"></div>
+
+      {
+        showURL && (
+          <div className="share-popup-overlay">
+
+            {
+
+              LoadingURL ?
+                (
+                  <div className='loading_url'>
+                    <div className='loadingCircle'></div>
+                    <p>Loading...</p>
+                  </div>
+                )
+                :
+                (
+                  <div className="share-popup">
+                    <div className="share-header">
+                      <h3>Share public link to chat</h3>
+
+                      <div className="close-btn-wrapper" onClick={() =>
+                        setshowURL(false)
+                      }>
+                        <IoMdClose
+                          size={20}
+                          color="white"
+                          className="close-share-btn"
+                        />
+                      </div>
+
+                    </div>
+                    <p className="share-description">
+                      Your name, custom instructions, and any messages you add after
+                      sharing stay private.{" "}
+                      <Link to="/" className="share-learn-more">
+                        Learn more
+                      </Link>
+                    </p>
+                    <div className="share-input-wrapper">
+                      <input
+                        type="text"
+                        value={URL}
+                        readOnly
+                        className="share-input"
+                      />
+                      <button
+                        className="create-link-btn"
+                        onClick={() => {
+                          navigator.clipboard.writeText(URL);
+                          copypopup();
+                        }}
+                      >
+                        <div className={`show ${hide ? "" : "unhide"}`}>copied</div>
+                        Copy link
+                      </button>
+                    </div>
+                  </div>
+                )
+            }
+
+          </div>
+        )
+      }
 
       <div className="saved-main-container">
         <div className="saved-sub-container">

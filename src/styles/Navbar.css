@@ -142,7 +142,7 @@
 .nav-dropdown-btn {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
     color: #8990a0;
     background: none;
     border: none;
@@ -283,7 +283,7 @@
     }
 
     .link-area .nav-dropdown-btn {
-        justify-content: space-between;
+        /* justify-content: space-between; */
         width: 100%;
         padding: 0;
     }
