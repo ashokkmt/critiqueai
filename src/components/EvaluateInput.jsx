@@ -208,10 +208,7 @@ const EvaluateInput = () => {
         <div className="page-wrapper">
 
           <div className="card-header">
-            <div className="header-icon">
-              <i className="fas fa-check-circle"></i>
-            </div>
-            <h1>Answer Evaluation</h1>
+            <h1><FaClipboardCheck color='#3fe493' /> Answer Evaluation</h1>
             <p className="tagline">Enter your answer or upload a file for AI-powered evaluation</p>
           </div>
 

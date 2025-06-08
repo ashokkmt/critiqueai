@@ -89,27 +89,49 @@ button:hover {
 }
 
 .card-header {
-    text-align: center;
-}
-
-.header-icon {
-    font-size: 2.5rem;
-    color: #3fe493;
-    animation: pulse 2s infinite;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
+    position: relative; /* Add this */
 }
 
 .card-header h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 2.2rem;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    color: #3fe493;
+    text-shadow: 0 0 10px rgba(63, 228, 147, 0.3);
+    background: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+    font-family: inherit;
     margin: 0;
-    background: linear-gradient(135deg, #3fe493, #0ea5e9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+}
+
+.header-icon {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-120px);
+    top: 33px; /* Adjust this value to align vertically */
+    color: #3fe493;
+}
+
+/* Add a media query for mobile screens */
+@media (max-width: 768px) {
+    .header-icon {
+        transform: translateX(-100px);
+        top: 30px;
+    }
 }
 
 .tagline {
+    font-size: 14px;
     color: #aaa;
-    margin-top: 10px;
+    margin-top: 0;
 }
 
 .input-section h2 {

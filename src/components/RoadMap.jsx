@@ -274,7 +274,8 @@ export default function RoadMap() {
                             {Loading ? (
                                 <div className='output-placeholder'>
                                     <FaRobot size={40} color="#3fe493" />
-                                    <p>AI is ready to generate your result...</p>
+                                    <p>Creating your personalized learning path...</p>
+                                    <p className="placeholder-subtext">This may take a few moments</p>
                                     <div className="shimmer-line"></div>
                                     <div className="shimmer-line short"></div>
                                 </div>
@@ -324,7 +325,7 @@ export default function RoadMap() {
 
                     <div className="roadmap-heading">
                         <h2> <FaMapSigns color='#3fe493' /> Skill RoadMap Generator</h2>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, nihil!</p>
+                        <p>Turn any skill into a step-by-step learning path in seconds.</p>
                     </div>
 
 

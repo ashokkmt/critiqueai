@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import '../styles/HomePage.css';
 import 'aos/dist/aos.css';
 import Toolsdata from '../data/tools.json'
@@ -117,6 +117,19 @@ const HomePage = () => {
 
   }, []);
 
+  useEffect(() => {
+    // Check if there's a hash in the URL
+    if (window.location.hash === '#about') {
+      // Small timeout to ensure the DOM is ready
+      setTimeout(() => {
+        const aboutElement = document.getElementById('about');
+        if (aboutElement) {
+          aboutElement.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, []);
+
   function scrollToLastAbout(e) {
     e.preventDefault();
     const aboutSections = document.querySelectorAll('.main-about-section');
@@ -224,7 +237,7 @@ const HomePage = () => {
 
 
         {/* About Section */}
-        <div className='main-about-section'>
+        <div id="about" className='main-about-section'>
           <div className='sub-about'>
             <div className='sub-about-title'>
               <h2>About CritiqueAI</h2>

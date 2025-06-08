@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import '../../styles/shared/Shared.css'
 import { FaDownload, FaRobot } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
-import { useParams } from "react-router-dom";
+import { IoMdClose } from 'react-icons/io'; // Add this import for close/cancel icon
+import { useParams, useNavigate } from "react-router-dom"; // Add useNavigate
 import axios from 'axios';
 import html2pdf from "html2pdf.js";
 
@@ -10,6 +11,7 @@ import html2pdf from "html2pdf.js";
 function Shared() {
 
     const { id } = useParams();
+    const navigate = useNavigate(); // Add this hook
     const [showoutput, setshowoutput] = useState(true);
     const [Loading, setLoading] = useState(false);
     const [shared, setshared] = useState("");
@@ -18,6 +20,10 @@ function Shared() {
     // const [sharetype, setsharetype] = useState("");
     const sharedout = useRef(null)
 
+    // Add this function to navigate to homepage
+    const goToHomepage = () => {
+        window.location.href = '/';  // Use direct page refresh instead of React Router navigation
+    }
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -209,6 +215,9 @@ function Shared() {
                                             </div>
                                             <div className='share-icon' onClick={DownloadFile} >
                                                 <FaDownload />
+                                            </div>
+                                            <div className='share-icon' onClick={goToHomepage}>
+                                                <IoMdClose />
                                             </div>
                                         </div>
                                     </div>

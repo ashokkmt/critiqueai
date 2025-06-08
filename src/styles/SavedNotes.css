@@ -4,6 +4,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative; /* Add this */
+  z-index: 5; /* Add this */
 }
 
 .saved-sub-container {
@@ -16,6 +18,8 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  position: relative; /* Add this */
+  z-index: 6; /* Add this */
 }
 
 .saved-sub-container>h2 {
@@ -24,30 +28,75 @@
 }
 
 .sub-heading-title {
-  display: flex;
-  list-style: none;
-  gap: 2rem;
-  padding: 0 1rem;
+  display: none;
 }
 
-.sub-heading-title>li {
-  padding: 0.3rem 1.5rem;
-  color: #10b981;
-  border: 1px solid #6c83495c;
-  border-radius: 10px;
+.search-container {
+  padding: 0 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.search-wrapper {
+  position: relative;
+  max-width: 500px;
+  transition: all 0.3s ease;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px;
+  border-radius: 25px;
+  border: 1px solid #374151;
+  background-color: rgba(31, 41, 55, 0.7);
+  color: white;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3fe493;
+  background-color: rgba(31, 41, 55, 0.9);
+  box-shadow: 0 0 0 3px rgba(63, 228, 147, 0.2);
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+  opacity: 0.8;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #3fe493;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.search-wrapper:focus-within .search-icon {
+  color: #3fe493;
+}
+
+.clear-search {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  background-color: #0f1520;
+  font-size: 15px;
+  transition: all 0.2s ease;
+  opacity: 0.7;
 }
 
-.sub-heading-title li:hover {
-  transform: translateY(-3px);
+.clear-search:hover {
+  color: #ef4444;
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
 }
-
-.sub-heading-title li:active {
-  transform: scale(0.99);
-}
-
 
 .saved-notes-container {
   height: 100%;
@@ -86,39 +135,44 @@
 }
 
 .action-btn {
-  padding: 6px 10px;
-  margin-right: 5px;
-  border: none;
+  padding: 6px 12px;
+  margin: 0 4px;
   border-radius: 4px;
+  font-size: 13px;
   cursor: pointer;
-  font-weight: 500;
   transition: all 0.2s ease;
+  background: transparent;
 }
 
-
 .view {
-  background-color: #3b82f6;
-  color: white;
+  color: #3fe493;
+  border: 1px solid #3fe493;
+}
+
+.view:hover {
+  background-color: rgba(63, 228, 147, 0.1);
 }
 
 .share {
-  background-color: #10b981;
-  color: white;
+  color: #60a5fa;
+  border: 1px solid #60a5fa;
+}
+
+.share:hover {
+  background-color: rgba(96, 165, 250, 0.1);
 }
 
 .delete {
-  background-color: #ef4444;
-  color: white;
+  color: #f87171;
+  border: 1px solid #f87171;
 }
 
-.action-btn:hover {
-  opacity: 0.85;
-  transform: translateY(-2px);
+.delete:hover {
+  background-color: rgba(248, 113, 113, 0.1);
 }
 
 .action-btn:active {
-  opacity: 0.85;
-  transform: scale(0.99);
+  opacity: 0.8;
 }
 
 .serial-number {
@@ -364,4 +418,77 @@
   opacity: 1;
   transform: scale(1.05);
   top: -100%;
+}
+
+/* Mobile Responsiveness - Better approach */
+@media (max-width: 768px) {
+  .saved-sub-container {
+    width: 95%;
+    height: 95%;
+    padding: 1rem;
+  }
+  
+  .saved-sub-container > h2 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+  
+  /* Better search handling */
+  .search-container {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  /* Table adjustments */
+  .saved-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  /* Hide less important columns on mobile */
+  .saved-notes-table th:nth-child(1), 
+  .saved-notes-table td:nth-child(1) {
+    display: none;
+  }
+  
+  .saved-notes-table th:nth-child(4), 
+  .saved-notes-table td:nth-child(4) {
+    display: none;
+  }
+  
+  .saved-notes-table th,
+  .saved-notes-table td {
+    padding: 10px 8px;
+  }
+  
+  /* Make action buttons stack better */
+  .saved-notes-table td:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 10px;
+  }
+  
+  .action-btn {
+    width: 100%;
+    margin: 0;
+    padding: 8px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .saved-sub-container {
+    width: 98%;
+    padding: 0.8rem;
+  }
+  
+  .saved-notes-table {
+    font-size: 13px;
+  }
+  
+  .action-btn {
+    font-size: 12px;
+    padding: 7px;
+  }
 }

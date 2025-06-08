@@ -1,10 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import '../styles/GenerateNote.css';
-import { FaDownload, FaRobot } from 'react-icons/fa';
-import { MdContentCopy } from 'react-icons/md';
-import { RiCloseLargeLine } from 'react-icons/ri';
+import { 
+  FaBook, 
+  FaMagic, 
+  FaGraduationCap, 
+  FaLayerGroup, 
+  FaFileAlt, 
+  FaCode,
+  FaDownload,
+  FaCopy,
+  FaRedo,
+  FaRobot
+} from 'react-icons/fa';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
 import { TfiSave } from 'react-icons/tfi';
+import { RiCloseLargeLine } from 'react-icons/ri';
 import axios from 'axios';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import { auth } from './firebase/firebase';
@@ -279,7 +289,7 @@ export default function GenerateNote() {
               {Loading ? (
                 <div className='output-placeholder'>
                   <FaRobot size={40} color="#3fe493" />
-                  <p>AI is ready to generate your result...</p>
+                  <p>AI is creating your study notes...</p>
                   <div className="shimmer-line"></div>
                   <div className="shimmer-line short"></div>
                 </div>
@@ -294,9 +304,9 @@ export default function GenerateNote() {
                       <div onClick={SendDataBackend} className='note-icon' >
                         <TfiSave />
                       </div>
-                      <div className='note-icon note-copy' onClick={CopyContent} >
+                      <div className='note-icon copy-icon' onClick={CopyContent} >
                         <div className={`show ${hide ? "" : "unhide"}`}>copied</div>
-                        <MdContentCopy />
+                        <FaCopy />
                       </div>
                       <div className='note-icon' onClick={DownloadFile} >
                         <FaDownload />
@@ -323,10 +333,9 @@ export default function GenerateNote() {
 
 
       <div className='generatenote-page'>
-
         <div className="card">
-          <div className='note-heading'>
-            <h1 className="title">✨ Generate Study Notes</h1>
+          <div className="note-heading">
+            <h2><FaBook color='#3fe493' /> Generate Study Notes</h2>
             <p className="subtitle">Create comprehensive study materials tailored to your needs</p>
           </div>
 
@@ -346,25 +355,25 @@ export default function GenerateNote() {
 
           {/* Dropdown Grid */}
           <div className="dropdown-grid">
-            <Dropdown
-              label="🏫 Academic Level:"
-              options={["School (1-12)", "College"]}
-              onChange={(val) => handleDropdownChange("academicLevel", val)}
+            <Dropdown 
+              label={<><FaGraduationCap /> Academic Level</>} 
+              options={["School (1-12)", "College"]} 
+              onChange={(val) => handleDropdownChange("academicLevel", val)} 
             />
-            <Dropdown
-              label="📘 Notes Detail Level:"
-              options={["Concise", "Detailed", "Summary", "Exam-Oriented"]}
-              onChange={(val) => handleDropdownChange("detailLevel", val)}
+            <Dropdown 
+              label={<><FaLayerGroup /> Detail Level</>} 
+              options={["Concise", "Detailed", "Summary", "Exam-Oriented"]} 
+              onChange={(val) => handleDropdownChange("detailLevel", val)} 
             />
-            <Dropdown
-              label="🗂 Format:"
-              options={["Bullet Points", "Paragraphs", "Mind Map Style", "Q&A Format"]}
-              onChange={(val) => handleDropdownChange("format", val)}
+            <Dropdown 
+              label={<><FaFileAlt /> Format</>} 
+              options={["Bullet Points", "Paragraphs", "Mind Map Style", "Q&A Format"]} 
+              onChange={(val) => handleDropdownChange("format", val)} 
             />
-            <Dropdown
-              label="📚 Code Examples:"
-              options={["Yes", "No"]}
-              onChange={(val) => handleDropdownChange("includeCode", val)}
+            <Dropdown 
+              label={<><FaCode /> Include Code</>} 
+              options={["Yes", "No"]} 
+              onChange={(val) => handleDropdownChange("includeCode", val)} 
             />
           </div>
 
@@ -375,7 +384,7 @@ export default function GenerateNote() {
               onClick={() => {
                 handleSubmit()
               }}>
-              ✏️ Generate Notes
+              <FaMagic /> Generate Notes
             </button>
           </div>
         </div>
@@ -401,9 +410,10 @@ export default function GenerateNote() {
   );
 }
 
-// Controlled Dropdown component
+// Enhanced Dropdown component
 const Dropdown = ({ label, options, onChange }) => {
   const [selected, setSelected] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleChange = (e) => {
     const val = e.target.value;
@@ -415,14 +425,23 @@ const Dropdown = ({ label, options, onChange }) => {
     <div className="dropdown-options">
       <div className='dropdown-sub-box'>
         <label className="label green">{label}</label>
-        <select className="select" value={selected} onChange={handleChange}>
-          {selected === "" && <option value="">-- Select Option --</option>}
-          {options.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+        <div className={`select-wrapper ${isFocused ? "focused" : ""}`}>
+          <select 
+            className="select" 
+            value={selected} 
+            onChange={handleChange}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+          >
+            {selected === "" && <option value="">-- Select Option --</option>}
+            {options.map((option, index) => (
+              <option key={index} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <span className="select-arrow">▼</span>
+        </div>
       </div>
     </div>
   );

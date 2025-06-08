@@ -352,7 +352,7 @@ export default function Summary() {
             <div className='summay-page'>
                 <div className="summary-page-subbox">
                     <div className="content-title">
-                        <h2>Content <span className="highlight">Summarizer</span></h2>
+                        <h2><FaFileAlt color='#3fe493' /> Content Summarizer</h2>
                         <p className="tagline">Upload your files or enter text to get started</p>
                     </div>
 

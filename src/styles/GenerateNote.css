@@ -1,5 +1,6 @@
 .generatenote-page {
     width: 100%;
+    position: relative; /* Add this line */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -7,14 +8,15 @@
     padding: 2rem;
     min-height: 93vh; /* Changed for better responsiveness */
     height: auto;
+    z-index: 1; /* Add this line */
 }
 
 .card {
-    background: rgb(22 27 34);
+    background: rgb(22, 27, 34); /* Change to rgb format like in RoadMap */
     padding: 1.5rem 2rem;
     border-radius: 20px;
     box-shadow: 0 0px 15px -2px rgb(0 255 255 / 16%);
-    width: 60%;
+    width: 70%;
     color: white;
     display: flex;
     flex-direction: column;
@@ -22,6 +24,8 @@
     gap: 2rem;
     border: 1px solid #30f57d30;
     transition: width 0.3s ease; /* Added transition */
+    position: relative; /* Add this line */
+    z-index: 2; /* Add this line */
 }
 
 .dropdown-options {
@@ -39,16 +43,37 @@
 /* Headings */
 
 .note-heading {
-    padding: .5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: 1rem;
 }
 
+.note-heading > h2 {
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  color: #3fe493;
+  text-shadow: 0 0 10px rgba(63, 228, 147, 0.3);
+}
 
+.subtitle {
+  color: #ccc;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: 0;
+}
 
-
+/* You can remove these if you're not using them anymore */
+/* .title {
+    font-size: 2rem;
+    color: #3fe493;
+    text-shadow: 0 0 30px #3fe49399;
+} */
 
 /* Yha Se output ke boxes ka color change krna ha */
 
@@ -80,17 +105,6 @@ ol strong {
 
 
 
-
-.title {
-    font-size: 2rem;
-    color: #3fe493;
-    text-shadow: 0 0 30px #3fe49399;
-}
-
-.subtitle {
-    color: #cccccc;
-    margin-bottom: 24px;
-}
 
 /* Form */
 .form-group {
@@ -131,14 +145,57 @@ ol strong {
     color: white;
 }
 
+.select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.select-wrapper.focused {
+    outline: 2px solid #3fe49359;
+    border-radius: 10px;
+}
+
 .select {
     width: 100%;
     padding: 10px;
+    padding-right: 30px; /* Make room for the arrow */
     border-radius: 10px;
     border: 1px solid #444;
     background-color: #393e46;
     color: white;
     text-align: center;
+    appearance: none; /* Removes default browser arrow */
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.select:hover {
+    border-color: #555;
+}
+
+.select:focus {
+    outline: none;
+}
+
+.select option {
+    background-color: #2e3440;
+    color: white;
+    padding: 8px;
+}
+
+.select-arrow {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 10px;
+    opacity: 0.7;
+    transition: transform 0.2s ease;
+}
+
+.select-wrapper.focused .select-arrow {
+    transform: translateY(-50%) rotate(180deg);
 }
 
 /* Grid */
