@@ -1,21 +1,44 @@
-.login-main-box{
-    width: 100%;
-    height: calc(100vh - 60px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* border: 1px solid white; */
+#particles-js {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
-
+.login-main-box {
+  width: 100%;
+  height: calc(100vh - 60px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
 
 .login-box {
   width: 400px;
-  background-color: white;
+  background: rgb(22 27 34);
   border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  color: black;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
+  color: #e6edf3;
+  border: 1px solid rgba(63, 228, 147, 0.1);
+  animation: fadeInUp 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .login-header {
@@ -23,18 +46,36 @@
   margin-bottom: 1.5rem;
 }
 
-.logo-shield {
-  font-size: 2.5rem;
+.login-header h2 {
+  background: linear-gradient(135deg, #3fe493, #0ea5e9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 2rem;
+  margin-top: 0.5rem;
 }
 
+.logo-shield {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
 
 .login-form input {
   width: 100%;
   padding: 0.75rem;
   margin-top: 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid rgba(63, 228, 147, 0.2);
   border-radius: 6px;
   font-size: 1rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #e6edf3;
+  transition: all 0.3s ease;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #3fe493;
+  box-shadow: 0 0 0 2px rgba(63, 228, 147, 0.1);
 }
 
 .password-box {
@@ -47,56 +88,72 @@
   top: 70%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #888;
+  color: #8b949e;
+  transition: color 0.2s ease;
 }
 
-.forgot-link {
-  display: block;
-  text-align: right;
-  margin-top: 0.5rem;
-  color: #007bff;
-  text-decoration: none;
-  font-size: 0.9rem;
+.eye-icon:hover {
+  color: #3fe493;
 }
 
 .login-button {
   width: 100%;
   padding: 0.75rem;
   margin-top: 1rem;
-  background-color: #007bff;
+  background: linear-gradient(135deg, #3fe493, #0ea5e9);
   color: white;
   font-size: 1rem;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(63, 228, 147, 0.4);
+}
+
+.login-button:active {
+  transform: translateY(0);
 }
 
 .signup-text {
   text-align: center;
   margin-top: 1rem;
   font-size: 0.9rem;
+  color: #8b949e;
 }
 
 .signup-text a {
-  color: #007bff;
+  color: #3fe493;
   text-decoration: none;
   font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.signup-text a:hover {
+  color: #0ea5e9;
+  text-decoration: underline;
 }
 
 .divider {
   text-align: center;
   margin: 1.5rem 0;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .divider::before,
 .divider::after {
   content: "";
   position: absolute;
-  top: 50%;
   width: 45%;
   height: 1px;
-  background-color: #ccc;
+  background-color: rgba(63, 228, 147, 0.2);
 }
 
 .divider::before {
@@ -108,16 +165,18 @@
 }
 
 .divider span {
-  background-color: white;
+  background-color: rgb(22 27 34);
   padding: 0 10px;
-  color: #888;
+  color: #8b949e;
+  position: relative;
+  z-index: 1;
 }
 
 .google-button {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ccc;
-  background-color: white;
+  border: 1px solid rgba(63, 228, 147, 0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   font-size: 1rem;
   display: flex;
   align-items: center;
@@ -125,8 +184,18 @@
   gap: 8px;
   border-radius: 6px;
   cursor: pointer;
+  color: #e6edf3;
+  transition: all 0.3s ease;
 }
 
-.google-icon {
-  font-size: 1.2rem;
+.google-button:hover {
+  border-color: #3fe493;
+  background-color: rgba(63, 228, 147, 0.1);
+}
+
+@media (max-width: 480px) {
+  .login-box {
+    width: 90%;
+    padding: 1.5rem;
+  }
 }

@@ -20,11 +20,12 @@ export default function SignUpPage() {
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
+    script.async = true;
     script.onload = () => {
       window.particlesJS('particles-js', {
         particles: {
           number: { value: 80, density: { enable: true, value_area: 800 } },
-          color: { value: '#4CAF50' },
+          color: { value: '#3fe493' },
           shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
           opacity: {
             value: 0.5,
@@ -39,7 +40,7 @@ export default function SignUpPage() {
           line_linked: {
             enable: true,
             distance: 150,
-            color: '#4CAF50',
+            color: '#3fe493',
             opacity: 0.4,
             width: 1
           },
@@ -69,6 +70,13 @@ export default function SignUpPage() {
       });
     };
     document.body.appendChild(script);
+    
+    // Clean up script on unmount
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
   }, []);
 
   const showpass = () => {
@@ -79,8 +87,10 @@ export default function SignUpPage() {
   const SubmitSignUp = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      toast.success("Password Doesn't Match", {
-        position: "top-center"
+      toast.error("Passwords don't match", {
+        position: "top-center",
+        autoClose: 2000,
+        transition: Slide,
       });
       return;
     }
@@ -88,7 +98,6 @@ export default function SignUpPage() {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       const user = auth.currentUser;
-
       if (user) {
         await setDoc(doc(db, "Users", user.uid), {
           firstName: firstName,
@@ -98,17 +107,16 @@ export default function SignUpPage() {
         })
       }
 
-      // console.log("User created:", user);
-      // console.log("Name:", firstName, lastName);
-
-      toast.success("Account Created SuccessFully", {
-        position: "top-center"
+      toast.success("Account created successfully", {
+        position: "top-center",
+        autoClose: 2000,
+        transition: Slide,
       });
 
     } catch (error) {
       console.error(error.message);
-      toast.error("Email/Password Allready in Use ", {
-        position: "bottom-center",
+      toast.error("Email already in use or invalid", {
+        position: "top-center",
         autoClose: 2000,
         transition: Slide,
       });
@@ -134,7 +142,6 @@ export default function SignUpPage() {
           </div>
 
           <form className="login-form" onSubmit={SubmitSignUp}>
-
             <input
               type="text"
               placeholder="First Name"
@@ -191,13 +198,6 @@ export default function SignUpPage() {
             <p className="signup-text">
               Already have an account? <Link to="/login">Sign In</Link>
             </p>
-            {/* 
-          <div className="divider"><span>OR</span></div>
-
-          <button type="button" className="google-button">
-            <FaGoogle color="green" className="google-icon" />
-            Continue with Google
-          </button> */}
           </form>
         </div>
       </div>

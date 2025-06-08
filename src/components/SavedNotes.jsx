@@ -4,6 +4,7 @@ import { auth } from './firebase/firebase';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { IoMdClose } from "react-icons/io";
+import { FaSearch, FaTimes } from "react-icons/fa";
 
 
 export default function SavedNotes() {
@@ -16,6 +17,8 @@ export default function SavedNotes() {
   const [showURL, setshowURL] = useState(false);
   const [LoadingURL, setLoadingURL] = useState(false);
   const [hide, sethide] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -153,6 +156,10 @@ export default function SavedNotes() {
     }, 1200);
   }
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <>
       <div id="particles-js"></div>
@@ -224,11 +231,24 @@ export default function SavedNotes() {
         <div className="saved-sub-container">
           <h2>Saved Notes</h2>
 
-          <ul className="sub-heading-title">
-            <li>Name</li>
-            <li>Type</li>
-            <li>Filter</li>
-          </ul>
+          <div className="search-container">
+            <div className="search-wrapper">
+              <FaSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder="Search notes by name or type..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="search-input"
+              />
+              {searchTerm && (
+                <FaTimes 
+                  className="clear-search" 
+                  onClick={() => setSearchTerm("")} 
+                />
+              )}
+            </div>
+          </div>
 
           <div className="saved-notes-container">
             <div className="saved-table-wrapper">
@@ -271,19 +291,24 @@ export default function SavedNotes() {
                           </thead>
                           <tbody>
                             {
-                              udata.map((val, key) => (
-                                <tr key={val.id || key}>
-                                  <td>{key + 1}</td>
-                                  <td>{val.name}</td>
-                                  <td>{val.type}</td>
-                                  <td>{val.time}</td>
-                                  <td>
-                                    <button onClick={() => showSavedDoc(val.id)} className="action-btn view">View</button>
-                                    <button onClick={() => shareOutput(val.id)} className="action-btn share">Share</button>
-                                    <button onClick={() => deleteDocument(val.id)} className="action-btn delete">Delete</button>
-                                  </td>
-                                </tr>
-                              ))
+                              udata
+                                .filter(val => 
+                                  val.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                  val.type.toLowerCase().includes(searchTerm.toLowerCase())
+                                )
+                                .map((val, key) => (
+                                  <tr key={val.id || key}>
+                                    <td>{key + 1}</td>
+                                    <td>{val.name}</td>
+                                    <td>{val.type}</td>
+                                    <td>{val.time}</td>
+                                    <td>
+                                      <button onClick={() => showSavedDoc(val.id)} className="action-btn view">View</button>
+                                      <button onClick={() => shareOutput(val.id)} className="action-btn share">Share</button>
+                                      <button onClick={() => deleteDocument(val.id)} className="action-btn delete">Delete</button>
+                                    </td>
+                                  </tr>
+                                ))
                             }
                           </tbody>
                         </table>

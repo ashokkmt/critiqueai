@@ -66,11 +66,19 @@ const Navbar = () => {
 
 
   function scrollToLastAbout(e) {
-    e.preventDefault();
-    const aboutSections = document.querySelectorAll('.main-about-section');
-    const lastAbout = aboutSections[aboutSections.length - 1];
-    if (lastAbout) {
-      lastAbout.scrollIntoView({ behavior: 'smooth' });
+    // Check if we're already on the homepage
+    if (window.location.pathname === '/') {
+      // If on homepage, just scroll to the about section
+      e.preventDefault();
+      const aboutSections = document.querySelectorAll('.main-about-section');
+      const lastAbout = aboutSections[aboutSections.length - 1];
+      if (lastAbout) {
+        lastAbout.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // If on another page, let the default navigation happen
+      // Don't prevent default behavior so it navigates to homepage first
+      // The '#about' in the href will attempt to scroll to an element with id="about"
     }
     handleLinkClick(); // Close menu on click
   }

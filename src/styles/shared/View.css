@@ -16,11 +16,13 @@
     scrollbar-width: none;
     scroll-behavior: smooth;
     gap: 1rem;
-    background: rgb(22 27 34);
+    background: rgba(22, 27, 34, 1); /* Fixed opacity */
     border: 1px solid #2dad6f41;
     border-radius: 25px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
     transition: all 0.5s ease;
+    position: relative; /* Added */
+    z-index: 5; /* Added */
 }
 
 
@@ -113,7 +115,7 @@
 
 .viewed-content {
     flex-grow: 1;
-    background: rgb(0 0 0 / 35%);
+    background: rgba(17, 22, 28, 1); /* Changed from 35% opacity to solid */
     text-wrap: wrap;
     border-radius: 25px;
     padding: 1rem;

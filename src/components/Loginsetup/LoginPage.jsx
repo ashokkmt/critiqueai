@@ -20,11 +20,12 @@ export default function LoginPage() {
     useEffect(() => {
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
+        script.async = true;
         script.onload = () => {
             window.particlesJS('particles-js', {
                 particles: {
                     number: { value: 80, density: { enable: true, value_area: 800 } },
-                    color: { value: '#4CAF50' },
+                    color: { value: '#3fe493' },
                     shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
                     opacity: {
                         value: 0.5,
@@ -39,7 +40,7 @@ export default function LoginPage() {
                     line_linked: {
                         enable: true,
                         distance: 150,
-                        color: '#4CAF50',
+                        color: '#3fe493',
                         opacity: 0.4,
                         width: 1
                     },
@@ -69,6 +70,13 @@ export default function LoginPage() {
             });
         };
         document.body.appendChild(script);
+
+        // Clean up script on unmount
+        return () => {
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+        };
     }, []);
 
     const showpass = () => {
@@ -79,20 +87,14 @@ export default function LoginPage() {
     const SubmitLogin = async (e) => {
         e.preventDefault();
 
-
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            // console.log(auth.currentUser)
-            console.log("Logged SuccessFully")
-            toast.success("Logged in SuccessFully", {
+            console.log("Logged SuccessFully");
+            toast.success("Logged in successfully", {
                 position: "top-center",
                 autoClose: 2000,
                 transition: Slide,
             });
-
-            console.log("Email:", email);
-            console.log("Password:", password);
-
 
             // Go to Home/Dashboard
             setTimeout(() => {
@@ -100,15 +102,15 @@ export default function LoginPage() {
             }, 1000);
 
         } catch (error) {
-            toast.error("Doesn't have Account..", {
+            toast.error("Login failed. Please check your credentials.", {
                 position: "top-center",
                 autoClose: 2000,
                 transition: Slide,
             });
         }
 
-        setemail("")
-        setpassword("")
+        setemail("");
+        setpassword("");
     };
 
     const signinWithGoogle = async () => {
@@ -119,22 +121,19 @@ export default function LoginPage() {
 
             if (GoogleUser) {
                 let fname = result.user.reloadUserInfo.displayName;
-                // console.log(fname.split(" "))
                 await setDoc(doc(db, "Users", GoogleUser.uid), {
                     firstName: fname.split(" ")[0],
                     lastName: fname.split(" ")[1] || "",
                     email: GoogleUser.reloadUserInfo.email,
                     Date: new Date(Date.now()).toLocaleString()
-                })
+                });
             }
 
-
-            toast.success("Logged in SuccessFully", {
+            toast.success("Logged in successfully", {
                 position: "top-center",
                 autoClose: 2000,
                 transition: Slide,
             });
-
 
             setTimeout(() => {
                 navigate('/');
@@ -142,7 +141,7 @@ export default function LoginPage() {
 
         } catch (error) {
             console.log(error);
-            toast.error(error.message, {
+            toast.error("Google login failed", {
                 position: "top-center",
                 autoClose: 2000,
                 transition: Slide,
@@ -158,13 +157,13 @@ export default function LoginPage() {
                 <div className="login-box">
                     <div className="login-header">
                         <div className="logo-shield"><img width={50} height={50} src="/images/favicon.png" alt="Logo" /></div>
-                        <h2>Welcome</h2>
+                        <h2>Welcome to CritiqueAI</h2>
                     </div>
 
                     <form className="login-form" onSubmit={SubmitLogin}>
                         <input
                             type="text"
-                            placeholder="Username or email address"
+                            placeholder="Email address"
                             value={email}
                             onChange={(e) => setemail(e.target.value)}
                             required
@@ -185,17 +184,19 @@ export default function LoginPage() {
 
                         <a href="#" className="forgot-link">Forgot password?</a>
 
-                        <button type="submit" className="login-button">Continue</button>
+                        <button type="submit" className="login-button">Sign In</button>
                         <ToastContainer />
 
                         <p className="signup-text">
-                            Don’t have an account? <Link to="/signUp">Sign up</Link>
+                            Don't have an account? <Link to="/signUp">Sign up</Link>
                         </p>
-
-                        <div className="divider"><span>OR</span></div>
-
+                        
+                        <div className="separator">
+                            <span>OR</span>
+                        </div>
+                        
                         <button onClick={signinWithGoogle} type="button" className="google-button">
-                            <FaGoogle color="green" className="google-icon" />
+                            <FaGoogle className="google-icon" />
                             Continue with Google
                         </button>
                     </form>
@@ -204,14 +205,3 @@ export default function LoginPage() {
         </>
     );
 }
-
-
-
-
-
-
-
-// console.log(result.user.reloadUserInfo.displayName)
-// console.log(result.user.auth.currentUser.reloadUserInfo.photoUrl)
-// console.log(result.user.auth.currentUser.reloadUserInfo.email)
-// console.log(result.user.auth.currentUser.uid)

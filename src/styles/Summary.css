@@ -28,10 +28,21 @@
 
 .content-title {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
 }
 
-.content-title>h2 {
-    font-size: 2.5rem;
+.content-title > h2 {
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    color: #3fe493;
+    text-shadow: 0 0 10px rgba(63, 228, 147, 0.3);
 }
 
 .summary-textarea {
@@ -43,17 +54,13 @@
     padding: 1rem;
     color: white;
     font-size: 1rem;
-    min-height: 100px; /* Added min-height */
-}
-
-.highlight {
-    background: linear-gradient(135deg, #3fe493, #0ea5e9);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    min-height: 90px; /* Added min-height */
 }
 
 .tagline {
     color: #ccc;
+    font-size: 1rem;
+    margin-top: 0;
 }
 
 .drag-upload-container {
@@ -135,9 +142,9 @@
 
 .features {
     display: flex;
-    justify-content: center;
-    gap: 3rem;
-    flex-wrap: wrap;
+    justify-content: space-between; /* Changed from center to space-between */
+    gap: 1rem; /* Reduced from 3rem to give more balanced spacing */
+    width: 100%; /* Ensure it takes full width of parent */
 }
 
 .feature {
@@ -188,7 +195,7 @@
 .second-summary-box {
     display: flex;
     flex-direction: column;
-    width: 40%;
+    width: 55%;  /* Increase from 40% to 55% to give more space */
     gap: 1rem;
     transition: width 0.3s ease;
 }

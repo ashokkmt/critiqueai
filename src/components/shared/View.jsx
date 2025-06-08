@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import '../../styles/shared/View.css'
 import { FaDownload } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
-import { useLocation } from "react-router-dom";
+import { IoMdArrowBack } from 'react-icons/io'; // Add this import for back icon
+import { useLocation, useNavigate } from "react-router-dom"; // Add useNavigate
 import axios from 'axios';
 import html2pdf from "html2pdf.js";
 import { auth } from '../firebase/firebase';
@@ -10,6 +11,7 @@ import { auth } from '../firebase/firebase';
 function Viewed() {
 
     const location = useLocation();
+    const navigate = useNavigate(); // Add this hook
     const { doc_id } = location.state || {};
     const [Loading, setLoading] = useState(false);
     const [shared, setshared] = useState("");
@@ -188,6 +190,11 @@ function Viewed() {
     const CopyContent = () => {
         navigator.clipboard.writeText(viewedout.current.innerText);
     }
+    
+    // Add this function to handle navigation to savedNotes
+    const goToSavedNotes = () => {
+        navigate('/savednotes');
+    }
 
     return (
         <>
@@ -205,6 +212,9 @@ function Viewed() {
                                 <div className='view-toolbar'>
                                     <h2>View Document</h2>
                                     <div className='viewed-btns'>
+                                        <div className='view-icon' onClick={goToSavedNotes}>
+                                            <IoMdArrowBack />
+                                        </div>
                                         <div className='view-icon' onClick={CopyContent} >
                                             <MdContentCopy />
                                         </div>
