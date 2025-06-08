@@ -757,6 +757,29 @@ def get_output():
         return jsonify({"error": str(e)}), 500
 
 
+@app.route('/view', methods=['POST'])
+def view_output():
+    try:
+        data = request.json
+        uid = data.get('uid')
+        doc_id = data.get('doc_id')
+
+        if not uid or not doc_id:
+            return jsonify({"error": "Missing UID or Document ID"}), 400
+
+        # Reference to the specific output document
+        doc_ref = db.collection("Users").document(uid).collection("outputs").document(doc_id)
+        doc = doc_ref.get()
+
+        if doc.exists:
+            return jsonify(doc.to_dict()), 200
+        else:
+            return jsonify({"error": "Document not found"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route("/api/delete-output", methods=['DELETE'])
 def delete_output():
     data = request.get_json()
