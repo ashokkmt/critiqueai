@@ -543,6 +543,11 @@ def get_output_helper(user):
 #         session['session_id'] = str(uuid.uuid4())
 #         print("Session ID - ", session['session_id'])
 
+@app.route("/")
+def home():
+    # print("home")
+    return 'Hello Programmer, Visit our <a href="https://github.com/ashokkmt/critiqueai" target="_blank">GitHub</a>!'
+
 
 @app.route('/content-out', methods=['POST'])
 def generate_content():
