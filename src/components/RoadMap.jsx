@@ -107,7 +107,7 @@ export default function RoadMap() {
 
         // Add logic for roadmap generation here
         try {
-            const res = await axios.post("http://127.0.0.1:5000/get-roadmap", SummRes, {
+            const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/get-roadmap", SummRes, {
                 headers: {
                     "Content-Type": "text/plain"
                 }
@@ -235,7 +235,7 @@ export default function RoadMap() {
                     hour12: true,
                 });
                 try {
-                    const res = await axios.post("http://127.0.0.1:5000/set-output", {
+                    const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/set-output", {
                         uid: user.uid,
                         time: formatted,
                         heading: topic,

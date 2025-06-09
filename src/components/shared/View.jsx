@@ -90,7 +90,7 @@ function Viewed() {
 
                 try {
                     setLoading(true)
-                    const response = await axios.post("http://127.0.0.1:5000/view", {
+                    const response = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/view", {
                         uid: user.uid,
                         doc_id: doc_id
                     });

@@ -94,7 +94,7 @@ function Shared() {
 
             setLoading(true)
             // const id = "fXFjWxU3iqNpEZ77gPJS";
-            const response = await axios.get(`http://127.0.0.1:5000/shared/${id}`);
+            const response = await axios.get(`https://critiqueai-app-react-952301619936.us-central1.run.app/shared/${id}`);
             console.log(response.data);
 
             // setshareheading(response.data.name)

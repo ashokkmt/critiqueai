@@ -81,7 +81,7 @@ const EvaluateInput = () => {
     setshowres(true);
 
     try {
-      const res = await axios.post("http://127.0.0.1:5000/evaluate", {
+      const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/evaluate", {
         text: text
       });
 
@@ -119,7 +119,7 @@ const EvaluateInput = () => {
     formData.append('guestId', 'abc123');
 
     try {
-      const res = await axios.post("http://127.0.0.1:5000/evaluate", formData);
+      const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/evaluate", formData);
       console.log('Response:', res.data);
       isloading(false);
       setScore(res.data.score);

@@ -80,7 +80,7 @@ export default function SavedNotes() {
         setCurrentUser(user);
         isLoading(true);
         try {
-          const res = await axios.post("http://127.0.0.1:5000/get-output", {
+          const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/get-output", {
             uid: user.uid
           });
           setudata(res.data.outputs);
@@ -104,7 +104,7 @@ export default function SavedNotes() {
     setshowURL(true)
     setLoadingURL(true);
     try {
-      const docResponse = await axios.post("http://127.0.0.1:5000/api/share-output", {
+      const docResponse = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/api/share-output", {
         user_id: currentUser.uid,
         doc_id: id
       });
@@ -121,7 +121,7 @@ export default function SavedNotes() {
 
   const deleteDocument = async (id) => {
     try {
-      await axios.delete("http://127.0.0.1:5000/api/delete-output", {
+      await axios.delete("https://critiqueai-app-react-952301619936.us-central1.run.app/api/delete-output", {
         data: {
           user_id: currentUser.uid,
           doc_id: id,
