@@ -27,19 +27,14 @@ import base64
 sec_client = secretmanager.SecretManagerServiceClient()
 
 # Firebase Certificate
-secret_name = "projects/952301619936/secrets/firebase-config/versions/latest"
-response = sec_client.access_secret_version(request={"name": secret_name})
-firebase_json = json.loads(response.payload.data.decode("UTF-8"))
+fb_name = "projects/952301619936/secrets/firebase-config/versions/latest"
+get_fb_key = sec_client.access_secret_version(request={"name": fb_name})
+firebase_json = json.loads(get_fb_key.payload.data.decode("UTF-8"))
 
 # Gemini API key 1
-gen_secret = "projects/952301619936/secrets/gemini-api/versions/latest"
+gen_secret = "projects/952301619936/secrets/critiqueai_gen_key/versions/latest"
 get_key = sec_client.access_secret_version(request={"name": gen_secret})
 gen_key = get_key.payload.data.decode("UTF-8")
-
-# Gemini API key 2
-gen_secret2 = "projects/952301619936/secrets/critiqueai_gen_key/versions/latest"
-get_key2 = sec_client.access_secret_version(request={"name": gen_secret2})
-gen_key2 = get_key2.payload.data.decode("UTF-8")
 
 # GCS Service Account Vision Certificate
 serve_account = "projects/952301619936/secrets/service_account/versions/latest"
@@ -104,7 +99,7 @@ firebase_admin.initialize_app(cred, {
 
 
 # Configure the Google Generative AI API
-client = genai.Client(api_key=gen_key2)
+client = genai.Client(api_key=gen_key)
 FLASH = 'gemini-2.0-flash'
 FLASH_LITE = 'gemini-2.0-flash-lite'
 

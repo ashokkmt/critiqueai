@@ -1,27 +1,26 @@
 # 1️⃣ Use an official Python runtime as a base image
-FROM python:3.12
+FROM python:3.13-slim
 
-# Set the working directory
-WORKDIR /app/code
+# 2️⃣ Set the working directory in the container
+WORKDIR /app
 
-# Install system dependencies
+# 3️⃣ Install system dependencies (like poppler-utils)
 RUN apt-get update && apt-get install -y poppler-utils
 
-# 3️⃣ Copy the requirements file into the container
+# 4️⃣ Copy the requirements file into the container
 COPY requirements.txt .
 
-# 4️⃣ Install dependencies
+# 5️⃣ Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 5️⃣ Copy the rest of your application code
-COPY . /app
+# 6️⃣ Copy the rest of the application code into the container
+COPY . .
 
-# 6️⃣ Set the environment variable for Cloud Run
+# 7️⃣ Set environment variable for Cloud Run
 ENV PORT=8080
 
-# 7️⃣ Expose port 8080 (Cloud Run default)
+# 8️⃣ Expose the default Cloud Run port
 EXPOSE 8080
 
-# 8️⃣ Start the Flask app using Gunicorn (for production)
-#CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+# 9️⃣ Start the app using Gunicorn (production ready)
 CMD ["gunicorn", "-w", "5", "--timeout", "120", "-b", "0.0.0.0:8080", "app:app"]
