@@ -20,8 +20,6 @@ import uuid
 from google.oauth2 import service_account
 import io
 import base64
-# from odf.opendocument import load
-# from odf.text import P
 
 
 sec_client = secretmanager.SecretManagerServiceClient()
@@ -144,8 +142,6 @@ def resolve_session(data):
     return identifier, session_id
 
 # Function for summary page
-
-
 def get_evaluation(text, isInstruction=None):
     if isInstruction:  # If an instruction is provided, append it
         full_prompt = f"{SUMMARY_PROMPT}\n\nAdditional Instructions: {isInstruction}"
@@ -164,9 +160,8 @@ def get_evaluation(text, isInstruction=None):
     return content
 
 # <----------------- Evaluation Page Here Starts From Here ------------------->
+
 # Functions for evaluation page
-
-
 def get_evaluate(text):
     response = client.models.generate_content(
         model=FLASH,
@@ -215,8 +210,6 @@ def process_pdf_file(pdf_bytes):
     return response, score
 
 # Image File
-
-
 def process_img_file(image_content):
     image = vision.Image(content=image_content)
     text_response = vision_client.text_detection(image=image)
@@ -279,8 +272,6 @@ def encode_image(image):
     return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
 # Image Extraction for PDF
-
-
 def extract_images(pdf_file, page_index):
     """Extracts images from a PDF page with Gemini descriptions."""
     page = pdf_file.load_page(page_index)
@@ -308,17 +299,15 @@ def extract_images(pdf_file, page_index):
             images.append(f"[Image extraction error: {str(e)}]")
     return images
 
+
 # Text Extraction for PDF
-
-
 def extract_text(pdf_file, page_index):
     """Extracts text from a given PDF page."""
     page = pdf_file.load_page(page_index)
     return page.get_text("text")
 
+
 # Tables Extraction for PDF
-
-
 def extract_tables(content, page_index):
     """Extracts tables using pdfplumber."""
     tables = []
@@ -336,9 +325,8 @@ def extract_tables(content, page_index):
         tables.append(f"[Table error: {str(e)}]")
     return tables
 
+
 # Process PDF for Page-Wise Extraction
-
-
 def extract_pdf_content(pdf_bytes):
     """Extracts text, images, and tables from PDF bytes and returns as a string."""
     pdf_file = pymupdf.open(
@@ -454,8 +442,6 @@ def upload_files(file, session):
     })
 
 # Function to get file content from Google Cloud Storage
-
-
 def get_user_files(session_id, time):
     """Fetches gs:// URLs for a user from Firestore."""
 
@@ -504,9 +490,8 @@ def process_file(gs_url):
         raise ValueError("Unsupported file type")
 # <---------- Summary Page Functions Ends Here ------------>
 
+
 # <---------- Save Output to Firebase ----------->
-
-
 def set_output_helper(user, head, data, time, typ):
     user_id = user
     parent_doc = db.collection("Users").document(user_id)
@@ -546,17 +531,9 @@ def get_output_helper(user):
 
     return output_list
 
-# Set session before each request
-# @app.before_request
-# def set_session():
-#     if 'session_id' not in session:
-#         session['session_id'] = str(uuid.uuid4())
-#         print("Session ID - ", session['session_id'])
-
 
 @app.route("/")
 def home():
-    # print("home")
     return 'Hello Programmer, Visit our <a href="https://github.com/ashokkmt/critiqueai" target="_blank">GitHub</a>!'
 
 
@@ -564,9 +541,6 @@ def home():
 def generate_content():
     try:
         if request.method == 'POST':
-            # if session.get("result_generated"):
-            #     print("Rechecked result generation reload")
-            #     return redirect(url_for("get-content"))
             data = request.get_json()
             if not data:
                 return "Please enter a valid topic", 400
@@ -587,8 +561,6 @@ def generate_content():
             )
 
             try:
-                # full_prompt = CONTENT_PROMPT.format(topic=data)
-                # print(full_prompt)
                 response = client.models.generate_content(
                     model=FLASH,
                     contents=full_prompt,
@@ -603,10 +575,6 @@ def generate_content():
                     extras=["fenced-code-blocks", "tables",
                             "strike", "task_list", "header-ids"]
                 )
-
-                # session["result_generated"] = True
-                # print("result marked true")
-
                 return jsonify({"output": temp}), 200
 
             except Exception as e:
@@ -620,9 +588,6 @@ def generate_content():
 @app.route('/get-roadmap', methods=['POST'])
 def get_roadmap():
     if request.method == 'POST':
-        # if session.get("result_generated"):
-        #     print("Rechecked result generation reload")
-        #     return redirect(url_for("roadmap"))
         data = request.data.decode('utf-8')
         if not data:
             return "Please enter a valid topic", 400
@@ -643,9 +608,6 @@ def get_roadmap():
                 extras=["fenced-code-blocks", "tables",
                         "strike", "task_list", "header-ids"]
             )
-
-            # session["result_generated"] = True
-            # print("result marked true")
             if response.candidates:
                 return jsonify({"output": temp}), 200
             else:
@@ -656,13 +618,9 @@ def get_roadmap():
 
 
 # Route for Summary output page
-
 @app.route('/summary-out', methods=['POST'])
 def summary_out():
     if request.method == 'POST':
-        # if session.get("result_generated"):
-        #     print("Session key 'result_generated' found. Redirecting to /summary...")
-        #     return redirect(url_for("summary"))
         check_file = 'files' in request.files and request.files.getlist(
             'files')
         check_fname = 'text' in request.form and request.form['text']
@@ -688,9 +646,7 @@ def summary_out():
                     else:
                         combined_text += f"Invalid or unsupported file: {f.filename}\n"
 
-                # session_id = session.get('session_id')
                 file_url = get_user_files(session_id, time)
-                # print("URL LIST AT FIREBASE - ", file_url)
                 for url in file_url:
                     combined_text += process_file(
                         url) + "\n\n***************************************************\n\n"
@@ -707,8 +663,6 @@ def summary_out():
                             "strike", "task_list", "header-ids"]
                 )
 
-                # session["result_generated"] = True
-                # print("result marked true")
                 return jsonify({"output": temp}), 200
             elif check_file:
                 files = request.files.getlist('files')
@@ -718,9 +672,7 @@ def summary_out():
                     else:
                         combined_text += f"Invalid or unsupported file: {f.filename}\n"
 
-                # session_id = session.get('session_id')
                 file_url = get_user_files(session_id, time)
-                # print("URL LIST AT FIREBASE - ", file_url)
                 for url in file_url:
                     combined_text += process_file(
                         url) + "\n\n***************************************************\n\n"
@@ -735,8 +687,6 @@ def summary_out():
                             "strike", "task_list", "header-ids"]
                 )
 
-                # session["result_generated"] = True
-                # print("result marked true")
                 return jsonify({"output": temp}), 200
             else:
                 return jsonify({"error": "Invalid input received. No files or text provided."}), 400
@@ -916,17 +866,12 @@ def accountcleanup():
 
     return jsonify({"deleted_files": deleted_files}), 200
 
+
 # Route for evalation page
-
-
 @app.route('/evaluate', methods=['POST'])
 def evaluate():
     try:
         if request.method == 'POST':
-            # if session.get("result_generated"):
-            #     print("Rechecked result generation reload")
-            #     return redirect(url_for("input"))
-
             if 'file' in request.files:
                 data = request.form
                 guest_id = request.form.get('guestId')
@@ -941,7 +886,6 @@ def evaluate():
                 if file and allowed_file(file.filename):
                     time = datetime.now(timezone.utc)
                     upload_files(file, session_id)
-                    # session_id = session.get('session_id')
                     file_url = get_user_files(session_id, time)
                     file_content, name = read_file_from_gcs(file_url[0])
                     file_extension = name.split(".")[-1].lower()
@@ -963,29 +907,14 @@ def evaluate():
 
                     print("response-", response.text,
                           "score-", score_response.text)
-                    # score_list = score_response.text.split(":")
-                    # if len(score_list) >= 0:
-                    #     score = score_list[1].strip()
-                    #     if not score.isdigit():
-                    #         score = "Error: Invalid score format"
-                    # else:
-                    #     score = "-/"
-
-                    # evaluation_md = response.text
                     evaluation_html = markdown2.markdown(
                         response.text,
                         extras=["fenced-code-blocks", "tables",
                                 "strike", "task_list", "header-ids"]
                     )
-
-                    # session["result_generated"] = True
-                    # print("result marked true")
                     return jsonify({"evaluation": evaluation_html, "score": score_response.text}), 200
 
                 else:
-                    # print("File not supported.")
-                    # session["result_generated"] = True
-                    # print("result marked true")
                     return jsonify({"error": "Invalid file"}), 400
             elif request.is_json:
                 data = request.get_json()
@@ -995,13 +924,6 @@ def evaluate():
                 response, score_response = get_evaluate(text)
                 print("response-", response.text,
                       " score-", score_response.text)
-                # score_list = score_response.text.split(":")
-                # if len(score_list) >= 0:
-                #     score = score_list[1].strip()
-                #     if not score.isdigit():
-                #         score = "Error: Invalid score format"
-                # else:
-                #     score = "-/"
 
                 evaluation_md = response.text
                 evaluation_html = markdown2.markdown(
@@ -1010,8 +932,6 @@ def evaluate():
                             "strike", "task_list", "header-ids"]
                 )
 
-                # session["result_generated"] = True
-                # print("result marked true")
                 return jsonify({"evaluation": evaluation_html, "score": score_response.text}), 200
             else:
                 return jsonify({"error": "No valid input provided"}), 400
@@ -1019,9 +939,7 @@ def evaluate():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-    # return render_template("evaluate.html", prompt="Submit a file or text.", score="")
-
 
 # Run the app in debug mode for development
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
