@@ -5,12 +5,11 @@ import pdfplumber
 import os
 import docx
 import markdown2
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 from google import genai
 from google.genai import types
 from datetime import datetime, timezone, timedelta
 from google.cloud import storage, vision
-import PIL.Image
 from PIL import Image
 from io import BytesIO
 import zipfile
@@ -76,10 +75,10 @@ Don't add any greeting and thank you note.
 
 # Initialize Flask app
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+# app.secret_key = os.urandom(24)
 CORS(app)
 
-cred = credentials.Certificate("code/firebase.json")
+cred = credentials.Certificate("firebase.json")
 firebase_admin.initialize_app(cred, {
     "storageBucket": "instant-theater-449913-h4.firebasestorage.app"
 })
@@ -95,7 +94,7 @@ db = firestore.client()
 
 # Initialize GCS client
 credentials = service_account.Credentials.from_service_account_file(
-    'code/service-account.json')
+    'service-account.json')
 
 # Initialize all Google Cloud clients with the same credentials
 vision_client = vision.ImageAnnotatorClient(credentials=credentials)
@@ -120,7 +119,7 @@ def resolve_session(data):
 
     if uid:
         identifier = uid
-        session_id = f"{uid}_{uuid.uuid4().hex[:8]}"
+        session_id = f"{identifier}_{uuid.uuid4().hex[:8]}"
     elif guest_id:
         identifier = f"guest_{guest_id}"
         session_id = f"{identifier}_{uuid.uuid4().hex[:8]}"
