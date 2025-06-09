@@ -135,44 +135,50 @@
 }
 
 .action-btn {
-  padding: 6px 12px;
+  padding: 8px 14px;
   margin: 0 4px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: transparent;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .view {
-  color: #3fe493;
-  border: 1px solid #3fe493;
+  background-color: #3fe493;
+  color: #111827;
 }
 
 .view:hover {
-  background-color: rgba(63, 228, 147, 0.1);
+  background-color: #34d584;
+  transform: translateY(-1px);
 }
 
 .share {
-  color: #60a5fa;
-  border: 1px solid #60a5fa;
+  background-color: #60a5fa;
+  color: #111827;
 }
 
 .share:hover {
-  background-color: rgba(96, 165, 250, 0.1);
+  background-color: #4d96ea;
+  transform: translateY(-1px);
 }
 
 .delete {
-  color: #f87171;
-  border: 1px solid #f87171;
+  background-color: #f87171;
+  color: #111827;
 }
 
 .delete:hover {
-  background-color: rgba(248, 113, 113, 0.1);
+  background-color: #e95c5c;
+  transform: translateY(-1px);
 }
 
 .action-btn:active {
-  opacity: 0.8;
+  transform: translateY(1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .serial-number {
@@ -491,4 +497,11 @@
     font-size: 12px;
     padding: 7px;
   }
+}
+
+.expiry-note {
+  color: #f87171;
+  font-weight: 500;
+  display: block;
+  margin-top: 6px;
 }
