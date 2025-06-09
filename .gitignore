@@ -1,5 +1,3 @@
-config.json              
-service-account.json   
 *.env                    
 *.local                  
 *.secret                
@@ -8,7 +6,7 @@ service-account.json
 .vscode/                
 .idx/                     
 
-code/*.json            
+*.json            
 code/uploads/*          
 files/   
 Rough/        
@@ -30,5 +28,8 @@ code/test*
 tests/
 images/
 output.*
+output_*
 
+test/
+!.filenignore
 !.gitignore

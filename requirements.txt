@@ -13,3 +13,4 @@ google-genai
 firebase-admin
 pdfplumber
 pymupdf
+flask-cors
