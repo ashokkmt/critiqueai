@@ -553,6 +553,7 @@ def get_output_helper(user):
 #         session['session_id'] = str(uuid.uuid4())
 #         print("Session ID - ", session['session_id'])
 
+
 @app.route("/")
 def home():
     # print("home")
@@ -783,7 +784,8 @@ def view_output():
             return jsonify({"error": "Missing UID or Document ID"}), 400
 
         # Reference to the specific output document
-        doc_ref = db.collection("Users").document(uid).collection("outputs").document(doc_id)
+        doc_ref = db.collection("Users").document(
+            uid).collection("outputs").document(doc_id)
         doc = doc_ref.get()
 
         if doc.exists:
@@ -840,6 +842,7 @@ def share_output():
     shared_doc_ref.set(copied_data)
 
     return jsonify({"sharedDocId": shared_doc_ref.id}), 200
+
 
 @app.route('/shared/<doc_id>', methods=['GET'])
 def get_shared_doc(doc_id):
@@ -923,14 +926,14 @@ def evaluate():
             # if session.get("result_generated"):
             #     print("Rechecked result generation reload")
             #     return redirect(url_for("input"))
-            data = request.form
-            guest_id = request.form.get('guestId')
-
-            print("Inside Evaluation Function: ", guest_id, "\n")
-
-            user_id, session_id = resolve_session(data)
 
             if 'file' in request.files:
+                data = request.form
+                guest_id = request.form.get('guestId')
+
+                print("Inside Evaluation Function: ", guest_id, "\n")
+
+                user_id, session_id = resolve_session(data)
                 file = request.files['file']
                 if file.filename == '':
                     return jsonify({"error": "No file selected"}), 400
