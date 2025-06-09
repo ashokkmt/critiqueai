@@ -181,7 +181,7 @@ export default function SavedNotes() {
                 (
                   <div className="share-popup">
                     <div className="share-header">
-                      <h3>Share public link to chat</h3>
+                      <h3>Share Your Note</h3>
 
                       <div className="close-btn-wrapper" onClick={() =>
                         setshowURL(false)
@@ -192,14 +192,9 @@ export default function SavedNotes() {
                           className="close-share-btn"
                         />
                       </div>
-
                     </div>
                     <p className="share-description">
-                      Your name, custom instructions, and any messages you add after
-                      sharing stay private.{" "}
-                      <Link to="/" className="share-learn-more">
-                        Learn more
-                      </Link>
+                      Anyone with this link can view this note without logging in. Your personal information remains protected. <span className="expiry-note">The link will expire in 1 hour.</span>
                     </p>
                     <div className="share-input-wrapper">
                       <input
