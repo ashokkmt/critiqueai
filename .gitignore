@@ -30,6 +30,7 @@ code/test*
 tests/
 output.*
 build/
+dist/
 *.yaml
 
 !.filenignore

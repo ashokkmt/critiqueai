@@ -1,5 +1,5 @@
 # Step 1: Build the React app
-FROM node:22-alpine
+FROM node:22-alpine AS build
 
 WORKDIR /app
 
@@ -10,11 +10,9 @@ RUN npm install
 # Copy source code and build
 COPY . .
 
-
 # Accept secret at build time
 ARG VITE_FIREBASE_API_KEY
 ENV VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY
-
 
 RUN npm run build
 
@@ -25,10 +23,12 @@ FROM nginx:stable-alpine
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy your custom nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+
 
 # Copy the React build output to NGINX's web directory
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html
 
 # Set the port expected by Cloud Run
 ENV PORT=8080
