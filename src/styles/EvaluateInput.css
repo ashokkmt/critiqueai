@@ -58,9 +58,12 @@ button:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: auto; /* Changed for responsiveness */
-    min-height: 93vh; /* Ensures it's tall on large screens */
-    padding: 2rem 0; /* Adds vertical padding for smaller screens */
+    height: auto;
+    /* Changed for responsiveness */
+    min-height: 93vh;
+    /* Ensures it's tall on large screens */
+    padding: 2rem 0;
+    /* Adds vertical padding for smaller screens */
 }
 
 .page-wrapper {
@@ -94,7 +97,8 @@ button:hover {
     justify-content: center;
     align-items: center;
     gap: .5rem;
-    position: relative; /* Add this */
+    position: relative;
+    /* Add this */
 }
 
 .card-header h1 {
@@ -116,7 +120,8 @@ button:hover {
     position: absolute;
     left: 50%;
     transform: translateX(-120px);
-    top: 33px; /* Adjust this value to align vertically */
+    top: 33px;
+    /* Adjust this value to align vertically */
     color: #3fe493;
 }
 
@@ -132,6 +137,7 @@ button:hover {
     font-size: 14px;
     color: #aaa;
     margin-top: 0;
+    text-align: center;
 }
 
 .input-section h2 {
@@ -239,7 +245,8 @@ textarea::placeholder {
     height: 60%;
     border: 2px dashed rgba(63, 228, 147, 0.3);
     display: flex;
-    flex-direction: column; /* Stack elements inside */
+    flex-direction: column;
+    /* Stack elements inside */
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -358,7 +365,8 @@ textarea::placeholder {
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 10px; /* Added margin */
+    margin-top: 10px;
+    /* Added margin */
 }
 
 .browse-btn:hover {
@@ -395,9 +403,11 @@ textarea::placeholder {
 
 /* Output pop-up */
 .popup-output {
-    position: fixed; /* Changed from absolute to fixed */
+    position: fixed;
+    /* Changed from absolute to fixed */
     top: 0;
-    left: 0; /* Added left: 0 */
+    left: 0;
+    /* Added left: 0 */
     width: 100%;
     height: 100%;
     z-index: 1000;
@@ -501,7 +511,7 @@ textarea::placeholder {
 
 /* Yha Changes kran output css ke lie */
 
-.result-text div{
+.result-text div {
     display: flex;
     flex-direction: column;
     gap: .5rem;
@@ -513,7 +523,7 @@ textarea::placeholder {
     gap: .5rem;
 }
 
-.result-text div p > strong{
+.result-text div p>strong {
     color: #2dad6f;
 }
 
@@ -583,6 +593,40 @@ textarea::placeholder {
     margin: 0;
 }
 
+
+.clipboard-icon {
+    height: 1.8rem;
+    width: 1.8rem;
+}
+
+.cp-btn{
+    position: relative;
+}
+
+
+.show {
+    position: absolute;
+    z-index: 100000000;
+    opacity: 0;
+    top: 0;
+    /* border: 1px solid; */
+    padding: .2rem;
+    border-radius: 5px;
+    transition: all .5s ease-in-out;
+    transform: scale(0.99);
+    background: #ffffff2b;
+    color: #00ffbfe8;
+    font-size: x-small;
+}
+
+.show.unhide {
+    opacity: 1;
+    transform: scale(1.05);
+    top: -60%;
+}
+
+
+
 /* Responsive Design */
 
 /* Tablet and larger mobile */
@@ -592,11 +636,23 @@ textarea::placeholder {
         padding: 20px 15px;
     }
 
+
+    .clipboard-icon {
+        height: 1.8rem;
+        width: 1.8rem;
+    }
+
     .evaluation-card {
         /* Stack the columns */
         grid-template-columns: 1fr;
-        gap: 2rem; /* Add more vertical gap */
+        gap: 2rem;
+        /* Add more vertical gap */
         padding: 20px 0;
+        justify-items: center;
+    }
+
+    .textarea-container textarea {
+        width: 100%;
     }
 
     .seprate {
@@ -612,7 +668,7 @@ textarea::placeholder {
         width: 90%;
         align-self: center;
     }
-    
+
     .output-text {
         width: 70vw;
     }
@@ -627,12 +683,12 @@ textarea::placeholder {
     }
 
     .card-header h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
     }
-    
+
     .tagline {
         font-size: 0.9rem;
-        padding: 0 1rem;
+        padding: 0 2rem;
     }
 
     #drop-zone {
@@ -660,5 +716,22 @@ textarea::placeholder {
 
     .res-btn {
         width: 100%;
+    }
+}
+
+@media (max-width: 326px) {
+
+    .card-header h1 {
+        font-size: 1.5rem;
+
+        >p {
+            text-align: center;
+        }
+    }
+
+
+    .clipboard-icon {
+        height: 1.5rem;
+        width: 1.5rem;
     }
 }

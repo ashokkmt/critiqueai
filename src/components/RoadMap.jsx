@@ -407,7 +407,7 @@ export default function RoadMap() {
                             ) : (
                                 <>
                                     <div className='note-toolbar'>
-                                        <h2>Generated Notes</h2>
+                                        <h2>Generated Roadmap</h2>
                                         <div className='notes-btns'>
                                             <div className='note-icon' onClick={MaximizeNotesSize} >
                                                 {Maximize ? <FiMinimize /> : <FiMaximize />}
@@ -418,7 +418,7 @@ export default function RoadMap() {
                                                 <TfiSave />
                                             </div>
                                             <div className='note-icon copy-icon' onClick={CopyContent} >
-                                                <div className={`show ${hide ? "" : "unhide"}`}>copied</div>
+                                                <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
                                                 <MdContentCopy />
                                             </div>
                                             <div className='note-icon' onClick={DownloadFile} >
@@ -485,8 +485,11 @@ export default function RoadMap() {
                 <div className="roadmap-outer">
 
                     <div className="roadmap-heading">
-                        <h2> <FaMapSigns color='#3fe493' /> Skill RoadMap Generator</h2>
-                        <p>Turn any skill into a step-by-step learning path in seconds.</p>
+                        <h2>
+                            
+                            <p className='roadmap-head' ><FaMapSigns className='road-sign' color='#3fe493' /> Skill RoadMap Generator</p>
+                        </h2>
+                        <p className='heading-roadmap'>Turn any skill into a step-by-step learning path in seconds.</p>
                     </div>
 
 

@@ -1,4 +1,4 @@
-import { use, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FaCloudUploadAlt, FaFolderOpen, FaPaperPlane, FaFileAlt, FaTachometerAlt, FaBrain, FaTimes, FaFile, FaRobot, FaDownload } from 'react-icons/fa';
 import '../styles/Summary.css';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
@@ -461,7 +461,7 @@ export default function Summary() {
                             ) : (
                                 <>
                                     <div className='note-toolbar'>
-                                        <h2>Generated Notes</h2>
+                                        <h2>Generated Summary</h2>
                                         <div className='notes-btns'>
                                             <div className='note-icon' onClick={MaximizeNotesSize} >
                                                 {Maximize ? <FiMinimize /> : <FiMaximize />}
@@ -534,7 +534,9 @@ export default function Summary() {
 
                 <div className="summary-page-subbox">
                     <div className="content-title">
-                        <h2><FaFileAlt color='#3fe493' /> Content Summarizer</h2>
+                        <h2>
+                            <p><FaFileAlt className='Altfile-icon' color='#3fe493' /> Content Summarizer</p>
+                        </h2>
                         <p className="tagline">Upload your files or enter text to get started</p>
                     </div>
 

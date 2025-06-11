@@ -26,6 +26,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }
 
 .share-icon:hover {
@@ -73,7 +74,7 @@ ol strong {
 
 
 .shared-content ul,
-.shared-content ol{
+.shared-content ol {
     padding-left: 1.5rem;
     /* indent */
     margin-top: 0.5rem;

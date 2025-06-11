@@ -12,6 +12,7 @@ const EvaluateInput = () => {
   const evaluation = useRef(null)
   const [Score, setScore] = useState("-/")
   const [feedbackHTML, setFeedbackHTML] = useState('');
+  const [hide, sethide] = useState(true);
 
 
 
@@ -142,6 +143,10 @@ const EvaluateInput = () => {
   const copyEvaluation = (e) => {
     if (evaluation.current) {
       navigator.clipboard.writeText(evaluation.current.innerText)
+      sethide(false)
+      setTimeout(() => {
+        sethide(true)
+      }, 1200);
     }
   }
 
@@ -201,9 +206,13 @@ const EvaluateInput = () => {
                       Back
                     </button>
                     <button
-                      className='res-btn'
+                      className='res-btn cp-btn'
                       onClick={copyEvaluation}
-                    > <FaCopy /> Copy Feedback</button>
+
+                    >
+                      <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
+                      <FaCopy /> Copy Feedback
+                    </button>
                   </div>
                 </>
             }
@@ -217,7 +226,9 @@ const EvaluateInput = () => {
         <div className="page-wrapper">
 
           <div className="card-header">
-            <h1><FaClipboardCheck color='#3fe493' /> Answer Evaluation</h1>
+            <h1>
+              <p><FaClipboardCheck className='clipboard-icon' color='#3fe493' /> Answer Evaluation</p>
+            </h1>
             <p className="tagline">Enter your answer or upload a file for AI-powered evaluation</p>
           </div>
 

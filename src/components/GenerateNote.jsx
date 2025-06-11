@@ -1,4 +1,4 @@
-import { useDebugValue, useEffect, useRef, useState } from 'react';
+import {  useEffect, useRef, useState } from 'react';
 import '../styles/GenerateNote.css';
 import {
   FaBook,
@@ -430,7 +430,7 @@ export default function GenerateNote() {
                         <TfiSave />
                       </div>
                       <div className='note-icon copy-icon' onClick={CopyContent} >
-                        <div className={`show ${hide ? "" : "unhide"}`}>copied</div>
+                        <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
                         <MdContentCopy />
                       </div>
                       <div className='note-icon' onClick={DownloadFile} >
@@ -496,7 +496,9 @@ export default function GenerateNote() {
 
         <div className="card">
           <div className="note-heading">
-            <h2><FaBook color='#3fe493' /> Generate Study Notes</h2>
+            <h2>
+              <p><FaBook className='book-icon' color='#3fe493' /> Generate Study Notes</p>
+            </h2>
             <p className="subtitle">Create comprehensive study materials tailored to your needs</p>
           </div>
 

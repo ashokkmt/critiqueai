@@ -215,7 +215,7 @@ function Viewed() {
                         ) : (
                             <>
                                 <div className='view-toolbar'>
-                                    <h2>View Document</h2>
+                                    <h2>View Output</h2>
                                     <div className='viewed-btns'>
                                         <div className='view-icon' onClick={goToSavedNotes}>
                                             <IoMdArrowBack />

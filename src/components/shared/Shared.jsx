@@ -213,7 +213,7 @@ function Shared() {
                                 <>
                                     <div className='shared-toolbar'>
                                         {/* <h2>{shareheading} {sharetype}</h2> */}
-                                        <h2>Shared</h2>
+                                        <h2>Shared Output</h2>
                                         <div className='shared-btns'>
                                             <div className='share-icon share-copy' onClick={CopyContent} >
                                                 <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
