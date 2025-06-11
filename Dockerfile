@@ -1,24 +1,38 @@
-# 1️⃣ Use an official Python runtime as a base image
-FROM python:3.12
+# Step 1: Build the React app
+FROM node:22-alpine
 
-# Set the working directory
 WORKDIR /app
 
+# Install dependencies
+COPY package*.json ./
+RUN npm install
 
-# 3️⃣ Copy the requirements file into the container
-COPY requirements.txt .
-
-# 4️⃣ Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# 5️⃣ Copy the rest of your application code
+# Copy source code and build
 COPY . .
 
-# 6️⃣ Set the environment variable for Cloud Run
-ENV PORT=8080
 
-# 7️⃣ Expose port 8080 (Cloud Run default)
+# Accept secret at build time
+ARG VITE_FIREBASE_API_KEY
+ENV VITE_FIREBASE_API_KEY=$VITE_FIREBASE_API_KEY
+
+
+RUN npm run build
+
+# Step 2: Serve with NGINX
+FROM nginx:stable-alpine
+
+# Remove default NGINX config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy your custom nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Copy the React build output to NGINX's web directory
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Set the port expected by Cloud Run
+ENV PORT=8080
 EXPOSE 8080
 
-# 8️⃣ Start the Flask app using Gunicorn (for production)
-CMD ["gunicorn", "-b", "0.0.0.0:8080", "app:app"]
+# Start NGINX in the foreground
+CMD ["nginx", "-g", "daemon off;"]
