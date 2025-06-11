@@ -198,7 +198,7 @@ const EvaluateInput = () => {
                       className='res-btn'
                     >
                       <FaRedo />
-                      New Evaluation
+                      Back
                     </button>
                     <button
                       className='res-btn'

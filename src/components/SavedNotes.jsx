@@ -210,7 +210,7 @@ export default function SavedNotes() {
                           copypopup();
                         }}
                       >
-                        <div className={`show ${hide ? "" : "unhide"}`}>copied</div>
+                        <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
                         Copy link
                       </button>
                     </div>

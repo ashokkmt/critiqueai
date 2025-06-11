@@ -8,10 +8,9 @@ import {
   FaFileAlt,
   FaCode,
   FaDownload,
-  FaCopy,
-  FaRedo,
   FaRobot
 } from 'react-icons/fa';
+import { MdContentCopy } from 'react-icons/md';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
 import { TfiSave } from 'react-icons/tfi';
 import { RiCloseLargeLine } from 'react-icons/ri';
@@ -432,7 +431,7 @@ export default function GenerateNote() {
                       </div>
                       <div className='note-icon copy-icon' onClick={CopyContent} >
                         <div className={`show ${hide ? "" : "unhide"}`}>copied</div>
-                        <FaCopy />
+                        <MdContentCopy />
                       </div>
                       <div className='note-icon' onClick={DownloadFile} >
                         <FaDownload />
