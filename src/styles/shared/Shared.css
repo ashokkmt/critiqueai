@@ -40,17 +40,46 @@
 
 .shared-content {
     flex-grow: 1;
-    background: rgba(17, 22, 28, 1); /* Changed from 35% opacity to solid */
+    background: rgba(17, 22, 28, 1);
+    /* Changed from 35% opacity to solid */
     text-wrap: wrap;
     border-radius: 25px;
     padding: 1rem;
 }
 
-.shared-content ul {
-    padding-left: 1.5rem; /* indent */
+
+
+
+
+/* Output ka style ha */
+
+
+.shared-content {
+    h2 {
+        color: #00ffb3;
+    }
+
+    p {
+        color: #00ffff;
+    }
+}
+
+.shared-content ul strong,
+ol strong {
+    color: rgb(183, 241, 35);
+}
+
+
+
+
+.shared-content ul,
+.shared-content ol{
+    padding-left: 1.5rem;
+    /* indent */
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
-    list-style-type: disc; /* bullet points */
+    list-style-type: disc;
+    /* bullet points */
 }
 
 /* Style list items */
@@ -70,9 +99,20 @@
     word-wrap: break-word;
 }
 
+
+/* yha tak */
+
+
+
+
+
+
+
+
 .not-shared-content {
     flex-grow: 1;
-    background: rgba(17, 22, 28, 1); /* Changed from 35% opacity to solid */
+    background: rgba(17, 22, 28, 1);
+    /* Changed from 35% opacity to solid */
     text-wrap: wrap;
     border-radius: 25px;
     padding: 1rem;
@@ -83,7 +123,8 @@
 
 .not-viewed-content {
     flex-grow: 1;
-    background: rgba(17, 22, 28, 1); /* Changed from 35% opacity to solid */
+    background: rgba(17, 22, 28, 1);
+    /* Changed from 35% opacity to solid */
     text-wrap: wrap;
     border-radius: 25px;
     padding: 1rem;
@@ -111,13 +152,16 @@
     scrollbar-width: none;
     scroll-behavior: smooth;
     gap: 1rem;
-    background: rgba(22, 27, 34, 1); /* Fixed opacity */
+    background: rgba(22, 27, 34, 1);
+    /* Fixed opacity */
     border: 1px solid #2dad6f41;
     border-radius: 25px;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px rgba(14, 165, 233, 0.2);
     transition: all 0.5s ease;
-    position: relative; /* Added */
-    z-index: 5; /* Added */
+    position: relative;
+    /* Added */
+    z-index: 5;
+    /* Added */
 }
 
 
@@ -159,4 +203,31 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+
+.share-copy {
+    position: relative;
+}
+
+
+.show {
+    position: absolute;
+    z-index: 100000000;
+    opacity: 0;
+    top: 0;
+    /* border: 1px solid; */
+    padding: .2rem;
+    border-radius: 5px;
+    transition: all .5s ease-in-out;
+    transform: scale(0.99);
+    background: #ffffff2b;
+    color: #00ffbfe8;
+    font-size: x-small;
+}
+
+.show.unhide {
+    opacity: 1;
+    transform: scale(1.05);
+    top: -60%;
 }

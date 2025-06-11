@@ -194,10 +194,10 @@ const HomePage = () => {
 
               {
 
-                Toolsdata.map((tool) => {
+                Toolsdata.map((tool, key) => {
                   const Icon = iconMap[tool.icon];
                   return (
-                    <div className='tool-card'>
+                    <div className='tool-card' key={key}>
                       {Icon && <Icon size={18} style={{ marginBottom: '8px' }} />}
                       <h3>{tool.heading}</h3>
                       <p>{tool.Des}</p>
@@ -218,11 +218,11 @@ const HomePage = () => {
             <h2>Why Choose CritiqueAI?</h2>
             <div className='features-cards'>
               {
-                Featuredata.map((item) => {
+                Featuredata.map((item, key) => {
                   const Icon = iconMap[item.icon];
 
                   return (
-                    <div className='feature-card'>
+                    <div className='feature-card' key={key} >
                       {Icon && <Icon size={40} style={{ marginBottom: "16px", color: "rgb(63, 228, 147)" }} />}
                       <h3>{item.heading}</h3>
                       <p>{item.Des}</p>
@@ -246,17 +246,15 @@ const HomePage = () => {
             <div className='about-cards'>
               {
 
-                aboutdata.map((item) => {
+                aboutdata.map((item, key) => {
 
                   const Icon = iconMap[item.icon];
                   return (
-                    <>
-                      <div className='about-card'>
+                      <div className='about-card' key={key} >
                         {Icon && <Icon size={18} />}
                         <h3>{item.heading}</h3>
                         <p>{item.Des}</p>
                       </div>
-                    </>
                   )
                 })
               }

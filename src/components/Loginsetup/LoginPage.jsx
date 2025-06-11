@@ -8,6 +8,7 @@ import { Slide, toast, ToastContainer } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 
 export default function LoginPage() {
@@ -89,6 +90,7 @@ export default function LoginPage() {
 
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            
             console.log("Logged SuccessFully");
             toast.success("Logged in successfully", {
                 position: "top-center",
@@ -98,7 +100,15 @@ export default function LoginPage() {
 
             // Go to Home/Dashboard
             setTimeout(() => {
-                navigate('/');
+                const savedData = JSON.parse(localStorage.getItem('formData'));
+                const restorePath = localStorage.getItem('restorePath');
+
+                if (savedData) {
+                    navigate(restorePath);
+                }
+                else {
+                    navigate("/");
+                }
             }, 1000);
 
         } catch (error) {
@@ -136,7 +146,15 @@ export default function LoginPage() {
             });
 
             setTimeout(() => {
-                navigate('/');
+                const savedData = JSON.parse(localStorage.getItem('formData'));
+                const restorePath = localStorage.getItem('restorePath');
+
+                if (savedData) {
+                    navigate(restorePath);
+                }
+                else {
+                    navigate("/");
+                }
             }, 2000);
 
         } catch (error) {
@@ -155,6 +173,12 @@ export default function LoginPage() {
 
             <div className="login-main-box">
                 <div className="login-box">
+
+                    <div className='sign-back-btn' onClick={() => navigate("/")} >
+                        <IoMdArrowRoundBack size={25} />
+                    </div>
+
+
                     <div className="login-header">
                         <div className="logo-shield"><img width={50} height={50} src="/images/favicon.png" alt="Logo" /></div>
                         <h2>Welcome to CritiqueAI</h2>
@@ -190,11 +214,11 @@ export default function LoginPage() {
                         <p className="signup-text">
                             Don't have an account? <Link to="/signUp">Sign up</Link>
                         </p>
-                        
+
                         <div className="separator">
                             <span>OR</span>
                         </div>
-                        
+
                         <button onClick={signinWithGoogle} type="button" className="google-button">
                             <FaGoogle className="google-icon" />
                             Continue with Google

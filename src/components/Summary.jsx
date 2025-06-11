@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { FaCloudUploadAlt, FaFolderOpen, FaPaperPlane, FaFileAlt, FaTachometerAlt, FaBrain, FaTimes, FaFile, FaRobot, FaDownload } from 'react-icons/fa';
 import '../styles/Summary.css';
 import { FiMaximize, FiMinimize } from 'react-icons/fi';
@@ -9,6 +9,8 @@ import axios from 'axios';
 import { auth } from './firebase/firebase';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import html2pdf from "html2pdf.js";
+import { IoMdClose } from 'react-icons/io';
+import { useNavigate } from 'react-router-dom';
 
 export default function Summary() {
     const fileInputRef = useRef(null);
@@ -22,73 +24,132 @@ export default function Summary() {
     const [SummaryOut, setSummaryOut] = useState("");
     const Summarydata = useRef(null)
     const [hide, sethide] = useState(true);
+    const [valuser, setvaluser] = useState("");
+    const [test, settest] = useState(false);
+    const navigate = useNavigate();
+
+    // useEffect(() => {
+    //     const loadScript = (src) => {
+    //         const script = document.createElement('script');
+    //         script.src = src;
+    //         script.async = true;
+    //         document.body.appendChild(script);
+    //     };
+
+    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
+    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js');
+    //     loadScript('../static/script/scriptroad.js');
+
+    //     const particlesInterval = setInterval(() => {
+    //         if (window.particlesJS) {
+    //             clearInterval(particlesInterval);
+    //             window.particlesJS('particles-js', {
+    //                 particles: {
+    //                     number: { value: 80, density: { enable: true, value_area: 800 } },
+    //                     color: { value: '#4CAF50' },
+    //                     shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
+    //                     opacity: {
+    //                         value: 0.5,
+    //                         random: true,
+    //                         anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
+    //                     },
+    //                     size: {
+    //                         value: 3,
+    //                         random: true,
+    //                         anim: { enable: true, speed: 2, size_min: 0.1, sync: false },
+    //                     },
+    //                     line_linked: {
+    //                         enable: true,
+    //                         distance: 150,
+    //                         color: '#4CAF50',
+    //                         opacity: 0.4,
+    //                         width: 1,
+    //                     },
+    //                     move: {
+    //                         enable: true,
+    //                         speed: 1,
+    //                         direction: 'none',
+    //                         random: true,
+    //                         straight: false,
+    //                         out_mode: 'out',
+    //                         bounce: false,
+    //                         attract: { enable: false, rotateX: 600, rotateY: 1200 },
+    //                     },
+    //                 },
+    //                 interactivity: {
+    //                     detect_on: 'canvas',
+    //                     events: {
+    //                         onhover: { enable: true, mode: 'grab' },
+    //                         onclick: { enable: true, mode: 'push' },
+    //                         resize: true,
+    //                     },
+    //                     modes: {
+    //                         grab: { distance: 140, line_linked: { opacity: 1 } },
+    //                         push: { particles_nb: 4 },
+    //                     },
+    //                 },
+    //                 retina_detect: true,
+    //             });
+    //         }
+    //     }, 100);
+    // }, []);
+
 
     useEffect(() => {
-        const loadScript = (src) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            document.body.appendChild(script);
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
+        script.onload = () => {
+            window.particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: '#4CAF50' },
+                    shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#4CAF50',
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1,
+                        random: true,
+                        out_mode: 'out'
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'grab' },
+                        onclick: { enable: true, mode: 'push' },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: { opacity: 1 }
+                        },
+                        push: { particles_nb: 4 }
+                    }
+                },
+                retina_detect: true
+            });
         };
-
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js');
-        loadScript('../static/script/scriptroad.js');
-
-        const particlesInterval = setInterval(() => {
-            if (window.particlesJS) {
-                clearInterval(particlesInterval);
-                window.particlesJS('particles-js', {
-                    particles: {
-                        number: { value: 80, density: { enable: true, value_area: 800 } },
-                        color: { value: '#4CAF50' },
-                        shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
-                        opacity: {
-                            value: 0.5,
-                            random: true,
-                            anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
-                        },
-                        size: {
-                            value: 3,
-                            random: true,
-                            anim: { enable: true, speed: 2, size_min: 0.1, sync: false },
-                        },
-                        line_linked: {
-                            enable: true,
-                            distance: 150,
-                            color: '#4CAF50',
-                            opacity: 0.4,
-                            width: 1,
-                        },
-                        move: {
-                            enable: true,
-                            speed: 1,
-                            direction: 'none',
-                            random: true,
-                            straight: false,
-                            out_mode: 'out',
-                            bounce: false,
-                            attract: { enable: false, rotateX: 600, rotateY: 1200 },
-                        },
-                    },
-                    interactivity: {
-                        detect_on: 'canvas',
-                        events: {
-                            onhover: { enable: true, mode: 'grab' },
-                            onclick: { enable: true, mode: 'push' },
-                            resize: true,
-                        },
-                        modes: {
-                            grab: { distance: 140, line_linked: { opacity: 1 } },
-                            push: { particles_nb: 4 },
-                        },
-                    },
-                    retina_detect: true,
-                });
-            }
-        }, 100);
+        document.body.appendChild(script);
     }, []);
+
 
     const handleFileChange = (e) => {
         const newFiles = Array.from(e.target.files);
@@ -100,6 +161,30 @@ export default function Summary() {
         fileInputRef.current.click();
     };
 
+
+
+    useEffect(() => {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                setvaluser(user.uid);
+            }
+            else {
+                setvaluser("");
+            }
+        })
+    }, [])
+
+    function generateRandomId(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -108,13 +193,22 @@ export default function Summary() {
         files.forEach(file => formData.append('files', file));
         if (textInput.trim()) formData.append('text', textInput.trim());
 
+        if (valuser == "") {
+            let randomGuest = generateRandomId(10);
+            formData.append('guestId', randomGuest);
+            console.log(randomGuest);
+        }
+        else {
+            formData.append('uid', valuser);
+            console.log(valuser);
+        }
         // Temporary hardcoded guest ID
-        formData.append('guestId', 'abc123');
 
 
         setFadeIn(true)
         setshowoutput(true)
         setLoading(true)
+
 
 
         console.log(files)
@@ -123,7 +217,6 @@ export default function Summary() {
         try {
             const res = await axios.post('https://critiqueai-app-react-952301619936.us-central1.run.app/summary-out', formData);
             console.log('Server response:', res);
-
 
 
             setSummaryOut(res.data.output);
@@ -251,51 +344,104 @@ export default function Summary() {
         setMaximize(!Maximize);
     }
 
-    const SendDataBackend = () => {
+    const SendDataBackend = async () => {
         console.log("Sending Data Backend....")
 
-        auth.onAuthStateChanged(async (user) => {
 
-            if (user) {
-                console.log(user);
-                const formatted = new Date(Date.now()).toLocaleString('en-GB', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true,
+        const formatted = new Date(Date.now()).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        });
+
+
+        const smry_data = {
+            time: formatted,
+            heading: "Summary",
+            content: SummaryOut,
+            type: "Summary"
+        }
+
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(smry_data))
+        console.log(formData);
+
+
+
+        // auth.onAuthStateChanged(async (user) => {
+
+        if (valuser !== "") {
+            // isuser(true)
+
+            try {
+                const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/set-output", {
+                    uid: valuser,
+                    ...smry_data,
+                    // time: formatted,
+                    // heading: "Summary",
+                    // content: SummaryOut,
+                    // type: "Summary"
+                })
+                console.log(res)
+
+
+                toast.success("Saved Successfully", {
+                    position: "top-center",
+                    autoClose: 2000,
+                    transition: Slide,
                 });
+
+                // setshowoutput(false)
+
+
+            } catch (error) {
+                console.log(error.message)
+            }
+        }
+        else {
+            settest(true);
+            localStorage.setItem('formData', JSON.stringify(smry_data));
+            localStorage.setItem('restorePath', window.location.pathname);
+        }
+        // })
+    }
+
+
+
+    useEffect(() => {
+        const sendPendingData = async () => {
+            const savedData = JSON.parse(localStorage.getItem('formData'));
+
+            if (savedData && valuser !== "") {
                 try {
                     const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/set-output", {
-                        uid: user.uid,
-                        time: formatted,
-                        heading: "Summary",
-                        content: SummaryOut,
-                        type: "Summary"
-                    })
-                    console.log(res)
+                        uid: valuser,
+                        ...savedData,
+                    });
 
+                    console.log(res);
 
-                    toast.success("Saved Successfully", {
+                    //  Clearing Local Storage
+                    localStorage.removeItem('formData');
+                    localStorage.removeItem('restorePath');
+
+                    toast.success("Saved Successfully (After Login)", {
                         position: "top-center",
                         autoClose: 2000,
                         transition: Slide,
                     });
 
-                    // setshowoutput(false)
-
-
-                } catch (error) {
-                    console.log(error.message)
+                } catch (err) {
+                    console.log("Error sending pending data:", err);
                 }
             }
-            else {
-                return;
-            }
-        })
-    }
+        };
 
+        sendPendingData();
+    }, [valuser]);
 
 
     return (
@@ -324,7 +470,7 @@ export default function Summary() {
                                                 <TfiSave />
                                             </div>
                                             <div className='note-icon sum-copy' onClick={CopyContent} >
-                                                <div className={`show ${hide ? "" : "unhide"}`}>copied</div>
+                                                <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
                                                 <MdContentCopy />
                                             </div>
                                             <div className='note-icon' onClick={DownloadFile} >
@@ -339,7 +485,7 @@ export default function Summary() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className='note-content' ref={Summarydata} >
+                                    <div className='summary-content' ref={Summarydata} >
 
                                     </div>
                                 </>
@@ -350,6 +496,42 @@ export default function Summary() {
             }
 
             <div className='summay-page'>
+
+
+
+                {
+
+
+                    test &&
+                    (
+
+                        <div className="summary-popup-overlay">
+                            <div className="summary-popup">
+                                <div className="summary-header">
+                                    <h3>You are not logged in. Please sign in to continue.</h3>
+                                    <div className="close-btn-wrapper" onClick={() => {
+                                        settest(!test)
+                                        localStorage.clear()
+                                    }}>
+                                        <IoMdClose size={20} color="white" className="close-summary-btn" />
+                                    </div>
+                                </div>
+
+                                <div className="summary-body">
+                                    <button className="sign-in-btn" onClick={() => navigate("/login")}>
+                                        Sign In
+                                    </button>
+                                    <button className="sign-in-btn" onClick={() => navigate("/signUp")}>
+                                        Sign Up
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )
+
+                }
+
+
                 <div className="summary-page-subbox">
                     <div className="content-title">
                         <h2><FaFileAlt color='#3fe493' /> Content Summarizer</h2>

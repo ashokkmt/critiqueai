@@ -11,6 +11,7 @@ import SignUpPage from "./components/Loginsetup/SignupPage.jsx"
 import SavedNotes from "./components/SavedNotes.jsx"
 import Shared from "./components/shared/Shared.jsx"
 import View from "./components/shared/View.jsx"
+import { useEffect } from "react"
 
 function Homepagefunc() {
   return (
@@ -88,25 +89,21 @@ function ViewPage() {
 
 
 
+
+
 function App() {
 
-  // const [userPresent, setuserPresent] = useState(false)
+  useEffect(() => {
+    const handleUnload = () => {
+      localStorage.clear();
+    };
 
+    window.addEventListener('beforeunload', handleUnload);
 
-
-
-  // const fetchUserDetail = async () => {
-  //   auth.onAuthStateChanged(async (user) => {
-  //     if ((user)) {
-  //       setuserPresent(true)
-  //     }
-  //   })
-  // }
-
-  // useEffect(() => {
-  //   fetchUserDetail();
-  // }, [])
-
+    return () => {
+      window.removeEventListener('beforeunload', handleUnload);
+    };
+  }, []);
 
   return (
     <>

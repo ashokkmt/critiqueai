@@ -8,7 +8,7 @@
     padding: 2rem;
     min-height: 93vh; /* Changed for better responsiveness */
     height: auto;
-    z-index: 1; /* Add this line */
+    /* z-index: 1;  */
 }
 
 .card {
@@ -75,6 +75,7 @@
     text-shadow: 0 0 30px #3fe49399;
 } */
 
+
 /* Yha Se output ke boxes ka color change krna ha */
 
 .note-content {
@@ -92,6 +93,10 @@
         margin-left: 1.5rem;
     }
 
+    h1{
+        font-size: 25px;
+    }
+
 }
 
 .note-content ul strong,
@@ -100,7 +105,6 @@ ol strong {
 }
 
 /* Yha tak ha output ka */
-
 
 
 
@@ -458,5 +462,98 @@ ol strong {
 .show.unhide {
   opacity: 1;
   transform: scale(1.05);
-  top: -75%;
+  top: -60%;
+}
+
+
+
+
+/* Share popup */
+.generatenote-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000000;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.generatenote-popup {
+    background-color: #1e1e1e;
+    color: white;
+    width: 450px;
+    height: 23%;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    position: relative;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.generatenote-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: self-start;
+    gap: 1rem;
+
+    >h3{
+        text-align: center;
+    }
+}
+
+.close-btn-wrapper {
+    padding: 2px;
+    border-radius: 10px;
+    cursor: pointer;
+    /* margin-top: 4px; */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+.close-btn-wrapper:hover {
+    background-color: #ffffff24;
+}
+
+
+.close-generatenote-btn {
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.generatenote-body {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.sign-in-btn {
+    padding: 10px 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+.sign-in-btn:hover {
+    background-color: #0056b3;
+}
+
+.sign-in-btn:active {
+    background-color: #0057b3ca;
+    transform: scale(0.99);
 }

@@ -18,6 +18,7 @@ function Viewed() {
     const viewedout = useRef(null)
     const [notfound, setnotfound] = useState(false)
     // const [userFound, setuserfound] = useState(false)
+    const [hide, sethide] = useState(true);
 
 
     useEffect(() => {
@@ -189,8 +190,12 @@ function Viewed() {
 
     const CopyContent = () => {
         navigator.clipboard.writeText(viewedout.current.innerText);
+        sethide(false)
+        setTimeout(() => {
+            sethide(true)
+        }, 1200);
     }
-    
+
     // Add this function to handle navigation to savedNotes
     const goToSavedNotes = () => {
         navigate('/savednotes');
@@ -215,7 +220,8 @@ function Viewed() {
                                         <div className='view-icon' onClick={goToSavedNotes}>
                                             <IoMdArrowBack />
                                         </div>
-                                        <div className='view-icon' onClick={CopyContent} >
+                                        <div className='view-icon view-copy' onClick={CopyContent} >
+                                            <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
                                             <MdContentCopy />
                                         </div>
                                         <div className='view-icon' onClick={DownloadFile} >

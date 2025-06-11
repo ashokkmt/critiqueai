@@ -9,6 +9,8 @@ import axios from 'axios';
 import { auth } from './firebase/firebase';
 import { Slide, toast, ToastContainer } from 'react-toastify';
 import html2pdf from "html2pdf.js";
+import { IoMdClose } from "react-icons/io";
+import { useNavigate } from 'react-router-dom';
 
 
 export default function RoadMap() {
@@ -21,75 +23,134 @@ export default function RoadMap() {
     const [RoadMap, setRoadMap] = useState("");
     const RoadOut = useRef(null)
     const [hide, sethide] = useState(true);
+    const [valuser, setvaluser] = useState("");
+    const [test, settest] = useState(false);
+    const navigate = useNavigate();
+
+    // useEffect(() => {
+    //     // Load external JS files
+    //     const loadScript = (src) => {
+    //         const script = document.createElement('script');
+    //         script.src = src;
+    //         script.async = true;
+    //         document.body.appendChild(script);
+    //     };
+
+    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
+    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js');
+    //     loadScript('../static/script/scriptroad.js');
+
+    //     // Wait for particles.js to load, then configure
+    //     const particlesInterval = setInterval(() => {
+    //         if (window.particlesJS) {
+    //             clearInterval(particlesInterval);
+    //             window.particlesJS('particles-js', {
+    //                 particles: {
+    //                     number: { value: 80, density: { enable: true, value_area: 800 } },
+    //                     color: { value: '#4CAF50' },
+    //                     shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
+    //                     opacity: {
+    //                         value: 0.5,
+    //                         random: true,
+    //                         anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
+    //                     },
+    //                     size: {
+    //                         value: 3,
+    //                         random: true,
+    //                         anim: { enable: true, speed: 2, size_min: 0.1, sync: false },
+    //                     },
+    //                     line_linked: {
+    //                         enable: true,
+    //                         distance: 150,
+    //                         color: '#4CAF50',
+    //                         opacity: 0.4,
+    //                         width: 1,
+    //                     },
+    //                     move: {
+    //                         enable: true,
+    //                         speed: 1,
+    //                         direction: 'none',
+    //                         random: true,
+    //                         straight: false,
+    //                         out_mode: 'out',
+    //                         bounce: false,
+    //                         attract: { enable: false, rotateX: 600, rotateY: 1200 },
+    //                     },
+    //                 },
+    //                 interactivity: {
+    //                     detect_on: 'canvas',
+    //                     events: {
+    //                         onhover: { enable: true, mode: 'grab' },
+    //                         onclick: { enable: true, mode: 'push' },
+    //                         resize: true,
+    //                     },
+    //                     modes: {
+    //                         grab: { distance: 140, line_linked: { opacity: 1 } },
+    //                         push: { particles_nb: 4 },
+    //                     },
+    //                 },
+    //                 retina_detect: true,
+    //             });
+    //         }
+    //     }, 100);
+    // }, []);
+
 
     useEffect(() => {
-        // Load external JS files
-        const loadScript = (src) => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            document.body.appendChild(script);
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
+        script.onload = () => {
+            window.particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: '#4CAF50' },
+                    shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#4CAF50',
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1,
+                        random: true,
+                        out_mode: 'out'
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'grab' },
+                        onclick: { enable: true, mode: 'push' },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: { opacity: 1 }
+                        },
+                        push: { particles_nb: 4 }
+                    }
+                },
+                retina_detect: true
+            });
         };
-
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-        loadScript('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js');
-        loadScript('../static/script/scriptroad.js');
-
-        // Wait for particles.js to load, then configure
-        const particlesInterval = setInterval(() => {
-            if (window.particlesJS) {
-                clearInterval(particlesInterval);
-                window.particlesJS('particles-js', {
-                    particles: {
-                        number: { value: 80, density: { enable: true, value_area: 800 } },
-                        color: { value: '#4CAF50' },
-                        shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
-                        opacity: {
-                            value: 0.5,
-                            random: true,
-                            anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
-                        },
-                        size: {
-                            value: 3,
-                            random: true,
-                            anim: { enable: true, speed: 2, size_min: 0.1, sync: false },
-                        },
-                        line_linked: {
-                            enable: true,
-                            distance: 150,
-                            color: '#4CAF50',
-                            opacity: 0.4,
-                            width: 1,
-                        },
-                        move: {
-                            enable: true,
-                            speed: 1,
-                            direction: 'none',
-                            random: true,
-                            straight: false,
-                            out_mode: 'out',
-                            bounce: false,
-                            attract: { enable: false, rotateX: 600, rotateY: 1200 },
-                        },
-                    },
-                    interactivity: {
-                        detect_on: 'canvas',
-                        events: {
-                            onhover: { enable: true, mode: 'grab' },
-                            onclick: { enable: true, mode: 'push' },
-                            resize: true,
-                        },
-                        modes: {
-                            grab: { distance: 140, line_linked: { opacity: 1 } },
-                            push: { particles_nb: 4 },
-                        },
-                    },
-                    retina_detect: true,
-                });
-            }
-        }, 100);
+        document.body.appendChild(script);
     }, []);
+
 
 
 
@@ -219,54 +280,118 @@ export default function RoadMap() {
     }
 
 
-    const SendDataBackend = () => {
+
+    useEffect(() => {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                setvaluser(user.uid);
+            }
+            else {
+                setvaluser("");
+            }
+        })
+    }, [])
+
+
+
+    const SendDataBackend = async () => {
         console.log("Sending Data Backend....")
 
-        auth.onAuthStateChanged(async (user) => {
+        const formatted = new Date(Date.now()).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        });
 
-            if (user) {
-                console.log(user);
-                const formatted = new Date(Date.now()).toLocaleString('en-GB', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: true,
+        const data = {
+            time: formatted,
+            heading: topic,
+            content: RoadMap,
+            type: "roadmap"
+        }
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(data))
+        console.log(formData);
+
+
+        // auth.onAuthStateChanged(async (user) => {
+
+        if (valuser !== "") {
+            try {
+                const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/set-output", {
+                    uid: valuser,
+                    ...data
+                    // time: formatted,
+                    // heading: topic,
+                    // content: RoadMap,
+                    // type: "roadmap"
+                })
+                console.log(res)
+
+
+                toast.success("Saved Successfully", {
+                    position: "top-center",
+                    autoClose: 2000,
+                    transition: Slide,
                 });
+
+                // setshowoutput(false)
+
+
+            } catch (error) {
+                console.log(error.message)
+            }
+        }
+        else {
+            settest(true);
+            localStorage.setItem('formData', JSON.stringify(data));
+            localStorage.setItem('restorePath', window.location.pathname);
+        }
+        // })
+    }
+
+
+    useEffect(() => {
+        const sendPendingData = async () => {
+            const savedData = JSON.parse(localStorage.getItem('formData'));
+
+            if (savedData && valuser !== "") {
                 try {
                     const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/set-output", {
-                        uid: user.uid,
-                        time: formatted,
-                        heading: topic,
-                        content: RoadMap,
-                        type: "roadmap"
-                    })
-                    console.log(res)
+                        uid: valuser,
+                        ...savedData,
+                    });
 
+                    console.log(res);
 
-                    toast.success("Saved Successfully", {
+                    //  Clearing Local Storage
+                    localStorage.removeItem('formData');
+                    localStorage.removeItem('restorePath');
+
+                    toast.success("Saved Successfully (After Login)", {
                         position: "top-center",
                         autoClose: 2000,
                         transition: Slide,
                     });
 
-                    // setshowoutput(false)
-
-
-                } catch (error) {
-                    console.log(error.message)
+                } catch (err) {
+                    console.log("Error sending pending data:", err);
                 }
             }
-            else {
-                return;
-            }
-        })
-    }
+        };
+
+        sendPendingData();
+    }, [valuser]);
+
 
 
     return (
         <>
+
+
             {
                 showoutput && (
                     <div className={`note-output ${FadeIn ? "fadein" : ""}`}>
@@ -288,6 +413,8 @@ export default function RoadMap() {
                                                 {Maximize ? <FiMinimize /> : <FiMaximize />}
                                             </div>
                                             <div onClick={SendDataBackend} className='note-icon' >
+
+
                                                 <TfiSave />
                                             </div>
                                             <div className='note-icon copy-icon' onClick={CopyContent} >
@@ -306,7 +433,7 @@ export default function RoadMap() {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className='note-content' ref={RoadOut} >
+                                    <div className='roadmap-content' ref={RoadOut} >
                                         {/* output Yha Ayega */}
 
                                     </div>
@@ -320,6 +447,40 @@ export default function RoadMap() {
 
 
             <div className='Roadmap-page'>
+
+
+
+                {
+
+
+                    test &&
+                    (
+
+                        <div className="roadmap-popup-overlay">
+                            <div className="roadmap-popup">
+                                <div className="roadmap-header">
+                                    <h3>You are not logged in. Please sign in to continue.</h3>
+                                    <div className="close-btn-wrapper" onClick={() => {
+                                        settest(!test)
+                                        localStorage.clear()
+                                    }}>
+                                        <IoMdClose size={20} color="white" className="close-roadmap-btn" />
+                                    </div>
+                                </div>
+
+                                <div className="roadmap-body">
+                                    <button className="sign-in-btn" onClick={() => navigate("/login")}>
+                                        Sign In
+                                    </button>
+                                    <button className="sign-in-btn" onClick={() => navigate("/signUp")}>
+                                        Sign Up
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )
+
+                }
 
                 <div className="roadmap-outer">
 
@@ -346,15 +507,6 @@ export default function RoadMap() {
                                 > <FaMapSigns /> Generate Roadmap</button>
 
                             </div>
-                            {/* <div class="roadmap-input-tip">
-                                <h3>How it works?</h3>
-                                <ul>
-                                    <li><strong>Enter Skills</strong> — Type what you want to learn (e.g. Python, Web Development).</li>
-                                    <li><strong>Click Generate</strong> — Hit the <strong>Generate Roadmap</strong> button.</li>
-                                    <li><strong>AI Builds Roadmap</strong> — The AI creates a personalized learning path.</li>
-                                    <li><strong>Start Learning</strong> — Follow the roadmap and track your progress.</li>
-                                </ul>
-                            </div> */}
 
                         </div>
                     </div>

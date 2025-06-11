@@ -107,6 +107,15 @@ const EvaluateInput = () => {
     fileInputRef.current.click();
   };
 
+  function generateRandomId(length) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     console.log('File uploaded:', file);
@@ -116,7 +125,7 @@ const EvaluateInput = () => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('guestId', 'abc123');
+    formData.append('guestId', generateRandomId(10));
 
     try {
       const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/evaluate", formData);

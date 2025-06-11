@@ -6,7 +6,8 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth, db } from '../firebase/firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { Slide, toast, ToastContainer } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 export default function SignUpPage() {
   const [eye, seteye] = useState(false);
@@ -16,6 +17,7 @@ export default function SignUpPage() {
   const [email, setemail] = useState("");
   const [password, setpassword] = useState("");
   const [confirmPassword, setconfirmPassword] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -70,7 +72,7 @@ export default function SignUpPage() {
       });
     };
     document.body.appendChild(script);
-    
+
     // Clean up script on unmount
     return () => {
       if (script.parentNode) {
@@ -134,6 +136,11 @@ export default function SignUpPage() {
       <div id='particles-js'></div>
       <div className="login-main-box">
         <div className="login-box">
+
+          <div className='sign-back-btn' onClick={() => navigate("/")} >
+            <IoMdArrowRoundBack size={25} />
+          </div>
+
           <div className="login-header">
             <div className="logo-shield">
               <img width={50} height={50} src="/images/favicon.png" alt="Logo" />

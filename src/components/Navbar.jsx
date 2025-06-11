@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import '../styles/Navbar.css';
@@ -15,6 +15,7 @@ const Navbar = () => {
   const [userDetail, setUserDetail] = useState(null);
   const [userURL, setUserURL] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Initialize AOS
@@ -65,6 +66,8 @@ const Navbar = () => {
   }, []);
 
 
+
+
   function scrollToLastAbout(e) {
     // Check if we're already on the homepage
     if (window.location.pathname === '/') {
@@ -107,13 +110,20 @@ const Navbar = () => {
   const LogOutUser = async () => {
     try {
       await auth.signOut();
+      localStorage.clear();
+
       toast.success("Logged Out Successfully", {
         position: "top-center",
         autoClose: 2000,
         transition: Slide,
       });
+
       setUserDetail(null);
       handleLinkClick(); // Close menu
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
     } catch (error) {
       console.log(error.message);
       toast.error("Having Some issue...", {

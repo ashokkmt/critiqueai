@@ -30,6 +30,23 @@
   overflow: hidden;
 }
 
+
+.sign-back-btn{
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: rgba(255, 255, 255, 0.737);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  padding: .2rem;
+}
+
+.sign-back-btn:hover{
+  background: rgba(199, 199, 199, 0.147);
+}
+
+
 @keyframes fadeInUp {
   0% {
     opacity: 0;

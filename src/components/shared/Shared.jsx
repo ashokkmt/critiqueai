@@ -19,6 +19,7 @@ function Shared() {
     // const [shareheading, setshareheading] = useState("");
     // const [sharetype, setsharetype] = useState("");
     const sharedout = useRef(null)
+    const [hide, sethide] = useState(true);
 
     // Add this function to navigate to homepage
     const goToHomepage = () => {
@@ -186,6 +187,10 @@ function Shared() {
 
     const CopyContent = () => {
         navigator.clipboard.writeText(sharedout.current.innerText);
+         sethide(false)
+        setTimeout(() => {
+            sethide(true)
+        }, 1200);
     }
 
 
@@ -210,7 +215,8 @@ function Shared() {
                                         {/* <h2>{shareheading} {sharetype}</h2> */}
                                         <h2>Shared</h2>
                                         <div className='shared-btns'>
-                                            <div className='share-icon' onClick={CopyContent} >
+                                            <div className='share-icon share-copy' onClick={CopyContent} >
+                                                <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
                                                 <MdContentCopy />
                                             </div>
                                             <div className='share-icon' onClick={DownloadFile} >
