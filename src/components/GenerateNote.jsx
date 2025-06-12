@@ -253,7 +253,7 @@ export default function GenerateNote() {
       time: formatted,
       heading: topic,
       content: Notes_Out,
-      type: "Generated Notes"
+      type: "Notes"
     }
 
 

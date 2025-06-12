@@ -233,7 +233,7 @@ export default function RoadMap() {
             time: formatted,
             heading: topic,
             content: RoadMap,
-            type: "roadmap"
+            type: "Roadmap"
         }
         const formData = new FormData();
         formData.append('data', JSON.stringify(data))
