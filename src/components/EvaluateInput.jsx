@@ -14,10 +14,6 @@ const EvaluateInput = () => {
   const [feedbackHTML, setFeedbackHTML] = useState('');
   const [hide, sethide] = useState(true);
 
-
-
-
-
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
@@ -176,9 +172,7 @@ const EvaluateInput = () => {
                 <div className="shimmer-line"></div>
                 <div className="shimmer-line short"></div>
               </div>
-
                 :
-
                 <>
                   <div className='res-heading'>
                     <h2> <FaStar style={{ color: "#3fe493" }} /> Evaluation Results</h2>
@@ -190,10 +184,7 @@ const EvaluateInput = () => {
 
                   <div className='result-text'>
                     <h3><FaClipboardCheck />  Detailed Feedback</h3>
-                    <div
-                      ref={evaluation}
-                    >
-
+                    <div ref={evaluation}>
                     </div>
                   </div>
 
@@ -208,7 +199,6 @@ const EvaluateInput = () => {
                     <button
                       className='res-btn cp-btn'
                       onClick={copyEvaluation}
-
                     >
                       <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
                       <FaCopy /> Copy Feedback
@@ -216,12 +206,9 @@ const EvaluateInput = () => {
                   </div>
                 </>
             }
-
           </div>
         </div>
-
       }
-
       <div className="main-wrapper">
         <div className="page-wrapper">
 
@@ -283,9 +270,7 @@ const EvaluateInput = () => {
                 </div>
               </form>
             </div>
-
           </div>
-
         </div>
       </div>
     </>

@@ -14,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 
 
 export default function RoadMap() {
-
     const [topic, setTopic] = useState('');
     const [Loading, setLoading] = useState(false);
     const [showoutput, setshowoutput] = useState(false);
@@ -26,76 +25,6 @@ export default function RoadMap() {
     const [valuser, setvaluser] = useState("");
     const [test, settest] = useState(false);
     const navigate = useNavigate();
-
-    // useEffect(() => {
-    //     // Load external JS files
-    //     const loadScript = (src) => {
-    //         const script = document.createElement('script');
-    //         script.src = src;
-    //         script.async = true;
-    //         document.body.appendChild(script);
-    //     };
-
-    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
-    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js');
-    //     loadScript('../static/script/scriptroad.js');
-
-    //     // Wait for particles.js to load, then configure
-    //     const particlesInterval = setInterval(() => {
-    //         if (window.particlesJS) {
-    //             clearInterval(particlesInterval);
-    //             window.particlesJS('particles-js', {
-    //                 particles: {
-    //                     number: { value: 80, density: { enable: true, value_area: 800 } },
-    //                     color: { value: '#4CAF50' },
-    //                     shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
-    //                     opacity: {
-    //                         value: 0.5,
-    //                         random: true,
-    //                         anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
-    //                     },
-    //                     size: {
-    //                         value: 3,
-    //                         random: true,
-    //                         anim: { enable: true, speed: 2, size_min: 0.1, sync: false },
-    //                     },
-    //                     line_linked: {
-    //                         enable: true,
-    //                         distance: 150,
-    //                         color: '#4CAF50',
-    //                         opacity: 0.4,
-    //                         width: 1,
-    //                     },
-    //                     move: {
-    //                         enable: true,
-    //                         speed: 1,
-    //                         direction: 'none',
-    //                         random: true,
-    //                         straight: false,
-    //                         out_mode: 'out',
-    //                         bounce: false,
-    //                         attract: { enable: false, rotateX: 600, rotateY: 1200 },
-    //                     },
-    //                 },
-    //                 interactivity: {
-    //                     detect_on: 'canvas',
-    //                     events: {
-    //                         onhover: { enable: true, mode: 'grab' },
-    //                         onclick: { enable: true, mode: 'push' },
-    //                         resize: true,
-    //                     },
-    //                     modes: {
-    //                         grab: { distance: 140, line_linked: { opacity: 1 } },
-    //                         push: { particles_nb: 4 },
-    //                     },
-    //                 },
-    //                 retina_detect: true,
-    //             });
-    //         }
-    //     }, 100);
-    // }, []);
-
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -151,13 +80,9 @@ export default function RoadMap() {
         document.body.appendChild(script);
     }, []);
 
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!topic.trim()) return;
-
 
         setFadeIn(true)
         setshowoutput(true)
@@ -173,7 +98,6 @@ export default function RoadMap() {
                     "Content-Type": "text/plain"
                 }
             });
-
             console.log(res);
             setRoadMap(res.data.output);
             setLoading(false)
@@ -190,7 +114,6 @@ export default function RoadMap() {
             RoadOut.current.innerHTML = RoadMap;
         }
     }, [RoadMap])
-
 
 
     const DownloadFile = () => {
@@ -317,29 +240,18 @@ export default function RoadMap() {
         console.log(formData);
 
 
-        // auth.onAuthStateChanged(async (user) => {
-
         if (valuser !== "") {
             try {
                 const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/set-output", {
                     uid: valuser,
                     ...data
-                    // time: formatted,
-                    // heading: topic,
-                    // content: RoadMap,
-                    // type: "roadmap"
                 })
-                console.log(res)
-
-
+                // console.log(res)
                 toast.success("Saved Successfully", {
                     position: "top-center",
                     autoClose: 2000,
                     transition: Slide,
                 });
-
-                // setshowoutput(false)
-
 
             } catch (error) {
                 console.log(error.message)
@@ -350,7 +262,6 @@ export default function RoadMap() {
             localStorage.setItem('formData', JSON.stringify(data));
             localStorage.setItem('restorePath', window.location.pathname);
         }
-        // })
     }
 
 
@@ -382,7 +293,6 @@ export default function RoadMap() {
                 }
             }
         };
-
         sendPendingData();
     }, [valuser]);
 
@@ -390,8 +300,6 @@ export default function RoadMap() {
 
     return (
         <>
-
-
             {
                 showoutput && (
                     <div className={`note-output ${FadeIn ? "fadein" : ""}`}>
@@ -444,18 +352,10 @@ export default function RoadMap() {
                 )
             }
 
-
-
             <div className='Roadmap-page'>
-
-
-
                 {
-
-
                     test &&
                     (
-
                         <div className="roadmap-popup-overlay">
                             <div className="roadmap-popup">
                                 <div className="roadmap-header">
@@ -479,14 +379,11 @@ export default function RoadMap() {
                             </div>
                         </div>
                     )
-
                 }
 
                 <div className="roadmap-outer">
-
                     <div className="roadmap-heading">
                         <h2>
-                            
                             <p className='roadmap-head' ><FaMapSigns className='road-sign' color='#3fe493' /> Skill RoadMap Generator</p>
                         </h2>
                         <p className='heading-roadmap'>Turn any skill into a step-by-step learning path in seconds.</p>
@@ -506,15 +403,12 @@ export default function RoadMap() {
                                 ></textarea>
                                 <button
                                     onClick={handleSubmit}
-
                                 > <FaMapSigns /> Generate Roadmap</button>
-
                             </div>
 
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <ToastContainer
@@ -530,7 +424,6 @@ export default function RoadMap() {
                 transition={Slide}
                 style={{ zIndex: 10000 }}
             />
-
         </>
     )
 }

@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import '../../styles/shared/Shared.css'
 import { FaDownload, FaRobot } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
-import { IoMdClose } from 'react-icons/io'; // Add this import for close/cancel icon
-import { useParams, useNavigate } from "react-router-dom"; // Add useNavigate
+import { IoMdClose } from 'react-icons/io';
+import { useParams, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import html2pdf from "html2pdf.js";
 
@@ -16,14 +16,12 @@ function Shared() {
     const [Loading, setLoading] = useState(false);
     const [shared, setshared] = useState("");
     const [notfound, setnotfound] = useState(false);
-    // const [shareheading, setshareheading] = useState("");
-    // const [sharetype, setsharetype] = useState("");
     const sharedout = useRef(null)
     const [hide, sethide] = useState(true);
 
     // Add this function to navigate to homepage
     const goToHomepage = () => {
-        window.location.href = '/';  // Use direct page refresh instead of React Router navigation
+        window.location.href = '/';
     }
 
     useEffect(() => {
@@ -87,19 +85,12 @@ function Shared() {
         }
     }, [shared])
 
-
-
     useEffect(async () => {
-
         try {
 
             setLoading(true)
-            // const id = "fXFjWxU3iqNpEZ77gPJS";
             const response = await axios.get(`https://critiqueai-app-react-952301619936.us-central1.run.app/shared/${id}`);
             console.log(response.data);
-
-            // setshareheading(response.data.name)
-            // setsharetype(response.data.type)
             setshared(response.data.content)
             setLoading(false)
         }
@@ -108,7 +99,6 @@ function Shared() {
             setnotfound(true)
             console.log(error.message);
         }
-
     }, [])
 
 
@@ -143,7 +133,6 @@ function Shared() {
             el.style.color = "black";
             el.style.marginBottom = "10px";
         });
-
 
         // Page break styles for child elements
         clone.querySelectorAll("p, div, li, strong").forEach((el) => {
@@ -187,19 +176,15 @@ function Shared() {
 
     const CopyContent = () => {
         navigator.clipboard.writeText(sharedout.current.innerText);
-         sethide(false)
+        sethide(false)
         setTimeout(() => {
             sethide(true)
         }, 1200);
     }
 
-
-
-
     return (
         <>
             <div id="particles-js"></div>
-
             {
                 showoutput && (
                     <div className={`shared-output`}>
@@ -212,7 +197,6 @@ function Shared() {
                             ) : (
                                 <>
                                     <div className='shared-toolbar'>
-                                        {/* <h2>{shareheading} {sharetype}</h2> */}
                                         <h2>Shared Output</h2>
                                         <div className='shared-btns'>
                                             <div className='share-icon share-copy' onClick={CopyContent} >
@@ -227,7 +211,6 @@ function Shared() {
                                             </div>
                                         </div>
                                     </div>
-
                                     {
                                         notfound ?
                                             <div className='not-shared-content'>
@@ -236,8 +219,6 @@ function Shared() {
                                             :
                                             <div className='shared-content' ref={sharedout} >
                                                 {/* output Yha Ayega */}
-
-
                                             </div>
                                     }
                                 </>
@@ -246,9 +227,6 @@ function Shared() {
                     </div>
                 )
             }
-
-
-
         </>
     )
 }

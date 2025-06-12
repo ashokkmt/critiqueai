@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import '../../styles/shared/View.css'
 import { FaDownload } from 'react-icons/fa';
 import { MdContentCopy } from 'react-icons/md';
-import { IoMdArrowBack } from 'react-icons/io'; // Add this import for back icon
-import { useLocation, useNavigate } from "react-router-dom"; // Add useNavigate
+import { IoMdArrowBack } from 'react-icons/io';
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import html2pdf from "html2pdf.js";
 import { auth } from '../firebase/firebase';
@@ -11,13 +11,12 @@ import { auth } from '../firebase/firebase';
 function Viewed() {
 
     const location = useLocation();
-    const navigate = useNavigate(); // Add this hook
+    const navigate = useNavigate();
     const { doc_id } = location.state || {};
     const [Loading, setLoading] = useState(false);
     const [shared, setshared] = useState("");
     const viewedout = useRef(null)
     const [notfound, setnotfound] = useState(false)
-    // const [userFound, setuserfound] = useState(false)
     const [hide, sethide] = useState(true);
 
 
@@ -84,7 +83,6 @@ function Viewed() {
 
 
     useEffect(() => {
-        // console.log(doc_id)
         auth.onAuthStateChanged(async (user) => {
             if (user && doc_id) {
                 console.log(user);
@@ -237,7 +235,6 @@ function Viewed() {
                                         :
                                         <div className='viewed-content' ref={viewedout} >
                                             {/* output Yha Ayega */}
-
                                         </div>
                                 }
                             </>

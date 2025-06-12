@@ -28,74 +28,6 @@ export default function Summary() {
     const [test, settest] = useState(false);
     const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     const loadScript = (src) => {
-    //         const script = document.createElement('script');
-    //         script.src = src;
-    //         script.async = true;
-    //         document.body.appendChild(script);
-    //     };
-
-    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js');
-    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-    //     loadScript('https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js');
-    //     loadScript('../static/script/scriptroad.js');
-
-    //     const particlesInterval = setInterval(() => {
-    //         if (window.particlesJS) {
-    //             clearInterval(particlesInterval);
-    //             window.particlesJS('particles-js', {
-    //                 particles: {
-    //                     number: { value: 80, density: { enable: true, value_area: 800 } },
-    //                     color: { value: '#4CAF50' },
-    //                     shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
-    //                     opacity: {
-    //                         value: 0.5,
-    //                         random: true,
-    //                         anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false },
-    //                     },
-    //                     size: {
-    //                         value: 3,
-    //                         random: true,
-    //                         anim: { enable: true, speed: 2, size_min: 0.1, sync: false },
-    //                     },
-    //                     line_linked: {
-    //                         enable: true,
-    //                         distance: 150,
-    //                         color: '#4CAF50',
-    //                         opacity: 0.4,
-    //                         width: 1,
-    //                     },
-    //                     move: {
-    //                         enable: true,
-    //                         speed: 1,
-    //                         direction: 'none',
-    //                         random: true,
-    //                         straight: false,
-    //                         out_mode: 'out',
-    //                         bounce: false,
-    //                         attract: { enable: false, rotateX: 600, rotateY: 1200 },
-    //                     },
-    //                 },
-    //                 interactivity: {
-    //                     detect_on: 'canvas',
-    //                     events: {
-    //                         onhover: { enable: true, mode: 'grab' },
-    //                         onclick: { enable: true, mode: 'push' },
-    //                         resize: true,
-    //                     },
-    //                     modes: {
-    //                         grab: { distance: 140, line_linked: { opacity: 1 } },
-    //                         push: { particles_nb: 4 },
-    //                     },
-    //                 },
-    //                 retina_detect: true,
-    //             });
-    //         }
-    //     }, 100);
-    // }, []);
-
-
     useEffect(() => {
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
@@ -188,7 +120,6 @@ export default function Summary() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-
         const formData = new FormData();
         files.forEach(file => formData.append('files', file));
         if (textInput.trim()) formData.append('text', textInput.trim());
@@ -202,13 +133,10 @@ export default function Summary() {
             formData.append('uid', valuser);
             console.log(valuser);
         }
-        // Temporary hardcoded guest ID
-
 
         setFadeIn(true)
         setshowoutput(true)
         setLoading(true)
-
 
 
         console.log(files)
@@ -217,7 +145,6 @@ export default function Summary() {
         try {
             const res = await axios.post('https://critiqueai-app-react-952301619936.us-central1.run.app/summary-out', formData);
             console.log('Server response:', res);
-
 
             setSummaryOut(res.data.output);
             setLoading(false);
@@ -370,32 +297,19 @@ export default function Summary() {
         console.log(formData);
 
 
-
-        // auth.onAuthStateChanged(async (user) => {
-
         if (valuser !== "") {
-            // isuser(true)
-
             try {
                 const res = await axios.post("https://critiqueai-app-react-952301619936.us-central1.run.app/set-output", {
                     uid: valuser,
                     ...smry_data,
-                    // time: formatted,
-                    // heading: "Summary",
-                    // content: SummaryOut,
-                    // type: "Summary"
                 })
                 console.log(res)
-
 
                 toast.success("Saved Successfully", {
                     position: "top-center",
                     autoClose: 2000,
                     transition: Slide,
                 });
-
-                // setshowoutput(false)
-
 
             } catch (error) {
                 console.log(error.message)
@@ -406,7 +320,6 @@ export default function Summary() {
             localStorage.setItem('formData', JSON.stringify(smry_data));
             localStorage.setItem('restorePath', window.location.pathname);
         }
-        // })
     }
 
 
@@ -445,7 +358,6 @@ export default function Summary() {
 
 
     return (
-
         <>
             {
                 showoutput && (
@@ -486,7 +398,6 @@ export default function Summary() {
                                         </div>
                                     </div>
                                     <div className='summary-content' ref={Summarydata} >
-
                                     </div>
                                 </>
                             )}
@@ -496,15 +407,9 @@ export default function Summary() {
             }
 
             <div className='summay-page'>
-
-
-
                 {
-
-
                     test &&
                     (
-
                         <div className="summary-popup-overlay">
                             <div className="summary-popup">
                                 <div className="summary-header">
@@ -528,7 +433,6 @@ export default function Summary() {
                             </div>
                         </div>
                     )
-
                 }
 
 

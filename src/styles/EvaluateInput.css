@@ -439,7 +439,6 @@ textarea::placeholder {
 
 .marks-circle {
     border-radius: 50%;
-    /* border: 1px solid white; */
     place-self: center;
     padding: 1.5rem;
     font-size: larger;
@@ -450,7 +449,6 @@ textarea::placeholder {
 }
 
 .res-heading {
-    /* border: 1px solid white; */
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -495,7 +493,6 @@ textarea::placeholder {
     display: flex;
     justify-content: center;
     gap: 1rem;
-    /* border: 1px solid white; */
     text-align: center;
 }
 
@@ -510,7 +507,6 @@ textarea::placeholder {
 
 
 /* Yha Changes kran output css ke lie */
-
 .result-text div {
     display: flex;
     flex-direction: column;
@@ -528,8 +524,6 @@ textarea::placeholder {
 }
 
 /* Yaha tak */
-
-
 
 
 
@@ -588,7 +582,6 @@ textarea::placeholder {
 
 .textarea-container textarea {
     width: calc(100% - 30px);
-    /* Subtracting padding */
     box-sizing: border-box;
     margin: 0;
 }
@@ -609,7 +602,6 @@ textarea::placeholder {
     z-index: 100000000;
     opacity: 0;
     top: 0;
-    /* border: 1px solid; */
     padding: .2rem;
     border-radius: 5px;
     transition: all .5s ease-in-out;

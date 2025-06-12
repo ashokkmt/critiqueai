@@ -9,12 +9,12 @@ import { CgLogOut } from 'react-icons/cg';
 import { auth, db } from './firebase/firebase';
 import { Slide, toast } from 'react-toastify';
 import { GrNotes } from 'react-icons/gr';
-import { FaBars, FaTimes } from 'react-icons/fa'; // Import icons for the menu toggle
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 const Navbar = () => {
   const [userDetail, setUserDetail] = useState(null);
   const [userURL, setUserURL] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for mobile menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {

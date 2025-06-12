@@ -261,7 +261,6 @@
 
 .file-name {
     max-width: 6ch;
-    /* Approx. 6 characters wide */
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -281,9 +280,6 @@
 .remove-file:hover {
     transform: scale(1.2);
 }
-
-
-
 
 
 
@@ -313,13 +309,6 @@
         opacity: 1;
     }
 }
-
-
-
-
-
-
-
 
 
 
@@ -368,8 +357,6 @@
     padding: 2px;
     border-radius: 10px;
     cursor: pointer;
-    /* margin-top: 4px; */
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -412,13 +399,6 @@
     background-color: #0057b3ca;
     transform: scale(0.99);
 }
-
-
-
-
-
-
-
 
 
 .sub-note-output {
@@ -469,8 +449,6 @@
 
 
 /* Output ka style ha */
-
-
 .summary-content {
     h2 {
         color: #00ffb3;
@@ -494,8 +472,6 @@ ol strong {
 }
 
 /* yha tak */
-
-
 
 
 .note-icon {
@@ -570,7 +546,6 @@ ol strong {
     z-index: 100000000;
     opacity: 0;
     top: 0;
-    /* border: 1px solid; */
     padding: .2rem;
     border-radius: 5px;
     transition: all .5s ease-in-out;

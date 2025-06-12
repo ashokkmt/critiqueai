@@ -191,9 +191,7 @@ const HomePage = () => {
           <div className='sub-tools'>
             <h2>Our Tools</h2>
             <div className='tools-cards' >
-
               {
-
                 Toolsdata.map((tool, key) => {
                   const Icon = iconMap[tool.icon];
                   return (
@@ -210,7 +208,6 @@ const HomePage = () => {
                   )
                 })
               }
-
             </div>
           </div>
         </div>
@@ -279,11 +276,7 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-
-
-
       </div>
-
     </>
   );
 };

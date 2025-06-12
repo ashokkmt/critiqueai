@@ -74,16 +74,8 @@
     margin-top: 0;
 }
 
-/* You can remove these if you're not using them anymore */
-/* .title {
-    font-size: 2rem;
-    color: #3fe493;
-    text-shadow: 0 0 30px #3fe49399;
-} */
-
 
 /* Yha Se output ke boxes ka color change krna ha */
-
 .note-content {
     h2 {
         color: #00ffb3;
@@ -169,14 +161,12 @@ ol strong {
     width: 100%;
     padding: 10px;
     padding-right: 30px;
-    /* Make room for the arrow */
     border-radius: 10px;
     border: 1px solid #444;
     background-color: #393e46;
     color: white;
     text-align: center;
     appearance: none;
-    /* Removes default browser arrow */
     cursor: pointer;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -390,7 +380,6 @@ ol strong {
     z-index: 100000000;
     opacity: 0;
     top: 0;
-    /* border: 1px solid; */
     padding: .2rem;
     border-radius: 5px;
     transition: all .5s ease-in-out;
@@ -454,8 +443,6 @@ ol strong {
     padding: 2px;
     border-radius: 10px;
     cursor: pointer;
-    /* margin-top: 4px; */
-
     display: flex;
     justify-content: center;
     align-items: center;
@@ -504,6 +491,7 @@ ol strong {
     width: 28px;
     height: 28px;
 }
+
 
 
 /* Responsive Design */
