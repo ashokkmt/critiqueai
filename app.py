@@ -41,16 +41,13 @@ service_account_json = json.loads(get_serve_account.payload.data.decode("UTF-8")
 
 
 # Updated prompts for AI evaluation
-EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Provide a concise summary (max 60-70 words, human -like legal language but simple), justification for your evaluations, and suggest specific improvements. Do not include any introductory text. Do not mention the question and answer or any word like evaluation, JUST GIVE EVALUATION AS YOU TOLD.
-eg-   Q:
-      A:
-
-question:
-answer:
+EVALUATION_PROMPT = """Evaluate the following question and answer pair for accuracy and relevance. Write a concise summary of the answer (60–70 words max) in clear, human-like legal language. Then, justify the score with specific reasoning and suggest precise improvements. Do not include any introduction, heading, or reference to the question or answer. Avoid words like 'evaluation', 'response', or similar. Just give the evaluation exactly as instructed. Don't give any score here.
 """
 
-SCORE_PROMPT = """Evaluate the following question and answer pair and give it a combined score out of 0 to 10. Just give one word score in digit like '3', '1', '10', '7', '0'. (Always give 0 if the answer is absolutely wrong)"""
+SCORE_PROMPT = """"Evaluate the following question and answer pair. Based on the accuracy and relevance of the answer, assign a single-digit score from 0 to 10 (e.g., '3', '7', '10'). Respond with only the numeric score. 
 
+If the answer is completely incorrect, or if the input is malformed, unclear, or missing either the question or the answer, always return '0'."
+"""
 
 SUMMARY_PROMPT = '''Generate a structured summary of the provided data. The data consists of multiple files, each separated by a line of asterisks (*************************).
 DONT ADD ANY SUMMARY STARTING LINE. JUST START SUMMART DIRECTLY.
@@ -158,8 +155,8 @@ def get_evaluation(text, isInstruction=None):
 
     content = response.text if response.candidates else "No summary generated"
     return content
-
 # <----------------- Evaluation Page Here Starts From Here ------------------->
+
 
 # Functions for evaluation page
 def get_evaluate(text):
@@ -561,6 +558,7 @@ def generate_content():
             )
 
             try:
+                print(full_prompt)
                 response = client.models.generate_content(
                     model=FLASH,
                     contents=full_prompt,
@@ -628,13 +626,10 @@ def summary_out():
         time = datetime.now(timezone.utc)
 
         data = request.form
-
         guest_id = request.form.get('guestId')
-
         print("Inside summary Function: ", guest_id, "\n")
 
         user_id, session_id = resolve_session(data)
-
         try:
             if check_file and check_fname:
                 instruction = request.form.get('text')
@@ -662,7 +657,6 @@ def summary_out():
                     extras=["fenced-code-blocks", "tables",
                             "strike", "task_list", "header-ids"]
                 )
-
                 return jsonify({"output": temp}), 200
             elif check_file:
                 files = request.files.getlist('files')
@@ -686,7 +680,6 @@ def summary_out():
                     extras=["fenced-code-blocks", "tables",
                             "strike", "task_list", "header-ids"]
                 )
-
                 return jsonify({"output": temp}), 200
             else:
                 return jsonify({"error": "Invalid input received. No files or text provided."}), 400
@@ -814,7 +807,7 @@ def delete_expired_shared_docs():
     print("Cleanup for shared docs started.")
 
     # 30 minutes ago from current UTC time
-    expiration_time = datetime.now(timezone.utc) - timedelta(minutes=2)
+    expiration_time = datetime.now(timezone.utc) - timedelta(minutes=30)
 
     # Query the shared collection for expired docs
     expired_docs = db.collection("shared").where(
@@ -837,7 +830,7 @@ def delete_expired_shared_docs():
 @app.route('/delete-user-files', methods=['GET'])
 def accountcleanup():
     print("Delete Function is called.")
-    expiration_time = datetime.now(timezone.utc) - timedelta(minutes=2)
+    expiration_time = datetime.now(timezone.utc) - timedelta(minutes=3)
 
     docs = db.collection("user_files").where(
         "uploaded_at", "<", expiration_time).stream()
@@ -865,7 +858,6 @@ def accountcleanup():
         return "No Files at Firebase\n", 200
 
     return jsonify({"deleted_files": deleted_files}), 200
-
 
 # Route for evalation page
 @app.route('/evaluate', methods=['POST'])
@@ -924,14 +916,12 @@ def evaluate():
                 response, score_response = get_evaluate(text)
                 print("response-", response.text,
                       " score-", score_response.text)
-
                 evaluation_md = response.text
                 evaluation_html = markdown2.markdown(
                     evaluation_md,
                     extras=["fenced-code-blocks", "tables",
                             "strike", "task_list", "header-ids"]
                 )
-
                 return jsonify({"evaluation": evaluation_html, "score": score_response.text}), 200
             else:
                 return jsonify({"error": "No valid input provided"}), 400
