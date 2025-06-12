@@ -123,7 +123,7 @@ export default function SavedNotes() {
               <div className="share-input-wrapper">
                 <input type="text" value={URL} readOnly className="share-input" />
                 <button className="create-link-btn" onClick={() => { navigator.clipboard.writeText(URL); copypopup(); }}>
-                  <div className={`show ${hide ? "" : "unhide"}`}>copied</div>Copy link
+                  <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>Copy link
                 </button>
               </div>
             </div>
@@ -153,6 +153,7 @@ export default function SavedNotes() {
                           <th className="time">Time</th>
                           <th className="title-type">Type</th>
                           <th className="actions-header">Actions</th>
+                          <th className="drop-btn"></th>
                         </tr>
                       </thead>
                       <tbody>

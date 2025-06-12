@@ -11,6 +11,7 @@ import SignUpPage from "./components/Loginsetup/SignupPage.jsx"
 import SavedNotes from "./components/SavedNotes.jsx"
 import Shared from "./components/shared/Shared.jsx"
 import View from "./components/shared/View.jsx"
+import ErrorPage from "./components/shared/ErrorPage.jsx"
 import { useEffect } from "react"
 
 function Homepagefunc() {
@@ -86,6 +87,16 @@ function ViewPage() {
   )
 }
 
+function Errorpage() {
+  return (
+    <>
+      <Navbar />
+      <ErrorPage/>
+      <Footer />
+    </>
+  )
+}
+
 
 
 
@@ -119,6 +130,7 @@ function App() {
           <Route path="/signUp" element={<SignUpPage />} />
           <Route path="/shared/:id" element={<SharedPage />} />
           <Route path="/view" element={<ViewPage />} />
+          <Route path="*" element={<Errorpage />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import '../styles/HomePage.css';
+import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Toolsdata from '../data/tools.json'
 import Featuredata from '../data/feature.json'
 import aboutdata from '../data/about.json'
-import AOS from 'aos';
 import { useNavigate } from 'react-router-dom';
 import { IoCheckmarkCircleSharp } from "react-icons/io5";
 import { FaBolt, FaBook, FaBrain, FaBullseye, FaChartLine, FaFileAlt, FaFileImport, FaGoogle, FaRoad, FaSlack, FaUsers } from 'react-icons/fa';
@@ -15,7 +15,7 @@ const HomePage = () => {
 
   useEffect(() => {
     // Initialize AOS
-    AOS.init({ duration: 500, offset: 100, once: true });
+    AOS.init({ duration: 500, offset: 100, once: false });
 
     // Typing Effect
     const words = [
@@ -190,14 +190,18 @@ const HomePage = () => {
         <div className='main-tools-section'>
           <div className='sub-tools'>
             <h2>Our Tools</h2>
-            <div className='tools-cards'>
+            <div className='tools-cards' >
 
               {
 
                 Toolsdata.map((tool, key) => {
                   const Icon = iconMap[tool.icon];
                   return (
-                    <div className='tool-card' key={key}>
+                    <div
+                      className='tool-card'
+                      key={key}
+                      data-aos="slide-up"
+                    >
                       {Icon && <Icon size={18} style={{ marginBottom: '8px' }} />}
                       <h3>{tool.heading}</h3>
                       <p>{tool.Des}</p>
@@ -216,13 +220,21 @@ const HomePage = () => {
         <div className='main-feature-section'>
           <div className='sub-feature'>
             <h2>Why Choose CritiqueAI?</h2>
-            <div className='features-cards'>
+            <div
+              className='features-cards'
+              data-aos="fade-in"
+            >
               {
                 Featuredata.map((item, key) => {
                   const Icon = iconMap[item.icon];
 
                   return (
-                    <div className='feature-card' key={key} >
+                    <div
+                      className='feature-card'
+                      key={key}
+                      data-aos="slide-right"
+                      data-aos-delay={key * 10}
+                    >
                       {Icon && <Icon size={40} style={{ marginBottom: "16px", color: "rgb(63, 228, 147)" }} />}
                       <h3>{item.heading}</h3>
                       <p>{item.Des}</p>
@@ -243,18 +255,24 @@ const HomePage = () => {
               <h2>About CritiqueAI</h2>
               <p>CritiqueAI is an innovative project developed for the Google Solution Challenge 2025. Our AI-powered learning companion is designed to revolutionize education through advanced technology, leveraging multiple Google technologies to create an impactful solution. Our platform combines answer evaluation, roadmap generation, and document summarization to create a comprehensive learning experience that addresses real-world educational challenges.</p>
             </div>
-            <div className='about-cards'>
+            <div
+              className='about-cards'
+            >
               {
 
                 aboutdata.map((item, key) => {
 
                   const Icon = iconMap[item.icon];
                   return (
-                      <div className='about-card' key={key} >
-                        {Icon && <Icon size={18} />}
-                        <h3>{item.heading}</h3>
-                        <p>{item.Des}</p>
-                      </div>
+                    <div
+                      className='about-card'
+                      key={key}
+                      data-aos="slide-up"
+                    >
+                      {Icon && <Icon size={18} />}
+                      <h3>{item.heading}</h3>
+                      <p>{item.Des}</p>
+                    </div>
                   )
                 })
               }
