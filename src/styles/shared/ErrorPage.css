@@ -1,0 +1,27 @@
+.error-page {
+    width: 100%;
+    display: flex;
+    min-height: calc(100vh - (6vh + 4rem + 61px));
+    justify-content: center;
+    color: rgb(255, 255, 255);
+    align-items: center;
+}
+
+
+.error-sub-page {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    align-items: center;
+    z-index: 1;
+}
+
+.error-sub-page p Navlink {
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .error-page {
+        min-height: calc(100vh - (6vh + 4rem + 50px));
+    }
+}
