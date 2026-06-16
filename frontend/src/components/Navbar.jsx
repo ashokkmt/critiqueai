@@ -1,0 +1,213 @@
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import '../styles/Navbar.css';
+import { FiLogIn } from 'react-icons/fi';
+import { CgLogOut } from 'react-icons/cg';
+import { supabase } from '../lib/supabase';
+import { Slide, toast } from 'react-toastify';
+import { GrNotes } from 'react-icons/gr';
+import { FaBars, FaTimes } from 'react-icons/fa';
+
+const Navbar = () => {
+  const [userDetail, setUserDetail] = useState(null);
+  const [userURL, setUserURL] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      offset: 100,
+      once: true,
+    });
+
+    // Prevent body scroll when mobile menu is open
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    // Cleanup function to restore scrolling
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isMenuOpen]);
+
+
+  // Other useEffect hooks and functions remain the same...
+
+
+
+
+  function scrollToLastAbout(e) {
+    // Check if we're already on the homepage
+    if (window.location.pathname === '/') {
+      // If on homepage, just scroll to the about section
+      e.preventDefault();
+      const aboutSections = document.querySelectorAll('.main-about-section');
+      const lastAbout = aboutSections[aboutSections.length - 1];
+      if (lastAbout) {
+        lastAbout.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // If on another page, let the default navigation happen
+      // Don't prevent default behavior so it navigates to homepage first
+      // The '#about' in the href will attempt to scroll to an element with id="about"
+    }
+    handleLinkClick(); // Close menu on click
+  }
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const user = session?.user;
+      if (user) {
+        setUserURL(user.user_metadata?.avatar_url || null);
+        setUserDetail({
+          firstName: user.user_metadata?.full_name?.split(' ')[0] || user.email,
+          lastName: user.user_metadata?.full_name?.split(' ').slice(1).join(' ') || '',
+          email: user.email,
+        });
+      } else {
+        setUserDetail(null);
+        setUserURL(null);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+
+  const LogOutUser = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.clear();
+
+      toast.success("Logged Out Successfully", {
+        position: "top-center",
+        autoClose: 2000,
+        transition: Slide,
+      });
+
+      setUserDetail(null);
+      handleLinkClick(); // Close menu
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    } catch (error) {
+      console.log(error.message);
+      toast.error("Having Some issue...", {
+        position: "top-center",
+        autoClose: 2000,
+        transition: Slide,
+      });
+    }
+  };
+
+
+  const FetchUserSavedData = () => {
+    console.log("Testing...");
+    handleLinkClick(); // Close menu
+  };
+
+  // Function to close the mobile menu
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
+
+  return (
+    <>
+      <div id="particles-js"></div>
+
+      <div className='navbar-main'>
+        <div className="navbar">
+          <div className="title-links" data-aos="fade-right">
+            <Link className="title" to="/" onClick={handleLinkClick}>
+              <img src="/images/logo-svg.svg" alt="CritiqueAI Logo" className="title-img" />
+              <span className="title-text">CritiqueAI</span>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Toggle Button */}
+          <button className="mobile-menu-toggle" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+
+          {/* Add 'active' class based on state */}
+          <div className={`link-area ${isMenuOpen ? 'active' : ''}`} data-aos="fade-left">
+            <Link to="/" className="nav-link" onClick={handleLinkClick}>
+              <i className="fas fa-home"></i>
+              <span>Home</span>
+            </Link>
+
+            <div className="nav-dropdown">
+              <button className="nav-dropdown-btn">
+                <i className="fas fa-tools"></i>
+                <span>Tools</span>
+                <i className="fas fa-chevron-down"></i>
+              </button>
+              <div className="nav-dropdown-content">
+                <Link to="/input" className="dropdown-item" onClick={handleLinkClick}>
+                  <i className="fas fa-check-circle"></i>
+                  <span>Answer Evaluation</span>
+                </Link>
+                <Link to="/roadmap" className="dropdown-item" onClick={handleLinkClick}>
+                  <i className="fas fa-road"></i>
+                  <span>Learning Roadmap</span>
+                </Link>
+                <Link to="/summary" className="dropdown-item" onClick={handleLinkClick}>
+                  <i className="fas fa-file-alt"></i>
+                  <span>Document Summary</span>
+                </Link>
+                <Link to="/notes" className="dropdown-item" onClick={handleLinkClick}>
+                  <i className="fas fa-book"></i>
+                  <span>Generate Notes</span>
+                </Link>
+              </div>
+            </div>
+
+            <a href="/#about" onClick={scrollToLastAbout} className="nav-link">
+              <i className="fas fa-info-circle"></i>
+              <span>About</span>
+            </a>
+
+            {
+              userDetail ?
+                <>
+                  <div className="nav-dropdown">
+                    <button className="nav-dropdown-btn user-info-btn">
+                      {userURL && (
+                        <img src={userURL} alt="User Avatar" className="user-avatar" />
+                      )}
+                      <span>{userDetail.firstName}</span>
+                    </button>
+                    <div className="nav-dropdown-content login-dropdown-content">
+                      <Link onClick={FetchUserSavedData} to='/savedNotes' className="dropdown-item">
+                        <GrNotes size={18} />
+                        <span>Saved Notes</span>
+                      </Link>
+
+                      <Link onClick={LogOutUser} className="dropdown-item">
+                        <CgLogOut size={22} />
+                        <span>Logout</span>
+                      </Link>
+                    </div>
+                  </div>
+                </>
+                :
+                <Link to="/login" className="nav-link" onClick={handleLinkClick}>
+                  <FiLogIn size={18} />
+                  <span>Login</span>
+                </Link>
+            }
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Navbar;

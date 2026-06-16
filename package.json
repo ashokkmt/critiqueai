@@ -1,0 +1,11 @@
+{
+  "name": "critiqueai",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && python app.py",
+    "dev": "docker-compose up",
+    "build": "docker-compose build",
+    "lint:frontend": "cd frontend && npm run lint"
+  }
+}

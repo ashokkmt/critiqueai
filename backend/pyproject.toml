@@ -1,0 +1,18 @@
+[project]
+name = "critiqueai-backend"
+version = "0.1.0"
+description = "CritiqueAI Flask backend"
+requires-python = ">=3.10"
+dependencies = [
+    "flask",
+    "python-docx",
+    "markdown2",
+    "werkzeug",
+    "google-genai",
+    "python-dotenv",
+    "gunicorn",
+    "flask-cors",
+    "supabase",
+    "pymupdf",
+    "pdfplumber",
+]

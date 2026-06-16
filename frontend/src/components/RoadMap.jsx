@@ -1,0 +1,437 @@
+import { useEffect, useRef, useState } from 'react';
+import '../styles/RoadMap.css'
+import { FaDownload, FaMapSigns, FaRobot } from 'react-icons/fa';
+import { FiMaximize, FiMinimize } from 'react-icons/fi';
+import { MdContentCopy } from 'react-icons/md';
+import { RiCloseLargeLine } from 'react-icons/ri';
+import { TfiSave } from 'react-icons/tfi';
+import axios from 'axios';
+import { supabase } from '../lib/supabase';
+import { Slide, toast, ToastContainer } from 'react-toastify';
+import html2pdf from "html2pdf.js";
+import { IoMdClose } from "react-icons/io";
+import { useNavigate } from 'react-router-dom';
+
+const API_BASE = import.meta.env.VITE_API_URL;
+
+
+export default function RoadMap() {
+    const [topic, setTopic] = useState('');
+    const [Loading, setLoading] = useState(false);
+    const [showoutput, setshowoutput] = useState(false);
+    const [FadeIn, setFadeIn] = useState(false);
+    const [Maximize, setMaximize] = useState(false);
+    const [RoadMap, setRoadMap] = useState("");
+    const RoadOut = useRef(null)
+    const [hide, sethide] = useState(true);
+    const [valuser, setvaluser] = useState("");
+    const [test, settest] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js';
+        script.onload = () => {
+            window.particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: '#4CAF50' },
+                    shape: { type: 'circle', stroke: { width: 0, color: '#000000' } },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#4CAF50',
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1,
+                        random: true,
+                        out_mode: 'out'
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'grab' },
+                        onclick: { enable: true, mode: 'push' },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: { opacity: 1 }
+                        },
+                        push: { particles_nb: 4 }
+                    }
+                },
+                retina_detect: true
+            });
+        };
+        document.body.appendChild(script);
+    }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!topic.trim()) return;
+
+        setFadeIn(true)
+        setshowoutput(true)
+        setLoading(true)
+
+        const SummRes = topic.trim();
+        console.log('Generating roadmap for:', SummRes);
+
+        // Add logic for roadmap generation here
+        try {
+            const res = await axios.post(`${API_BASE}/get-roadmap`, SummRes, {
+                headers: {
+                    "Content-Type": "text/plain"
+                }
+            });
+            console.log(res);
+            setRoadMap(res.data.output);
+            setLoading(false)
+
+        } catch (error) {
+            console.log(error.message);
+        }
+
+    };
+
+
+    useEffect(() => {
+        if (RoadOut.current) {
+            RoadOut.current.innerHTML = RoadMap;
+        }
+    }, [RoadMap])
+
+
+    const DownloadFile = () => {
+        console.log("Download Button Pressed.....")
+
+        const element = RoadOut.current;
+        if (!element) return;
+
+
+        const randomNum = Math.floor(100000 + Math.random() * 900000);
+        const filename = `critiqueai_output_${randomNum}.pdf`;
+        // Clone the node to apply export-specific styles
+        const clone = element.cloneNode(true);
+
+        // Clean PDF styles
+        clone.style.backgroundColor = "white";
+        clone.style.color = "black";
+        clone.style.padding = "20px";
+        clone.style.fontFamily = "Arial, sans-serif";
+        clone.style.fontSize = "14px";
+        clone.style.width = "100%";
+
+        // Fix overflow and page breaks
+        clone.style.overflow = "visible";
+        clone.style.pageBreakInside = "auto";
+
+        // Optional: set minHeight to ensure spacing is not squashed
+        clone.style.minHeight = "100vh";
+
+        clone.querySelectorAll("h1, h2, h3, h4").forEach((el) => {
+            el.style.color = "black";
+            el.style.marginBottom = "10px";
+        });
+
+
+        // Page break styles for child elements
+        clone.querySelectorAll("p, div, li, strong").forEach((el) => {
+            el.style.pageBreakInside = "avoid";
+            el.style.breakInside = "avoid";
+            el.style.color = "black";
+            el.style.lineHeight = "1.6";
+        });
+
+        clone.querySelectorAll("ul").forEach((ul) => {
+            ul.style.paddingLeft = "20px";
+            ul.style.marginTop = "10px";
+            ul.style.marginBottom = "10px";
+        });
+
+        clone.querySelectorAll("li").forEach((li) => {
+            li.style.marginBottom = "5px";
+            li.style.paddingLeft = "10px";
+            li.style.listStyleType = "disc";
+            li.style.color = "black";
+        });
+
+        const opt = {
+            margin: 0.5,
+            filename: filename,
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                scrollY: 0
+            },
+            jsPDF: {
+                unit: "in",
+                format: "a4",
+                orientation: "portrait"
+            }
+        };
+
+        html2pdf().set(opt).from(clone).save();
+    };
+
+
+    const CopyContent = () => {
+        navigator.clipboard.writeText(RoadOut.current.innerText);
+        sethide(false)
+        setTimeout(() => {
+            sethide(true)
+        }, 1200);
+    }
+
+    const MaximizeNotesSize = () => {
+        setMaximize(!Maximize);
+    }
+
+
+
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) setvaluser(user.id);
+            else setvaluser("");
+        };
+        getUser();
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+            (event, session) => {
+                if (session?.user) setvaluser(session.user.id);
+                else setvaluser("");
+            }
+        );
+        return () => subscription.unsubscribe();
+    }, [])
+
+
+
+    const SendDataBackend = async () => {
+        console.log("Sending Data Backend....")
+
+        const formatted = new Date(Date.now()).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        });
+
+        const data = {
+            time: formatted,
+            heading: topic,
+            content: RoadMap,
+            type: "Roadmap"
+        }
+        const formData = new FormData();
+        formData.append('data', JSON.stringify(data))
+        console.log(formData);
+
+
+        if (valuser !== "") {
+            try {
+                const res = await axios.post(`${API_BASE}/set-output`, {
+                    uid: valuser,
+                    ...data
+                })
+                // console.log(res)
+                toast.success("Saved Successfully", {
+                    position: "top-center",
+                    autoClose: 2000,
+                    transition: Slide,
+                });
+
+            } catch (error) {
+                console.log(error.message)
+            }
+        }
+        else {
+            settest(true);
+            localStorage.setItem('formData', JSON.stringify(data));
+            localStorage.setItem('restorePath', window.location.pathname);
+        }
+    }
+
+
+    useEffect(() => {
+        const sendPendingData = async () => {
+            const savedData = JSON.parse(localStorage.getItem('formData'));
+
+            if (savedData && valuser !== "") {
+                try {
+                    const res = await axios.post(`${API_BASE}/set-output`, {
+                        uid: valuser,
+                        ...savedData,
+                    });
+
+                    console.log(res);
+
+                    //  Clearing Local Storage
+                    localStorage.removeItem('formData');
+                    localStorage.removeItem('restorePath');
+
+                    toast.success("Saved Successfully (After Login)", {
+                        position: "top-center",
+                        autoClose: 2000,
+                        transition: Slide,
+                    });
+
+                } catch (err) {
+                    console.log("Error sending pending data:", err);
+                }
+            }
+        };
+        sendPendingData();
+    }, [valuser]);
+
+
+
+    return (
+        <>
+            {
+                showoutput && (
+                    <div className={`note-output ${FadeIn ? "fadein" : ""}`}>
+                        <div className={`sub-note-output ${Maximize ? "sub-note-output-max" : ""}`}>
+                            {Loading ? (
+                                <div className='output-placeholder'>
+                                    <FaRobot size={40} color="#3fe493" />
+                                    <p>Creating your personalized learning path...</p>
+                                    <p className="placeholder-subtext">This may take a few moments</p>
+                                    <div className="shimmer-line"></div>
+                                    <div className="shimmer-line short"></div>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className='note-toolbar'>
+                                        <h2>Generated Roadmap</h2>
+                                        <div className='notes-btns'>
+                                            <div className='note-icon' onClick={MaximizeNotesSize} >
+                                                {Maximize ? <FiMinimize /> : <FiMaximize />}
+                                            </div>
+                                            <div onClick={SendDataBackend} className='note-icon' >
+
+
+                                                <TfiSave />
+                                            </div>
+                                            <div className='note-icon copy-icon' onClick={CopyContent} >
+                                                <div className={`show ${hide ? "" : "unhide"}`}>Copied</div>
+                                                <MdContentCopy />
+                                            </div>
+                                            <div className='note-icon' onClick={DownloadFile} >
+                                                <FaDownload />
+                                            </div>
+                                            <div className='note-icon' onClick={() => {
+                                                setshowoutput(false)
+                                                setMaximize(false)
+                                            }}
+                                            >
+                                                <RiCloseLargeLine />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className='roadmap-content' ref={RoadOut} >
+                                        {/* output Yha Ayega */}
+
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )
+            }
+
+            <div className='Roadmap-page'>
+                {
+                    test &&
+                    (
+                        <div className="roadmap-popup-overlay">
+                            <div className="roadmap-popup">
+                                <div className="roadmap-header">
+                                    <h3>You are not logged in. Please sign in to continue.</h3>
+                                    <div className="close-btn-wrapper" onClick={() => {
+                                        settest(!test)
+                                        localStorage.clear()
+                                    }}>
+                                        <IoMdClose size={20} color="white" className="close-roadmap-btn" />
+                                    </div>
+                                </div>
+
+                                <div className="roadmap-body">
+                                    <button className="sign-in-btn" onClick={() => navigate("/login")}>
+                                        Sign In
+                                    </button>
+                                    <button className="sign-in-btn" onClick={() => navigate("/signUp")}>
+                                        Sign Up
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                }
+
+                <div className="roadmap-outer">
+                    <div className="roadmap-heading">
+                        <h2>
+                            <p className='roadmap-head' ><FaMapSigns className='road-sign' color='#3fe493' /> Skill RoadMap Generator</p>
+                        </h2>
+                        <p className='heading-roadmap'>Turn any skill into a step-by-step learning path in seconds.</p>
+                    </div>
+
+
+                    <div className='second-Roadmapbox'>
+                        <div className='roadmap-input-box'>
+                            <div className='roadmap-box'>
+                                <h3>What would you like to learn?</h3>
+                                <textarea
+                                    required
+                                    placeholder='e.g. Python, Web Development, Machine Learning'
+                                    className='roadmap-textarea'
+                                    onChange={(e) => { setTopic(e.target.value) }}
+                                    value={topic}
+                                ></textarea>
+                                <button
+                                    onClick={handleSubmit}
+                                > <FaMapSigns /> Generate Roadmap</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <ToastContainer
+                position="top-center"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                transition={Slide}
+                style={{ zIndex: 10000 }}
+            />
+        </>
+    )
+}
+

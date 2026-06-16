@@ -1,35 +1,57 @@
-*.env                    
-*.local                  
-*.secret                
+# Dependencies
+apps/frontend/node_modules/
+__pycache__/
+*.py[cod]
+*.egg-info/
 
-.venv/                   
-.vscode/                
-.idx/                     
+# Build outputs
+apps/frontend/dist/
+apps/frontend/build/
 
-*.json            
-code/uploads/*          
-files/   
-Rough/        
-node_modules/   
+# Environment files
+apps/backend/.env
+*.env
+*.local
+*.secret
 
-*.md                    
-!README.md              
+# IDE
+.vscode/
+.idea/
+.idx/
 
-__pycache__/           
-*.py[cod]            
-*.egg-info/             
-.pytest_cache/           
+# OS
+.DS_Store
+Thumbs.db
+*.swp
 
-.DS_Store             
-Thumbs.db                
-*.swp                    
-.*
-code/test*
+# Testing
+.pytest_cache/
 tests/
-images/
+test/
+
+# Python
+.venv/
+
+# Output files
 output.*
 output_*
+code/uploads/*
+files/
+Rough/
+images/
 
-test/
+# Markdown (except README)
+*.md
+!README.md
+
+# JSON files (except package*.json)
+*.json
+!package.json
+!apps/frontend/package.json
+!apps/frontend/package-lock.json
+!docker-compose.json
+
+# Filenignore
 !.filenignore
 !.gitignore
+frontend/node_modules/
